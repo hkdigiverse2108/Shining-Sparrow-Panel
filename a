@@ -1,0 +1,61 @@
+Your leader is speaking in Gujarati. Here is the exact translation of what they said:
+
+"haju aani andar na badha page banavo" = "Now, make all the pages inside this" (Referring to the authentication flow/layout you just built).
+"haa a pn ane login pachi na page pn means k course workshop a badhu j che ae badhu banavu che" = "Yes, this too, and also the pages after login, meaning courses, workshops, everything that is there, you have to build all of that."
+What your leader wants you to do:
+They are tasking you with building the entire frontend application. Your job is no longer just the login screen; you need to build the main app itself.
+
+This breaks down into two main phases:
+
+Phase 1: Finish the "Auth" (Pre-login) Pages
+Make sure all the pages related to logging in are complete inside your AuthLayout:
+
+✅ Login
+✅ Register
+✅ Forgot Password
+🔲 OTP Verification Page (Usually needed after register/forgot password)
+🔲 Reset Password Page (Where the user actually types their new password after clicking the email link)
+🔲 Profile/Account Setup Page (Sometimes apps ask for more details right after your first login)
+Phase 2: Build the "Post-Login" (Main App) Pages
+Once the user clicks "Sign In", they leave the AuthLayout and enter the main application. You need to create a DashboardLayout (with a Sidebar and Header) and build the pages inside it.
+
+Based on what your leader said, you need to build:
+
+🔲 Dashboard / Home Page (The main screen users see after login)
+🔲 Courses Page (List of all courses)
+🔲 Course Detail Page (Viewing a specific course, its videos, materials)
+🔲 Workshops Page (List of workshops)
+🔲 Workshop Detail Page (Viewing a specific workshop)
+🔲 My Courses/Workshops (The user's enrolled/purchased items)
+🔲 Profile/Settings Page
+How to start (Architecture Advice):
+Since you just successfully built the AuthLayout with <Outlet />, you should do the exact same thing for the post-login pages:
+
+Create a DashboardLayout.tsx: This will have a Sidebar (with links to Courses, Workshops, etc.) and a Top Header. It will use <Outlet /> to render the child pages.
+Update your Router (App.tsx): Separate the routes so unauthenticated users see the AuthLayout, and authenticated users see the DashboardLayout.
+tsx
+
+// Example of how your router should look:
+
+const router = createBrowserRouter([
+{
+path: '/',
+element: <AuthLayout />, // Your current layout
+children: [
+{ path: 'login', element: <Login /> },
+{ path: 'register', element: <Register /> },
+{ path: 'forgot-password', element: <ForgotPassword /> },
+],
+},
+{
+path: '/app', // New base route for logged-in users
+element: <DashboardLayout />, // New layout with Sidebar
+children: [
+{ path: 'dashboard', element: <Dashboard /> },
+{ path: 'courses', element: <Courses /> },
+{ path: 'workshops', element: <Workshops /> },
+{ path: 'profile', element: <Profile /> },
+],
+}
+]);
+Summary: Your leader is happy with the auth setup and now wants you to build the core product pages (Courses, Workshops, Dashboard). Start by creating a DashboardLayout with a sidebar!

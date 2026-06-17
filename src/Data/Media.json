@@ -1,0 +1,173 @@
+[
+  {
+    "id": 1,
+    "name": "React Course Thumbnail.jpg",
+    "url": "https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=500&q=80",
+    "type": "image",
+    "category": "Development",
+    "size": "240 KB",
+    "uploadedAt": "12 Oct 2023"
+  },
+  {
+    "id": 2,
+    "name": "Advanced React Patterns.pdf",
+    "url": "https://raw.githubusercontent.com/mozilla/pdf.js/master/web/compressed.tracemonkey-pldi-09.pdf",
+    "type": "doc",
+    "category": "Development",
+    "size": "1.4 MB",
+    "uploadedAt": "10 Oct 2023"
+  },
+  {
+    "id": 3,
+    "name": "Node.js Backend Architecture.mp4",
+    "url": "https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/360/Big_Buck_Bunny_360_10s_1MB.mp4",
+    "thumbnail": "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=500&q=80",
+    "type": "video",
+    "category": "Development",
+    "size": "120 MB",
+    "uploadedAt": "15 Oct 2023"
+  },
+
+  {
+    "id": 4,
+    "name": "UI Design Hero.png",
+    "url": "https://images.unsplash.com/photo-1559028012-481c04fa702d?w=500&q=80",
+    "type": "image",
+    "category": "Design",
+    "size": "1.2 MB",
+    "uploadedAt": "14 Oct 2023"
+  },
+  {
+    "id": 5,
+    "name": "UI/UX Masterclass Slides.pdf",
+    "url": "https://raw.githubusercontent.com/mozilla/pdf.js/master/web/compressed.tracemonkey-pldi-09.pdf",
+    "type": "doc",
+    "category": "Design",
+    "size": "5.2 MB",
+    "uploadedAt": "11 Oct 2023"
+  },
+  {
+    "id": 6,
+    "name": "Figma Wireframing Tutorial.mp4",
+    "url": "https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/360/Big_Buck_Bunny_360_10s_1MB.mp4",
+    "thumbnail": "https://images.unsplash.com/photo-1545235617-9465d2a55698?w=500&q=80",
+    "type": "video",
+    "category": "Design",
+    "size": "85 MB",
+    "uploadedAt": "18 Oct 2023"
+  },
+
+  {
+    "id": 7,
+    "name": "Data Science Board.jpg",
+    "url": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=500&q=80",
+    "type": "image",
+    "category": "Business",
+    "size": "320 KB",
+    "uploadedAt": "20 Oct 2023"
+  },
+  {
+    "id": 8,
+    "name": "Business Strategy Audio.mp3",
+    "url": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+    "type": "audio",
+    "category": "Business",
+    "size": "8.4 MB",
+    "uploadedAt": "22 Oct 2023"
+  },
+  {
+    "id": 9,
+    "name": "Financial Modeling.pdf",
+    "url": "https://raw.githubusercontent.com/mozilla/pdf.js/master/web/compressed.tracemonkey-pldi-09.pdf",
+    "type": "doc",
+    "category": "Business",
+    "size": "1.8 MB",
+    "uploadedAt": "25 Oct 2023"
+  },
+
+  {
+    "id": 10,
+    "name": "Lecture 1 - Intro to Marketing.mp4",
+    "url": "https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/360/Big_Buck_Bunny_360_10s_1MB.mp4",
+    "thumbnail": "https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?w=500&q=80",
+    "type": "video",
+    "category": "Marketing",
+    "size": "45 MB",
+    "uploadedAt": "18 Oct 2023"
+  },
+  {
+    "id": 11,
+    "name": "Digital Marketing E-Book.pdf",
+    "url": "https://raw.githubusercontent.com/mozilla/pdf.js/master/web/compressed.tracemonkey-pldi-09.pdf",
+    "type": "doc",
+    "category": "Marketing",
+    "size": "3.8 MB",
+    "uploadedAt": "16 Oct 2023"
+  },
+  {
+    "id": 12,
+    "name": "Podcast Interview.mp3",
+    "url": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
+    "type": "audio",
+    "category": "Marketing",
+    "size": "12.1 MB",
+    "uploadedAt": "24 Oct 2023"
+  },
+
+  {
+    "id": 13,
+    "name": "Golden Hour Portrait.jpg",
+    "url": "https://images.unsplash.com/photo-1502082553048-f009c37129b9?w=500&q=80",
+    "type": "image",
+    "category": "Photography",
+    "size": "450 KB",
+    "uploadedAt": "02 Nov 2023"
+  },
+  {
+    "id": 14,
+    "name": "Camera Settings Cheat Sheet.pdf",
+    "url": "https://raw.githubusercontent.com/mozilla/pdf.js/master/web/compressed.tracemonkey-pldi-09.pdf",
+    "type": "doc",
+    "category": "Photography",
+    "size": "800 KB",
+    "uploadedAt": "04 Nov 2023"
+  },
+  {
+    "id": 15,
+    "name": "Studio Lighting Setup.mp4",
+    "url": "https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/360/Big_Buck_Bunny_360_10s_1MB.mp4",
+    "thumbnail": "https://images.unsplash.com/photo-1606983340126-99ab4feaa64a?w=500&q=80",
+    "type": "video",
+    "category": "Photography",
+    "size": "210 MB",
+    "uploadedAt": "06 Nov 2023"
+  },
+
+  {
+    "id": 16,
+    "name": "Music Theory Basics.mp3",
+    "url": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
+    "type": "audio",
+    "category": "Music",
+    "size": "15.4 MB",
+    "uploadedAt": "10 Nov 2023"
+  },
+  {
+    "id": 17,
+    "name": "Ableton Project Template.pdf",
+    "url": "https://raw.githubusercontent.com/mozilla/pdf.js/master/web/compressed.tracemonkey-pldi-09.pdf",
+    "type": "doc",
+    "category": "Music",
+    "size": "45 MB",
+    "uploadedAt": "12 Nov 2023"
+  },
+  {
+    "id": 18,
+    "name": "Synthesizer Sound Design.jpg",
+    "url": "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=500&q=80",
+    "type": "image",
+    "category": "Music",
+    "size": "680 KB",
+    "uploadedAt": "14 Nov 2023"
+  }
+]

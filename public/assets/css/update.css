@@ -1,0 +1,445 @@
+@reference "tailwindcss";
+@reference "./variables.css";
+@tailwind utilities;
+
+@layer components {
+  /* ─── BUTTONS ─── */
+  .common-btn.ant-btn {
+    @apply font-semibold rounded-lg border-0! transition-all! duration-200!;
+    /* box-shadow: 0 2px 8px
+      color-mix(in srgb, var(--color-primary, var(--primary)) 30%, rgba(0, 0, 0, 0.1)) !important; */
+  }
+  .common-btn.ant-btn:hover {
+    @apply  scale-[1.02]! -translate-y-[1px]!;
+    box-shadow: 0 4px 12px
+      color-mix(in srgb, var(--color-primary, var(--primary)) 40%, rgba(0, 0, 0, 0.15)) !important;
+  }
+  .common-btn.ant-btn:active {
+    @apply scale-[0.98]! translate-y-0!;
+  }
+  .common-input.ant-input, .common-input.ant-input-affix-wrapper {
+    @apply border border-border! text-foreground! rounded-lg h-12! px-4! text-[15px]! transition-all! duration-300!;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04) !important;
+  }
+  .common-input.ant-input:hover,
+  .common-input.ant-input-affix-wrapper:hover {
+    @apply border border-border!;
+  }
+  .common-input.ant-input:focus, .common-input.ant-input-affix-wrapper-focused, .common-input.ant-input-affix-wrapper:focus-within {
+    @apply border border-primary!;
+    box-shadow: 0 0 0 3px
+      color-mix(in srgb, var(--color-primary, var(--primary)) 12%, transparent) !important;
+  }
+  .common-input .ant-input-prefix,
+  .common-input .ant-input-prefix .anticon,
+  .common-input .ant-input-prefix svg,
+  .common-input .ant-input-password-icon,
+  .common-input .ant-input-password-icon svg {
+    @apply text-muted!;
+    transition: color 0.3s;
+  }
+  .common-input .ant-input-prefix {
+    @apply mr-2.5!;
+  }
+  .common-input.ant-input-affix-wrapper-focused .ant-input-prefix,
+  .common-input.ant-input-affix-wrapper-focused .ant-input-prefix .anticon,
+  .common-input:focus-within .ant-input-prefix,
+  .common-input:focus-within .ant-input-prefix .anticon,
+  .common-input .ant-input-password-icon:hover,
+  .common-input .ant-input-password-icon:hover svg {
+    @apply text-primary!;
+  }
+  .common-input .ant-input {
+    @apply bg-transparent!;
+  }
+  .common-input .ant-input::placeholder {
+    @apply text-muted!;
+  }
+  .common-checkbox {
+    @apply font-medium text-foreground!;
+  }
+  .common-checkbox .ant-checkbox {
+    @apply rounded border-border! bg-surface!;
+  }
+  .common-checkbox .ant-checkbox:hover {
+    @apply shadow-md! border-primary!;
+  }
+  .common-checkbox .ant-checkbox-checked {
+    @apply shadow-lg! border-primary!;
+  }
+  .common-checkbox .ant-checkbox-checked .ant-checkbox-inner {
+    @apply bg-primary! border-primary!;
+  }
+  .common-checkbox .ant-checkbox-checked .ant-checkbox-inner::after,
+  .common-checkbox .ant-checkbox-checked::after {
+    @apply border-white!;
+  }
+  .error-message {
+    @apply text-red-500 text-xs block m-0 p-0 leading-none;
+    min-height: 16px;
+  }
+  .field-error {
+    @apply mb-0;
+  }
+  /* ─── BREADCRUMBS ─── */
+.common-breadcrumbs {
+  @apply flex flex-col md:flex-row md:items-center md:justify-between gap-2 md:gap-4 p-3 md:px-6 md:py-4 bg-surface!  z-20 mb-0! rounded-xl shadow-md transition-colors duration-300 ease-in-out;
+  /* sticky top-[44px] */
+}
+.common-breadcrumbs-title {
+  @apply m-0! p-0! text-base md:text-xl font-bold leading-tight text-foreground truncate min-w-0; 
+}
+.common-breadcrumb-nav {
+  @apply text-[11px] md:text-sm text-muted shrink-0;
+}
+.common-breadcrumb-nav .ant-breadcrumb-link {
+  @apply text-muted! transition-colors duration-200;
+}
+.common-breadcrumb-nav .ant-breadcrumb-link:hover {
+  @apply text-primary!; 
+}
+.common-breadcrumb-nav .home-crumb {
+  @apply text-primary! font-semibold inline-flex items-center gap-1 transition-opacity duration-200 ease-in-out;
+}
+.common-breadcrumb-nav .home-crumb:hover {
+  @apply opacity-80; 
+}
+.common-breadcrumb-nav .ant-breadcrumb-separator {
+  @apply text-muted!;
+}
+.common-breadcrumb-nav li:last-child span {
+  @apply text-foreground! font-medium;
+}
+.common-breadcrumb-link {
+  @apply hover:text-primary transition-colors;
+}
+.common-breadcrumb-span {
+  @apply font-semibold text-foreground;
+}
+.ant-layout, 
+.ant-layout-content {
+  @apply bg-background! m-0!;
+}
+.common-page-wrapper {
+  @apply mt-6 bg-surface rounded-xl shadow-lg min-h-[calc(100vh-200px)] transition-colors duration-300 ease-in-out;
+}
+.page-content-padding {
+  @apply p-4 md:p-6;
+}
+.page-content-no-padding {
+  @apply p-0;
+}
+.common-btn.ant-btn.btn-primary { background-color: var(--primary) !important; color: var(--surface) !important; }
+.common-btn.ant-btn.btn-secondary { background-color: var(--muted) !important; color: var(--foreground) !important; }
+.common-btn.ant-btn.btn-outline { background-color: transparent !important; border: 1px solid var(--primary) !important; color: var(--primary) !important; }
+.common-btn.ant-btn.btn-success { background-color: var(--success) !important; color: var(--surface) !important; }
+.common-btn.ant-btn.btn-danger { background-color: var(--danger) !important; color: var(--surface) !important; }
+}
+/* -------------------------------------------------
+   ICON‑ONLY BUTTON
+   ------------------------------------------------- */
+.common-btn.ant-btn.btn-icononly {
+  @apply w-12 h-12 min-w-0 p-0 flex items-center justify-center!;
+  background-color: var(--primary) !important;   /* fallback colour */
+  color: var(--surface) !important;
+}
+.common-btn.ant-btn.btn-primary.btn-icononly  { background-color: var(--primary)   !important; }
+.common-btn.ant-btn.btn-secondary.btn-icononly{ background-color: var(--muted)    !important; }
+.common-btn.ant-btn.btn-outline.btn-icononly { background-color: transparent    !important;
+                                               border: 1px solid var(--primary) !important;
+                                               color: var(--primary) !important; }
+.common-btn.ant-btn.btn-success.btn-icononly  { background-color: var(--success)  !important; }
+.common-btn.ant-btn.btn-danger.btn-icononly   { background-color: var(--danger)   !important; }
+.common-btn.ant-btn.btn-ghost.btn-icononly    { background-color: transparent   !important;
+                                               color: var(--foreground) !important; }
+.common-tag {
+  @apply inline-flex items-center gap-1.5 font-semibold text-xs leading-5 rounded-md px-2.5 py-[2px];
+}
+.common-tag.ant-tag {
+  @apply mr-0 border-0;
+}
+.common-tag {
+  @apply bg-surface text-foreground;
+}
+ .ant-drawer-mask {
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* =========================================
+   MODERN FORM STYLES - GLOBAL CSS (@apply)
+   ========================================= */
+
+/* Consistent Label Styling */
+.modern-form-item .ant-form-item-label > label {
+  @apply font-semibold text-foreground text-[13px];
+}
+
+/* Consistent Form Item Spacing */
+.modern-form-item {
+  @apply !mb-[18px];
+}
+
+/* --- UNIFIED INPUT & SELECT STYLING --- */
+.modern-input,
+.modern-input.ant-input-affix-wrapper,
+.modern-select .ant-select-selector {
+  @apply !h-[42px] !rounded-lg !border !border-border !px-3 !text-sm !text-foreground !bg-surface-muted transition-all duration-300 !flex !items-center;
+}
+.modern-input .ant-input {
+  @apply !bg-transparent;
+}
+.modern-input::placeholder,
+.modern-select .ant-select-selection-placeholder {
+  @apply !text-muted;
+}
+.modern-input:hover,
+.modern-input.ant-input-affix-wrapper:hover,
+.modern-select:not(.ant-select-disabled):hover .ant-select-selector {
+  @apply !border-border-hover;
+}
+.modern-input:focus,
+.modern-input.ant-input-affix-wrapper-focused,
+.modern-select.ant-select-focused .ant-select-selector {
+  @apply !border-primary !bg-surface outline-none;
+  box-shadow: 0 0 0 3px var(--primary-ring) !important;
+}
+.modern-form-item.ant-form-item-has-error .modern-input,
+.modern-form-item.ant-form-item-has-error .modern-select .ant-select-selector {
+  @apply !border-danger outline-none;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--danger) 10%, transparent) !important;
+}
+
+.modern-form-item .ant-form-item-explain-error {
+  @apply text-xs mt-1 text-danger;
+}
+
+/* ====== TIPTAP EDITOR STYLES ====== */
+
+/* Force the Tiptap wrapper to be full width */
+.tiptap {
+  width: 100%;
+  max-width: 100%;
+}
+
+.tiptap-editor-content {
+  width: 100%;
+  padding: 12px 16px;
+  min-height: 150px;
+  outline: none;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--foreground);
+}
+
+.tiptap-editor-content p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: var(--muted);
+  pointer-events: none;
+  height: 0;
+}
+
+.tiptap-editor-content ul { list-style: disc; padding-left: 20px; }
+.tiptap-editor-content ol { list-style: decimal; padding-left: 20px; }
+.tiptap-editor-content p { margin-bottom: 8px; }
+.tiptap-editor-content h1, .tiptap-editor-content h2 { font-weight: bold; margin-bottom: 8px; }
+.tiptap-editor-content h1 { font-size: 1.5rem; }
+.tiptap-editor-content h2 { font-size: 1.25rem; }
+/* ====== STYLES FOR DISPLAYING TIPTAP HTML ====== */
+.tiptap-render {
+  line-height: 1.6;
+}
+
+.tiptap-render p {
+  margin-bottom: 0.5rem;
+}
+
+.tiptap-render ul {
+  list-style-type: disc;
+  padding-left: 1.25rem; /* 20px */
+  margin-bottom: 0.5rem;
+}
+
+.tiptap-render ol {
+  list-style-type: decimal;
+  padding-left: 1.25rem; /* 20px */
+  margin-bottom: 0.5rem;
+}
+
+.tiptap-render li {
+  margin-bottom: 0.25rem;
+}
+
+.tiptap-render code {
+  background-color: var(--surface-muted);
+  padding: 0.1rem 0.3rem;
+  border-radius: 4px;
+  font-size: 0.85em;
+  color: var(--danger); /* Makes inline code stand out */
+}
+
+.tiptap-render strong {
+  font-weight: 600;
+  color: var(--foreground);
+}
+/* ====== ANT DESIGN DATE/TIME PICKER DARK MODE ====== */
+.ant-datepicker-popup .ant-picker-panel-container,
+.ant-datepicker-popup .ant-picker-content {
+  background-color: var(--surface) !important;
+  color: var(--foreground) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 12px !important;
+}
+
+.ant-datepicker-popup .ant-picker-header,
+.ant-datepicker-popup .ant-picker-footer {
+  border-color: var(--border) !important;
+}
+
+.ant-datepicker-popup .ant-picker-header button,
+.ant-datepicker-popup .ant-picker-cell {
+  color: var(--foreground) !important;
+}
+
+.ant-datepicker-popup .ant-picker-cell-in-view .ant-picker-cell-inner {
+  color: var(--foreground) !important;
+}
+
+.ant-datepicker-popup .ant-picker-cell-selected .ant-picker-cell-inner {
+  background-color: var(--primary) !important;
+  color: white !important;
+}
+
+.ant-datepicker-popup .ant-picker-cell:hover .ant-picker-cell-inner {
+  background-color: var(--primary-soft) !important;
+}
+
+.ant-datepicker-popup .ant-picker-time-panel-column > li.ant-picker-time-panel-cell-selected .ant-picker-time-panel-cell-inner {
+  background-color: var(--primary) !important;
+  color: white !important;
+}
+/* ===================== IMAGE UPLOAD ===================== */
+.image-upload-container {
+  @apply relative inline-block;
+}
+.image-upload-img {
+  @apply object-cover border border-border shadow-sm;
+}
+.image-upload-overlay {
+  @apply absolute inset-0 bg-black/60 backdrop-blur-[2px] flex justify-center items-center gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300;
+}
+.image-upload-overlay .ant-btn {
+  @apply bg-white/20 border-white/40 text-white;
+  &:hover { @apply bg-white/40; }
+}
+.image-upload-overlay .ant-btn-dangerous {
+  @apply bg-red-500/50 border-red-400/60 text-white;
+  &:hover { @apply bg-red-500/80; }
+}
+.image-upload-placeholder {
+  @apply border border-dashed border-border flex flex-col items-center justify-center bg-surface-muted cursor-pointer hover:border-primary hover:bg-primary/5 transition-colors shadow-sm;
+}
+.image-upload-placeholder-text {
+  @apply text-[9px] mt-1 text-muted;
+}
+
+
+/* ================= BASE ================= */
+.common-btn {
+  transition: all 0.2s ease;
+}
+
+
+/* ================= PRIMARY (filled) ================= */
+.common-btn.btn-primary {
+  background: var(--primary);
+  color: #fff;
+  border: none;
+}
+
+
+.common-btn.btn-primary:hover {
+  background: var(--primary-dark);
+}
+
+
+/* ================= OUTLINE ================= */
+.common-btn.btn-outline {
+  background: transparent;
+  color: var(--primary);
+  border: 1px solid var(--primary);
+}
+
+
+.common-btn.btn-outline:hover {
+  background: var(--primary-soft);
+}
+
+
+/* ================= FILLED (soft background) ================= */
+.common-btn.btn-filled {
+  background: var(--primary-soft);
+  color: var(--primary-dark);
+  border: none;
+}
+
+
+/* ================= GHOST ================= */
+.common-btn.btn-ghost {
+  background: transparent;
+  border: none;
+  color: var(--foreground);
+}
+
+
+.common-btn.btn-ghost:hover {
+  background: var(--surface-muted);
+}
+
+
+/* =========================================
+   ICON ONLY BUTTON STYLES (No Background)
+   ========================================= */
+
+.ant-btn.common-btn.btn-icon-only,
+.ant-btn.common-btn.btn-iconOnly {
+  @apply px-0! aspect-square inline-flex items-center justify-center text-[0px]! leading-none! text-primary!
+         bg-transparent! border-transparent! shadow-none! 
+         text-primary!; 
+  
+  .anticon {
+    @apply m-0! text-base leading-none text-inherit; 
+  }
+  &:hover {
+    @apply bg-surface-muted! text-foreground! border-transparent!;
+  }
+  &:active, &:focus {
+    @apply bg-surface-muted! text-foreground! border-transparent! shadow-none!;
+  }
+}
+
+.ant-btn.common-btn.btn-icon-only.btn-small,
+.ant-btn.common-btn.btn-iconOnly.btn-small {
+  @apply aspect-auto w-9!; 
+}
+
+
+.ant-btn.common-btn.btn-icon-only.btn-middle,
+.ant-btn.common-btn.btn-iconOnly.btn-middle {
+  @apply aspect-auto w-[42px]!; 
+}
+
+
+.ant-btn.common-btn.btn-icon-only.btn-large,
+.ant-btn.common-btn.btn-iconOnly.btn-large {
+  @apply aspect-auto w-12!;
+}
+
+/* ================= DANGER ================= */
+.common-btn.btn-danger {
+  background: var(--danger);
+  color: #fff;
+  border: none;
+}
+

@@ -1,0 +1,129 @@
+[
+  {
+    "id": 1781154317412,
+    "title": "Future of AI in Web Development",
+    "date": "Oct 24, 2024",
+    "time": "10:00 AM - 12:00 PM",
+    "attendees": 120,
+    "category": "AI",
+    "image": "https://images.unsplash.com/photo-1591453089816-0fbb971b454c?auto=format&fit=crop&w=400&q=80",
+    "description": "Join us for an in-depth look at how AI is reshaping the frontend landscape. Learn how to work with next-gen models, prompt engineering, and automated agents.",
+    "featured": true,
+    "agenda": [
+      { "time": "10:00 AM - 10:30 AM", "title": "Introduction", "desc": "Setting the stage for AI in frontend development." },
+      { "time": "10:30 AM - 11:30 AM", "title": "Keynote Address", "desc": "A deep dive into prompt engineering, agentic workflows, and UI generations." },
+      { "time": "11:30 AM - 12:00 PM", "title": "Live Q&A Session", "desc": "Interactive discussion and audience questions with Dr. Alan Turing." }
+    ],
+    "speakerId": 5,
+    "speaker": { "id": 5, "name": "Johen Mark" },
+    "registrations": [
+      { "userId": 6, "status": "attended", "registeredAt": "10/20/2024" },
+      { "userId": 7, "status": "attended", "registeredAt": "10/21/2024" },
+      { "userId": 8, "status": "absent", "registeredAt": "10/22/2024" },
+      { "userId": 9, "status": "registered", "registeredAt": "10/23/2024" }
+    ]
+  },
+  {
+    "id": 1781154319512,
+    "title": "Design Systems 101",
+    "date": "Nov 05, 2024",
+    "time": "02:00 PM - 04:00 PM",
+    "attendees": 85,
+    "image": "https://images.unsplash.com/photo-1581291518655-9523c932dedf?auto=format&fit=crop&w=400&q=80",
+    "description": "Learn how to build scalable and consistent UI using modern design system principles and tools like Figma and Storybook.",
+    "featured": false,
+    "agenda": [
+      { "time": "02:00 PM - 02:45 PM", "title": "Why Design Systems?", "desc": "Understanding the ROI of consistent UI and design tokens." },
+      { "time": "02:45 PM - 03:30 PM", "title": "Building Your First Component Library", "desc": "Hands-on walkthrough of creating flexible, themed components in Figma and React." },
+      { "time": "03:30 PM - 04:00 PM", "title": "Documentation & Handoff", "desc": "Best practices for Storybook documentation and developer-designer collaboration." }
+    ],
+    "speakerId": 12,
+    "speaker": { "id": 12, "name": "Marie Curie" },
+    "registrations": [
+      { "userId": 6, "status": "attended", "registeredAt": "11/01/2024" },
+      { "userId": 14, "status": "attended", "registeredAt": "11/02/2024" },
+      { "userId": 11, "status": "cancelled", "registeredAt": "11/03/2024" }
+    ]
+  },
+  {
+    "id": 1781154318745,
+    "title": "Advanced React Patterns",
+    "date": "Nov 12, 2024",
+    "time": "01:00 PM - 03:00 PM",
+    "attendees": 95,
+    "image": "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=400&q=80",
+    "description": "Deep dive into compound components, render props, and custom hooks for cleaner React architecture.",
+    "featured": false,
+    "agenda": [
+      { "time": "01:00 PM - 01:40 PM", "title": "Compound Components", "desc": "Building flexible APIs that share implicit state across children." },
+      { "time": "01:40 PM - 02:20 PM", "title": "Hooks Deep Dive", "desc": "Creating custom hooks for side effects, data fetching, and state reduction." },
+      { "time": "02:20 PM - 03:00 PM", "title": "Performance Optimization", "desc": "Profiling renders, memoization strategies, and avoiding unnecessary re-renders." }
+    ],
+    "speakerId": 15,
+    "speaker": { "id": 15, "name": "Nikola Tesla" },
+    "registrations": [
+      { "userId": 7, "status": "attended", "registeredAt": "11/10/2024" },
+      { "userId": 17, "status": "absent", "registeredAt": "11/11/2024" }
+    ]
+  },
+  {
+    "id": 1781154310859,
+    "title": "Cloud Infrastructure Basics",
+    "date": "Dec 01, 2024",
+    "time": "11:00 AM - 01:00 PM",
+    "attendees": 60,
+    "image": "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=400&q=80",
+    "description": "A beginner-friendly guide to AWS, Docker, and deploying your first application to the cloud.",
+    "featured": false,
+    "agenda": [
+      { "time": "11:00 AM - 11:40 AM", "title": "Cloud Concepts & AWS Setup", "desc": "Understanding regions, availability zones, and core AWS services." },
+      { "time": "11:40 AM - 12:20 PM", "title": "Dockerizing Your App", "desc": "Writing Dockerfiles and building containers for local and production environments." },
+      { "time": "12:20 PM - 01:00 PM", "title": "CI/CD & Deployment", "desc": "Automating deployments with GitHub Actions and hosting on AWS/EC2." }
+    ],
+    "speakerId": 4,
+    "speaker": { "id": 4, "name": "Tyler Mark" },
+    "registrations": [
+      { "userId": 8, "status": "registered", "registeredAt": "11/28/2024" },
+      { "userId": 19, "status": "registered", "registeredAt": "11/29/2024" }
+    ]
+  },
+  {
+    "id": 1781158659787,
+    "title": "Web Development",
+    "description": "dki ishdshd shiosd osakhdashk",
+    "date": "13/06/2026",
+    "time": "12:00 AM",
+    "attendees": 0,
+    "category": "Development",
+    "image": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAA...[TRUNCATED]",
+    "featured": false,
+    "agenda": [
+      { "time": "12:00 AM", "title": "Web Development Basics", "desc": "" },
+      { "time": "11:30 AM", "title": "UI Design Fundamentals", "desc": "<ul><li><p>Principles of good user interface design</p></li></ul>" },
+      { "time": "12:30 PM", "title": "Component Development", "desc": "<ul><li><p>Creating reusable UI components</p></li></ul>" }
+    ],
+    "speakerId": 18,
+    "speaker": { "id": 18, "name": "Rosalind Franklin" },
+    "registrations": []
+  },
+  {
+    "id": 1781154310838,
+    "title": "Modern Web Apps",
+    "description": "<p>Built using modern frameworks like React, Vue, or Angular for faster development.</p>",
+    "date": "12/06/2026",
+    "time": "11:30 AM",
+    "attendees": 0,
+    "category": "",
+    "image": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCE...[TRUNCATED]",
+    "featured": false,
+    "agenda": [
+      { "time": "10:00 AM", "title": "Getting Started with Modern Web Apps", "desc": "<ul><li><p>Understanding how modern web applications are structured</p></li></ul>" },
+      { "time": "10:45 PM", "title": "Mastering Component-Based Architecture", "desc": "<ul><li><p>Breaking UI into reusable components</p></li></ul>" },
+      { "time": "11:30 AM", "title": "State Management & Data Flow", "desc": "<ul><li><p>Managing local and global state effectively</p></li></ul>" },
+      { "time": "12:15 PM", "title": "Optimizing UI Performance", "desc": "<ul><li><p>Reducing unnecessary re-renders</p></li></ul>" }
+    ],
+    "speakerId": 2,
+    "speaker": { "id": 2, "name": "Nil Yeager" },
+    "registrations": []
+  }
+]

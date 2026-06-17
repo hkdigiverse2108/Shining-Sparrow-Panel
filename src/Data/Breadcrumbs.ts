@@ -1,0 +1,33 @@
+import { PAGE_TITLE, ROUTES } from "../Constants";
+
+export const BREADCRUMBS = {
+  DASHBOARD: [{label: PAGE_TITLE.DASHBOARD }],
+  COURSE: {
+    BASE: [{ label: PAGE_TITLE.COURSE.BASE }],
+    DETAILS: [{ label: PAGE_TITLE.COURSE.BASE, href: ROUTES.COURSE.BASE }, { label: PAGE_TITLE.COURSE.DETAILS}]
+  },
+  WORKSHOP: {
+    BASE: [{ label: PAGE_TITLE.WORKSHOP.BASE }],
+    DETAILS: [{ label: PAGE_TITLE.WORKSHOP.BASE, href: ROUTES.WORKSHOP.BASE }, { label: PAGE_TITLE.WORKSHOP.DETAILS }],
+  },
+  PROFILE: {
+    BASE: [{ label: PAGE_TITLE.PROFILE.BASE }],
+    CHANGE_PASSWORD: [{ label: PAGE_TITLE.PROFILE.CHANGE_PASSWORD }]
+  },
+  ROADMAP: {
+    BASE: [{ label: PAGE_TITLE.ROADMAP }],
+  },
+  CONTACT: [{label: PAGE_TITLE.CONTACT }],
+  HISTORY: {
+    BASE: [{ label: PAGE_TITLE.HISTORY }]
+  },
+  USERS: {
+    BASE: [{ label: PAGE_TITLE.USERS.BASE }],
+    DETAILS: [{ label: PAGE_TITLE.USERS.BASE, href: ROUTES.USERS.BASE }, { label: PAGE_TITLE.USERS.DETAILS }]
+  },
+  ACTIONCENTER: [{ label: PAGE_TITLE.ACTIONCENTER }],
+  CALENDAR: [{ label: PAGE_TITLE.CALENDAR }],
+  CONTENT: {
+    BASE: [{ label: PAGE_TITLE.CONTENT }],
+  },
+}

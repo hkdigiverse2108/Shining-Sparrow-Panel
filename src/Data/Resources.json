@@ -1,0 +1,34 @@
+[
+  {
+    "id": 1,
+    "title": "Advanced React Patterns.pdf",
+    "type": "PDF",
+    "category": "Development",
+    "size": "1.4 MB",
+    "uploadedAt": "10 Oct 2023"
+  },
+  {
+    "id": 2,
+    "title": "UI/UX Masterclass Slides.ppt",
+    "type": "PPT",
+    "category": "Design",
+    "size": "5.2 MB",
+    "uploadedAt": "11 Oct 2023"
+  },
+  {
+    "id": 3,
+    "title": "Project Source Code.zip",
+    "type": "ZIP",
+    "category": "Development",
+    "size": "12.4 MB",
+    "uploadedAt": "14 Oct 2023"
+  },
+  {
+    "id": 4,
+    "title": "Digital Marketing E-Book.pdf",
+    "type": "PDF",
+    "category": "Marketing",
+    "size": "3.8 MB",
+    "uploadedAt": "16 Oct 2023"
+  }
+]

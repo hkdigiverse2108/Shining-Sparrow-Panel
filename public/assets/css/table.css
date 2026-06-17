@@ -1,0 +1,238 @@
+@layer components {
+  .user-management-page {
+    @apply min-h-screen bg-background p-3 transition-colors duration-300 sm:p-4 lg:p-6;
+  }
+
+  .user-management-metrics {
+    @apply mb-5 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:mb-6 lg:grid-cols-4 lg:gap-4;
+  }
+
+  .user-management-metric-card {
+    @apply flex min-h-28 items-center justify-between rounded-xl border border-border bg-surface p-4 text-foreground shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md;
+  }
+
+  .user-management-metric-title {
+    @apply m-0 text-sm font-medium text-muted;
+  }
+
+  .user-management-metric-value {
+    @apply m-0 mt-2 text-2xl font-extrabold leading-none text-foreground;
+  }
+
+  .user-management-metric-icon {
+    @apply flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-lg text-primary;
+  }
+
+  .user-management-filters {
+    @apply mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:max-w-xl;
+  }
+
+  .user-management-filter {
+    @apply w-full;
+  }
+
+  .user-management-profile {
+    @apply flex min-w-0 items-center gap-3;
+  }
+
+  .user-management-profile-copy {
+    @apply min-w-0;
+  }
+
+  .user-management-profile-name {
+    @apply truncate font-bold text-foreground;
+  }
+
+  .user-management-profile-date {
+    @apply text-xs text-muted;
+  }
+
+  .user-management-actions {
+    @apply flex items-center gap-1;
+  }
+
+  .user-management-icon-button {
+    @apply text-muted transition-colors hover:text-primary;
+  }
+
+  .user-management-tag {
+    @apply m-0 inline-flex items-center gap-1 rounded-md border-0 px-2 py-0.5 text-xs font-medium capitalize;
+  }
+
+  .user-role-admin {
+    @apply bg-purple/30! text-purple!;
+  }
+
+  .user-role-instructor {
+    @apply bg-orange/20! text-orange!;
+  }
+
+  .user-role-student {
+    @apply bg-teal/10! text-teal!;
+  }
+
+  .user-status-active {
+    @apply bg-success/10! text-success!;
+  }
+
+  .user-status-inactive {
+    @apply bg-warning/10! text-warning!;
+  }
+
+  .user-status-blocked {
+    @apply bg-danger/20! text-danger!;
+  }
+
+  .user-management-form .ant-form-item-label > label {
+    @apply text-foreground;
+  }
+
+  .common-table {
+    @apply space-y-3;
+  }
+
+  .common-table-toolbar {
+    @apply flex flex-col justify-between gap-3 sm:flex-row sm:items-center;
+  }
+
+  .common-table-search {
+    @apply w-full sm:max-w-sm;
+  }
+
+  .common-table-actions {
+    @apply w-full justify-start sm:w-auto sm:justify-end;
+  }
+
+  .common-table-button {
+    @apply border-border bg-surface text-foreground shadow-sm transition-colors hover:border-primary hover:text-primary;
+  }
+
+  .common-table-add-button {
+    @apply bg-primary text-white shadow-sm hover:bg-primary hover:opacity-90;
+  }
+
+  .common-table-column-menu {
+    @apply rounded-lg bg-surface p-2 text-foreground shadow-lg;
+  }
+
+  .common-table-surface {
+    @apply overflow-hidden rounded-xl border border-border bg-surface;
+  }
+
+  .common-table-surface .ant-table {
+    @apply bg-surface text-foreground;
+  }
+
+  .common-table-surface .ant-table-container {
+    @apply bg-surface;
+  }
+
+  .common-table-surface .ant-table-thead > tr > th {
+    @apply border-border bg-surface-muted text-sm font-bold text-foreground;
+  }
+
+  .common-table-surface .ant-table-thead > tr > th::before {
+    @apply hidden;
+  }
+
+  .common-table-surface .ant-table-tbody > tr > td {
+    @apply border-border bg-surface text-foreground;
+  }
+
+  .common-table-surface .ant-table-tbody > tr:hover > td {
+    @apply bg-primary/5;
+  }
+
+  .common-table-surface .ant-table-cell-row-hover {
+    @apply bg-primary/5!;
+  }
+
+  .common-table-surface .ant-empty-description,
+  .common-table-surface .ant-pagination,
+  .common-table-surface .ant-pagination-item a,
+  .common-table-surface .ant-pagination-prev,
+  .common-table-surface .ant-pagination-next {
+    @apply text-muted;
+  }
+
+  .common-table-surface .ant-pagination-item {
+    @apply border-border bg-surface;
+  }
+
+  .common-table-surface .ant-pagination-item-active {
+    @apply border-primary bg-primary/10;
+  }
+
+  .common-table-surface .ant-pagination-item-active a {
+    @apply text-primary;
+  }
+
+  .common-table .ant-input-affix-wrapper,
+  .user-management-page .ant-select-selector,
+  .user-management-form .ant-input,
+  .user-management-form .ant-select-selector {
+    @apply border-border bg-surface text-foreground shadow-none transition-colors;
+  }
+
+  .common-table .ant-input-affix-wrapper:hover,
+  .common-table .ant-input-affix-wrapper-focused,
+  .user-management-page .ant-select-selector:hover,
+  .user-management-form .ant-input:hover,
+  .user-management-form .ant-input:focus,
+  .user-management-form .ant-select-selector:hover {
+    @apply border-primary;
+  }
+
+  .common-table .ant-input,
+  .common-table .ant-input-prefix,
+  .user-management-page .ant-select-selection-item,
+  .user-management-page .ant-select-arrow,
+  .user-management-form .ant-input,
+  .user-management-form .ant-select-selection-item,
+  .user-management-form .ant-select-arrow {
+    @apply bg-transparent text-foreground;
+  }
+
+  .common-table .ant-input::placeholder,
+  .user-management-form .ant-input::placeholder {
+    @apply text-muted;
+  }
+
+  .common-table .ant-switch.ant-switch-checked {
+    @apply bg-primary;
+  }
+
+  .ant-select-dropdown,
+  .ant-dropdown .ant-dropdown-menu,
+  .ant-popover-inner,
+  .ant-modal-content,
+  .ant-modal-header {
+    @apply bg-surface text-foreground;
+  }
+
+  .ant-modal-title,
+  .ant-popover-title,
+  .ant-checkbox-wrapper,
+  .ant-dropdown-menu-title-content,
+  .ant-select-item {
+    @apply text-foreground;
+  }
+
+  .ant-select-item-option-active,
+  .ant-select-item-option-selected {
+    @apply bg-primary/10! text-foreground!;
+  }
+
+  .ant-modal-close {
+    @apply text-muted hover:text-foreground;
+  }
+  .common-table-surface .ant-table-thead > tr > th {
+    @apply bg-primary/50! text-foreground! text-center!; 
+  }
+  .ant-table-tbody{
+    @apply text-center!;
+  }
+  .ant-tag {
+    @apply bg-none!;
+  }
+}

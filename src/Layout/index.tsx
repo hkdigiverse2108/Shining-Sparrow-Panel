@@ -1,0 +1,68 @@
+import { useEffect, type FC } from 'react';
+import { Outlet } from 'react-router-dom';
+import { Layout, ConfigProvider, theme } from 'antd'; 
+import Sidebar from './Sidebar';
+import DashboardHeader from './Header';
+import { useAppSelector, useAppDispatch } from '@/Store/hooks'; 
+import { setToggleSidebar, setToggleTheme, setPrimaryColor as setPrimaryColorAction } from '@/Store';
+
+const DashboardLayout: FC = () => {
+  const dispatch = useAppDispatch();
+  const { isToggleTheme, primaryColor, isExpanded } = useAppSelector((state) => state.layout);
+  const isDark = isToggleTheme === "dark";
+  useEffect(() => {
+    const handleResize = () => {
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [dispatch]);
+  const setCollapsed = (val: boolean) => {
+    const collapsed = !isExpanded;
+    if (val !== collapsed) {
+      dispatch(setToggleSidebar());
+    }
+  };
+  const setIsDark = (val: boolean) => {
+    dispatch(setToggleTheme(val ? 'dark' : 'light'));
+  };
+  const updatePrimaryColor = (val: string) => {
+    dispatch(setPrimaryColorAction(val));
+  };
+  return (
+    <ConfigProvider
+      theme={{ algorithm: isDark ? theme.darkAlgorithm : theme.defaultAlgorithm,
+        token: {
+          colorPrimary: primaryColor,
+          colorBgContainer: 'transparent', 
+          colorBgElevated: 'var(--surface)', 
+          colorBorderSecondary: 'var(--border)',
+        },
+        components: {
+          Layout: { headerBg: 'var(--surface)', siderBg: 'var(--surface)' }
+        }
+      }}
+    >
+      <Layout style={{ minHeight: '100vh', background: 'var(--background)' }}>
+        <Sidebar isExpanded={isExpanded} />
+        <Layout style={{ background: 'transparent' }}>
+          <DashboardHeader collapsed={!isExpanded} setCollapsed={setCollapsed} isDark={isDark} setIsDark={setIsDark} primaryColor={primaryColor} setPrimaryColor={updatePrimaryColor} />
+          <Layout.Content 
+            style={{ 
+              margin: '24px 16px', 
+              padding: 24, 
+              minHeight: 280, 
+              borderRadius: 8, 
+              background: 'var(--surface)', 
+              border: '1px solid var(--border)',
+              color: 'var(--foreground)'
+            }}
+          >
+            <Outlet />
+          </Layout.Content>
+        </Layout>
+      </Layout>
+    </ConfigProvider>
+  );
+};
+
+export default DashboardLayout;
