@@ -1,6 +1,6 @@
 import { type FC } from 'react';
 import { motion } from 'motion/react';
-import { CommonPageWrapper, CommonBreadcrumbs, WorkshopRegistrationsChart, UpcomingWorkshops, CourseStatusOverview, CurrentActivity, DashboardBanner, RecentUsers, CompletionRateChart, PopularCourses, CategoryPerformanceChart, FeaturedWorkshop, } from '@/Components';
+import { CommonPageWrapper, CommonBreadcrumbs, CourseStatusOverview, CurrentActivity, DashboardBanner, RecentUsers, CompletionRateChart, PopularCourses, CategoryPerformanceChart, WorkshopSummary } from '@/Components';
 import { staggerContainer } from '@/Utils/animations';
 
 const LMSDashboard: FC = () => (
@@ -12,18 +12,14 @@ const LMSDashboard: FC = () => (
         <div className="dashboard-grid-three">
           <PopularCourses />
           <CurrentActivity />
-          <UpcomingWorkshops />
-        </div> 
+          <RecentUsers />
+        </div>
         <div className="dashboard-grid-charts">
           <CategoryPerformanceChart />
           <CompletionRateChart />
-          <WorkshopRegistrationsChart />
-        </div>
-        <div className="dashboard-grid-three">
           <CourseStatusOverview />
-          <FeaturedWorkshop />
-          <RecentUsers />
         </div>
+        <WorkshopSummary />
       </motion.div>
     </CommonPageWrapper>
   </>

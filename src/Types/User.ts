@@ -24,12 +24,45 @@ export interface UserTable {
     createdAt: string;
     updatedAt?: string;
     enrolledCourses?: number[]; 
-    attendedWorkshops?: number[]; 
+  attendedWorkshops?: number[]; 
+  isBlocked?: string;
+  isEmailVerified?: string[];
 }
 
+
+import type { CommonDataType, MessageStatus, PageStatus, PhoneNumberType } from "./Common";
+
+export interface UserFormValues {
+  userId?: string;
+  fullName?: string;
+  phoneNumber?: PhoneNumberType;
+  profilePhoto?: string | null;
+  email?: string;
+  password?: string;
+  offers?: string[];
+  socialMediaLinks?: string[];
+  isActive?: boolean;
+  logoTitle?: string;
+  isBlocked?: boolean;
+}
+
+export type AddUserPayload = UserFormValues;
+
+export type UpdateUserPayload = AddUserPayload;
+
+export type UserBase = UserFormValues & CommonDataType;
+
+export interface UserDataResponse extends PageStatus {
+  user_data: UserBase[];
+  toatalData: number;
+}
+
+export interface UserApiResponse extends MessageStatus {
+  data: UserDataResponse;
+}
 
 export interface HandlerProps {
   onEdit: (user: UserTable) => void;
   onToggleStatus: (id: number) => void;
-  onDelete: (id: number) => void;
+  onDelete: (id: string) => void;
 }

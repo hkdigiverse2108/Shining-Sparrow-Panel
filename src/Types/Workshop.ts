@@ -8,7 +8,7 @@ export type RegistrationStatus = 'registered' | 'attended' | 'absent' | 'cancell
 export interface WorkshopRegistration {
     userId: number;
     status: RegistrationStatus;
-    registeredAt: string; 
+    registeredAt: string;
 }
 
 export interface WorkshopSpeaker {
@@ -27,7 +27,7 @@ export interface Workshop {
     description?: string;
     featured?: boolean;
     speaker?: WorkshopSpeaker;
-    speakerId?: number; 
+    speakerId?: number;
     agenda?: WorkshopAgendaItem[];
     tag?: string;
     actionText?: string;
@@ -61,4 +61,38 @@ export interface User { id: number; username?: string; profileImage?: string; }
 export interface WorkshopRegistrationsProps {
   registrations: Registration[];
   users: User[];
+}
+import type { CommonDataType, MessageStatus, PageStatus } from "./Common";
+
+export interface WorkshopFormValues {
+    id?: string; 
+    image?: string;
+    title?: string;
+    subTitle?: string;
+    about?: string;
+    pdfAttach?: string;
+    workshopCurriculum?: string[];
+    workshopTestimonials?: string[];
+    workshopFAQ?: string[];
+    price?: number;
+    mrpPrice?: number;
+    validFor?: string;
+    couponCode?: string;
+    language?: string;
+    duration?: string;
+}
+
+export type AddWorkshopPayload = WorkshopFormValues;
+
+export type UpdateWorkshopPayload = AddWorkshopPayload;
+
+export type WorkshopBase = WorkshopFormValues & CommonDataType;
+
+export interface WorkshopDataResponse extends PageStatus {
+    workshop_data: WorkshopBase[];
+  totalData: number;
+}
+
+export interface WorkshopApiResponse extends MessageStatus {
+    data: WorkshopDataResponse;
 }

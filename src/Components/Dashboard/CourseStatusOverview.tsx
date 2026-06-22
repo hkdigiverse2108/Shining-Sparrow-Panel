@@ -1,61 +1,53 @@
 import React, { useMemo } from 'react';
 import { motion } from 'motion/react';
-import { Link } from 'react-router-dom';
-import { ROUTES } from '@/Constants';
-import { CommonCard } from '@/Components';
-import { useAppSelector } from '@/Store/hooks';
+import { Skeleton } from 'antd';
+import { BookOutlined, CheckCircleOutlined, StopOutlined } from '@ant-design/icons';
 import { fadeInUp } from '@/Utils/animations';
-
-const statusConfig = [
-  { key: 'published', label: 'Published', color: '#22c55e' },
-  { key: 'draft', label: 'Draft', color: '#3b82f6' },
-  { key: 'archived', label: 'Archived', color: '#f59e0b' },
-];
+import { CommonCard } from '@/Components';
+import { Queries } from '@/Api';
 
 const CourseStatusOverview: React.FC = () => {
-  const courses = useAppSelector(state => state.courses.data);
+  const { data: dashRes, isLoading } = Queries.useGetDashboard();
+  const { data: courseRes, isLoading: courseLoading } = Queries.useGetCourses({ page: 1, limit: 1000 });
 
-  const stats = useMemo(() => {
-    const total = courses.length || 1;
-    return {
-      published: courses.filter(c => c.status === 'published').length,
-      draft: courses.filter(c => c.status === 'draft').length,
-      archived: courses.filter(c => c.status === 'archived').length,
-      total
-    };
-  }, [courses]);
+  const stats = dashRes?.data?.sec1 ?? {};
+  const totalCourses = stats.totalCourses ?? 0;
+  const coursePurchaseCount = stats.coursePurchaseCount ?? 0;
+
+  const courses = useMemo(() => courseRes?.data?.course_data || [], [courseRes]);
+  const activeCourses = useMemo(() => courses.filter((c: any) => !c.isBlocked).length, [courses]);
+  const blockedCourses = useMemo(() => courses.filter((c: any) => c.isBlocked).length, [courses]);
+
+  const loading = isLoading || courseLoading;
+
+  const items = [
+    { label: 'Total Courses', value: totalCourses, icon: <BookOutlined />, color: 'text-primary', bg: 'bg-primary/10' },
+    { label: 'Active', value: activeCourses, icon: <CheckCircleOutlined />, color: 'text-success', bg: 'bg-success/10' },
+    { label: 'Blocked', value: blockedCourses, icon: <StopOutlined />, color: 'text-danger', bg: 'bg-danger/10' },
+    { label: 'Purchases', value: coursePurchaseCount, icon: <BookOutlined />, color: 'text-indigo', bg: 'bg-indigo/10' },
+  ];
 
   return (
     <motion.div variants={fadeInUp}>
-      <CommonCard 
-        title="Course Status" 
-        extra={<Link to={ROUTES.COURSE.BASE} className="text-sm text-primary hover:underline">View All</Link>}
-        cardProps={{ className: "h-full bg-surface!" }}
+      <CommonCard
+        title="Course Overview"
+        cardProps={{ className: 'h-full bg-surface!' }}
       >
-        <div className="dashboard-list space-y-4">
-          {statusConfig.map((item) => {
-            const count = stats[item.key as keyof typeof stats] as number;
-            const percent = Math.round((count / stats.total) * 100);
-
-            return (
-              <div key={item.key} className="dashboard-completion-row">
-                <div className="dashboard-completion-meta flex justify-between items-center mb-1">
-                  <span className="text-sm font-medium text-foreground">{item.label}</span>
-                  <span className="text-xs text-muted">{count} Courses ({percent}%)</span>
+        {loading ? (
+          <Skeleton active paragraph={{ rows: 4 }} />
+        ) : (
+          <div className="grid grid-cols-2 gap-3">
+            {items.map((item) => (
+              <div key={item.label} className={`flex flex-col gap-1 p-4 rounded-xl border border-border`}>
+                <div className={`w-8 h-8 rounded-lg flex items-center justify-center mb-1 ${item.bg} ${item.color}`}>
+                  {item.icon}
                 </div>
-                <div className="dashboard-progress-track w-full h-2 rounded-full bg-border overflow-hidden">
-                  <motion.div 
-                    className="dashboard-progress-fill h-full rounded-full"
-                    style={{ backgroundColor: item.color }}
-                    initial={{ width: 0 }}
-                    animate={{ width: `${percent}%` }}
-                    transition={{ duration: 1, ease: 'easeOut' }}
-                  />
-                </div>
+                <span className={`text-2xl font-extrabold ${item.color}`}>{item.value.toLocaleString()}</span>
+                <span className="text-xs text-muted font-medium">{item.label}</span>
               </div>
-            );
-          })}
-        </div>
+            ))}
+          </div>
+        )}
       </CommonCard>
     </motion.div>
   );

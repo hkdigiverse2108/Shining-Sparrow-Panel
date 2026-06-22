@@ -118,10 +118,10 @@
 }
 .ant-layout, 
 .ant-layout-content {
-  @apply bg-background! m-0!;
+  @apply bg-background! m-0! ;
 }
 .common-page-wrapper {
-  @apply mt-6 bg-surface rounded-xl shadow-lg min-h-[calc(100vh-200px)] transition-colors duration-300 ease-in-out;
+  @apply mt-3 bg-surface rounded-xl shadow-lg min-h-[calc(100vh-200px)] transition-colors duration-300 ease-in-out;
 }
 .page-content-padding {
   @apply p-4 md:p-6;
@@ -443,3 +443,9 @@
   border: none;
 }
 
+.ant-popover-content{
+  @apply p-3!;
+}
+.ant-list-item{
+  @apply mb-1;
+}

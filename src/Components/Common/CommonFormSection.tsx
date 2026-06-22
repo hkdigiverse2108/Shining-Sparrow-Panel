@@ -16,8 +16,8 @@ export const CommonFormSection: FC<CommonFormSectionProps> = ({ title, children 
         </div>
       )}
       
-      {/* 2-column grid applied automatically */}
-      <div className="grid grid-cols-2 gap-x-5 gap-y-0">
+      {/* Responsive grid applied automatically */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-0">
         {children}
       </div>
     </div>

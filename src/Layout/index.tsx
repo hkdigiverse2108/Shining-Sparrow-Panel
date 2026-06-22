@@ -4,11 +4,11 @@ import { Layout, ConfigProvider, theme } from 'antd';
 import Sidebar from './Sidebar';
 import DashboardHeader from './Header';
 import { useAppSelector, useAppDispatch } from '@/Store/hooks'; 
-import { setToggleSidebar, setToggleTheme, setPrimaryColor as setPrimaryColorAction } from '@/Store';
+import { setToggleSidebar, setToggleTheme } from '@/Store';
 
 const DashboardLayout: FC = () => {
   const dispatch = useAppDispatch();
-  const { isToggleTheme, primaryColor, isExpanded } = useAppSelector((state) => state.layout);
+  const { isToggleTheme, isExpanded } = useAppSelector((state) => state.layout);
   const isDark = isToggleTheme === "dark";
   useEffect(() => {
     const handleResize = () => {
@@ -25,14 +25,12 @@ const DashboardLayout: FC = () => {
   const setIsDark = (val: boolean) => {
     dispatch(setToggleTheme(val ? 'dark' : 'light'));
   };
-  const updatePrimaryColor = (val: string) => {
-    dispatch(setPrimaryColorAction(val));
-  };
+  const brandColor = isDark ? '#FFC32C' : '#FF8A1F';
   return (
     <ConfigProvider
       theme={{ algorithm: isDark ? theme.darkAlgorithm : theme.defaultAlgorithm,
         token: {
-          colorPrimary: primaryColor,
+          colorPrimary: brandColor,
           colorBgContainer: 'transparent', 
           colorBgElevated: 'var(--surface)', 
           colorBorderSecondary: 'var(--border)',
@@ -45,11 +43,11 @@ const DashboardLayout: FC = () => {
       <Layout style={{ minHeight: '100vh', background: 'var(--background)' }}>
         <Sidebar isExpanded={isExpanded} />
         <Layout style={{ background: 'transparent' }}>
-          <DashboardHeader collapsed={!isExpanded} setCollapsed={setCollapsed} isDark={isDark} setIsDark={setIsDark} primaryColor={primaryColor} setPrimaryColor={updatePrimaryColor} />
+          <DashboardHeader collapsed={!isExpanded} setCollapsed={setCollapsed} isDark={isDark} setIsDark={setIsDark} />
           <Layout.Content 
             style={{ 
-              margin: '24px 16px', 
-              padding: 24, 
+              margin: '14px 16px', 
+              padding: 10, 
               minHeight: 280, 
               borderRadius: 8, 
               background: 'var(--surface)', 

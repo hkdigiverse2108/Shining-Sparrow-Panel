@@ -30,4 +30,14 @@ export const BREADCRUMBS = {
   CONTENT: {
     BASE: [{ label: PAGE_TITLE.CONTENT }],
   },
+  BLOG: {
+    BASE: [{ label: PAGE_TITLE.BLOG }],
+  },
+  HERO_BANNER: {
+    BASE: [{ label: PAGE_TITLE.HERO_BANNER }],
+  },
+  ABOUT_US: {
+    BASE: [{ label: PAGE_TITLE.ABOUT_US }],
+  },
+  CHAT: [{ label: PAGE_TITLE.CHAT }]
 }

@@ -1,5 +1,5 @@
 import type { FormField } from "@/Types";
-import { BookOutlined, CrownOutlined, TeamOutlined, UserOutlined, } from "@ant-design/icons";
+import { CheckCircleOutlined, StopOutlined, TeamOutlined } from "@ant-design/icons";
 import type { AntdIconProps } from "@ant-design/icons/es/components/AntdIcon";
 import type { ComponentType } from "react";
 
@@ -70,18 +70,24 @@ export const roleOptions = [
     { label: "Instructors", value: "instructor" },
     { label: "Students", value: "student" },
 ];
-type MetricKey = "total" | "admin" | "instructor" | "student";
+
+export type MetricKey = "total" | "active" | "blocked";
+
 export const metricCards: {
     key: MetricKey;
     title: string;
     icon: ComponentType<AntdIconProps>;
 }[] = [
-        { key: "total", title: "Total", icon: TeamOutlined },
-        { key: "admin", title: "Admins", icon: CrownOutlined },
-        { key: "instructor", title: "Instructors", icon: UserOutlined },
-        { key: "student", title: "Students", icon: BookOutlined },
+        { key: "total", title: "Total Users", icon: TeamOutlined },
+        { key: "active", title: "Active Users", icon: CheckCircleOutlined },
+        { key: "blocked", title: "Blocked Users", icon: StopOutlined },
     ];
 
+export const metricStyles: Record<string, string> = {
+    total: 'user-metric-icon--total',
+    active: 'user-metric-icon--active', // Make sure your CSS has these classes, or reuse existing ones
+    blocked: 'user-metric-icon--blocked',
+};
 export const statusOptions = [
     { label: "All Status", value: "all" },
     { label: "Active", value: "active" },
@@ -126,14 +132,6 @@ export const statusColors: Record<string, string> = {
 };
 
 export const stepColors = ['var(--info)', 'var(--purple)', 'var(--pink)', 'var(--indigo)', 'var(--teal)', 'var(--orange)'];
-
-
-export const metricStyles: Record<string, string> = {
-    total: 'user-metric-icon--total',
-    admin: 'user-metric-icon--admin',
-    instructor: 'user-metric-icon--instructor',
-    student: 'user-metric-icon--student',
-};
 
 export const roleColors: Record<string, string> = { 
   admin: 'user-role-admin', 

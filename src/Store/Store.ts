@@ -2,7 +2,6 @@ import { configureStore } from "@reduxjs/toolkit";
 import courseReducer from "./Slices/CourseSlice";
 import workshopReducer from "./Slices/WorkshopSlice";
 import layoutReducer from "./Slices/LayoutSlice"
-import userReducer from "./Slices/UserSlice";
 import authReducer from "./Slices/AuthSlice";
 import customEventReducer from "./Slices/customEventSlice";
 import categoryReducer from "./Slices/CategorySlice";
@@ -12,7 +11,6 @@ const Store = configureStore({
   reducer: {
     auth: authReducer,
     layout: layoutReducer,
-    users: userReducer,
     workshops: workshopReducer,
     courses: courseReducer,
     customEvents: customEventReducer,

@@ -88,12 +88,13 @@
   }
 
   .common-table {
-    @apply space-y-3;
+    @apply space-y-3 border-0!;
   }
 
   .common-table-toolbar {
     @apply flex flex-col justify-between gap-3 sm:flex-row sm:items-center;
   }
+  
 
   .common-table-search {
     @apply w-full sm:max-w-sm;

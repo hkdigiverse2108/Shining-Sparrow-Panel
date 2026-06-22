@@ -22,4 +22,8 @@ export const PAGE_TITLE = {
   },
   CALENDAR: "Calendar",
   CONTENT: "Content",
+  BLOG: "Blog",
+  HERO_BANNER: "Hero Banner",
+  ABOUT_US: "About Us",
+  CHAT: "Chat Support"
 } as const;

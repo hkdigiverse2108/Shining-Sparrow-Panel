@@ -1,13 +1,15 @@
 import { type FC } from 'react';
-import { message } from 'antd';
 import { MailOutlined, ArrowLeftOutlined, RocketOutlined } from '@ant-design/icons';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Formik, Form } from 'formik';
 import { ROUTES } from '@/Constants';
-import { CommonButton, CommonValidationTextField } from '@/Attribute';
+import { CommonButton, CommonValidationTextField, showNotification } from '@/Attribute';
 import { ForgotPasswordSchema } from '@/Utils';
+import { Mutations } from '@/Api/Mutations';
 
 const ForgotPassword: FC = () => {
+  const navigate = useNavigate();
+  const { mutateAsync: forgotPassword, isPending } = Mutations.useForgotPassword();
   return (
     <>
       <div className="auth-header">
@@ -17,18 +19,23 @@ const ForgotPassword: FC = () => {
       <Formik
         initialValues={{ email: '' }}
         validationSchema={ForgotPasswordSchema}
-        onSubmit={(_, { setSubmitting }) => {
-          setTimeout(() => {
+        onSubmit={async (values, { setSubmitting }) => {
+          try {
+            await forgotPassword({ email: values.email });
+            showNotification('success', 'OTP has been sent to your email.');
+            navigate(ROUTES.AUTH.VERIFY_OTP, { state: { email: values.email, type: 'forgot' } });
+          } catch (error) {
+            console.log(error);
+          } finally {
             setSubmitting(false);
-            message.success('If an account exists with this email, a reset link has been sent.');
-          }, 1500);
+          }
         }}
       >
         {({ values, errors, touched, handleChange, handleBlur, isSubmitting }) => (
           <Form>
             <CommonValidationTextField required name="email" placeholder="Enter Email" autoComplete="email" startIcon={<MailOutlined />} value={values.email} onChange={handleChange} onBlur={handleBlur} error={errors.email} touched={touched.email} />
-            <CommonButton htmlType="submit" loading={isSubmitting} block size="large" icon={!isSubmitting && <RocketOutlined />}>
-              {isSubmitting ? 'Sending...' : 'Reset Password'}
+            <CommonButton htmlType="submit" loading={isSubmitting || isPending} block size="large" icon={!isSubmitting && !isPending && <RocketOutlined />}>
+              {isSubmitting || isPending ? 'Sending...' : 'Send OTP'}
             </CommonButton>
           </Form>
         )}

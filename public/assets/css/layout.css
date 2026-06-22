@@ -734,22 +734,22 @@
 
 /* ===================== USER ===================== */
 .user-metrics-grid {
-  @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5 mb-6;
+  @apply grid grid-cols-3 gap-2 md:gap-5 mb-6;
 }
 .user-metric-card {
-  @apply flex items-center gap-4 p-4 md:p-5 bg-surface border border-border rounded-2xl transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 ;
+  @apply flex flex-col items-center text-center p-3 gap-1 bg-surface border border-border rounded-xl transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 sm:flex-row sm:items-center sm:text-left sm:p-4 md:p-5 sm:gap-4 sm:rounded-2xl;
 }
 .user-metric-icon {
-  @apply w-12 h-12 rounded-xl flex items-center justify-center text-xl shrink-0 transition-colors duration-300;
+  @apply w-9 h-9 text-base rounded-lg flex items-center justify-center shrink-0 transition-colors duration-300 sm:w-12 sm:h-12 sm:text-xl sm:rounded-xl;
 }
 .user-metric-info {
-  @apply min-w-0;
+  @apply min-w-0 w-full;
 }
 .user-metric-title {
-  @apply text-xs font-medium text-muted;
+  @apply text-[10px] font-medium text-muted truncate sm:text-xs;
 }
 .user-metric-value {
-  @apply text-2xl font-black text-foreground mt-0.5;
+  @apply text-base font-extrabold text-foreground mt-0 sm:text-2xl sm:font-black sm:mt-0.5;
 }
 .user-metric-icon--total { 
   @apply bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white; 
@@ -762,6 +762,12 @@
 }
 .user-metric-icon--student { 
   @apply bg-success/10 text-success group-hover:bg-success group-hover:text-white; 
+}
+.user-metric-icon--active { 
+  @apply bg-success/10 text-success group-hover:bg-success group-hover:text-white; 
+}
+.user-metric-icon--blocked { 
+  @apply bg-danger/10 text-danger group-hover:bg-danger group-hover:text-white; 
 }
 .user-cell-profile {
   @apply flex items-center gap-3;
@@ -1164,90 +1170,6 @@
   50% { content: ".."; }
   75% { content: "..."; }
 }
-/* ===================== CHAT ===================== */
-/* Floating Chat Widget */
-.floating-chat-btn-wrapper {
-  @apply fixed bottom-6 right-6 z-50;
-}
-
-.floating-chat-btn {
-  @apply shadow-lg flex items-center justify-center border-none!;
-  background-color: var(--primary) !important;
-  color: white !important;
-  width: 48px;
-  height: 48px;
-}
-
-.floating-chat-btn:hover {
-  @apply opacity-90;
-}
-
-
-.floating-chat-window {
-  @apply fixed bottom-24 right-6 z-50 flex flex-col overflow-hidden rounded-xl border shadow-2xl;
-  background-color: var(--surface);
-  border-color: var(--border);
-  width: calc(100vw - 48px); /* Full width on small mobile */
-  max-width: 340px; /* Fixed width on tablet/desktop */
-  height: 450px;
-}
-@media (max-width: 400px) {
-  .floating-chat-window {
-    right: 24px;
-  }}
-
-
-.floating-chat-header {
-  @apply px-4 py-3 flex justify-between items-center font-semibold;
-  background-color: var(--primary);
-  color: white;
-}
-
-.floating-chat-close {
-  @apply cursor-pointer text-white/80 hover:text-white transition-colors;
-}
-
-
-.floating-chat-body {
-  @apply flex-1 overflow-y-auto p-4 flex flex-col gap-3;
-  background-color: var(--background);
-}
-
-
-.floating-chat-empty {
-  @apply text-center text-xs text-muted py-10;
-}
-
-
-.floating-chat-bubble {
-  @apply text-xs leading-relaxed px-3 py-2 rounded-lg max-w-[80%] inline-block;
-}
-
-.floating-chat-bubble.user {
-  @apply self-end text-white;
-  background-color: var(--primary);
-  border-bottom-right-radius: 2px;
-}
-
-.floating-chat-bubble.bot {
-  @apply self-start;
-  background-color: var(--surface);
-  color: var(--foreground);
-  border: 1px solid var(--border);
-  border-bottom-left-radius: 2px;
-}
-
-
-.floating-chat-footer {
-  @apply p-3 flex gap-2 border-t;
-  border-color: var(--border);
-  background-color: var(--surface);
-}
-
-.floating-chat-input {
-  @apply rounded-lg;
-}
-
 
 .common-notification {
   @apply rounded-xl border shadow-lg;

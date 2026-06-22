@@ -1,13 +1,15 @@
 import { type FC } from 'react';
-import { message } from 'antd';
 import { UserOutlined, LockOutlined, MailOutlined, RocketOutlined } from '@ant-design/icons';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Formik, Form } from 'formik';
 import { RegisterSchema } from '@/Utils';
 import { ROUTES } from '@/Constants';
-import { CommonButton, CommonValidationTextField } from '@/Attribute';
+import { CommonButton, CommonValidationTextField, showNotification } from '@/Attribute';
+import { Mutations } from '@/Api/Mutations';
 
 const Register: FC = () => {
+  const navigate = useNavigate();
+  const { mutateAsync: signup, isPending } = Mutations.useSignup();
   return (
     <>
       <div className="auth-header">
@@ -17,11 +19,20 @@ const Register: FC = () => {
       <Formik
         initialValues={{ fullname: '', email: '', password: '', confirmPassword: '' }}
         validationSchema={RegisterSchema}
-        onSubmit={(_, { setSubmitting }) => {
-          setTimeout(() => {
+        onSubmit={async (values, { setSubmitting }) => {
+          try {
+            await signup({
+              fullName: values.fullname, 
+              email: values.email,
+              password: values.password,
+            });
+            showNotification('success', 'Registration successful! Please check your email for OTP.');
+            navigate(ROUTES.AUTH.VERIFY_OTP, { state: { email: values.email, type: 'signup' } });
+          } catch (error) {
+            console.log(error);
+          } finally {
             setSubmitting(false);
-            message.success('Registration successful! Please check your email.');
-          }, 1500);
+          }
         }}
       >
         {({ values, errors, touched, handleChange, handleBlur, isSubmitting }) => (
@@ -30,8 +41,8 @@ const Register: FC = () => {
             <CommonValidationTextField required name="email" placeholder="Enter Email" autoComplete="email" startIcon={<MailOutlined />} value={values.email} onChange={handleChange} onBlur={handleBlur} error={errors.email} touched={touched.email} className="mb-4" />
             <CommonValidationTextField required name="password" type="password" showPasswordToggle placeholder="Enter Password" startIcon={<LockOutlined />} value={values.password} onChange={handleChange} onBlur={handleBlur} error={errors.password} touched={touched.password} className="mb-4" />
             <CommonValidationTextField required name="confirmPassword" type="password" showPasswordToggle placeholder="Enter Confirm Password" startIcon={<LockOutlined />} value={values.confirmPassword} onChange={handleChange} onBlur={handleBlur} error={errors.confirmPassword} touched={touched.confirmPassword} className="mb-4" />
-            <CommonButton htmlType="submit" loading={isSubmitting} block size="large" icon={!isSubmitting && <RocketOutlined />}>
-              {isSubmitting ? 'Creating Account...' : 'Create Account'}
+            <CommonButton htmlType="submit" loading={isSubmitting || isPending} block size="large" icon={!isSubmitting && !isPending && <RocketOutlined />}>
+              {isSubmitting || isPending ? 'Creating Account...' : 'Create Account'}
             </CommonButton>
           </Form>
         )}

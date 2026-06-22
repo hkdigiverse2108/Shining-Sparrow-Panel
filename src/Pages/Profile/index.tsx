@@ -1,35 +1,57 @@
 import { useState, type FC } from "react";
-import { message, Switch } from "antd";
-import { EditOutlined, LockOutlined, IeOutlined } from "@ant-design/icons";
+import { message } from "antd";
+import { EditOutlined } from "@ant-design/icons";
 import { Formik, Form } from "formik";
 import { motion } from "motion/react";
-import { Link } from "react-router-dom";
 import { CommonBreadcrumbs, CommonPageWrapper, CommonFormSection, CommonImageUpload, CommonCard, CommonTag, CommonDrawer } from "@/Components";
 import { blurRevealUp, staggerContainer } from "@/Utils/animations";
 import { CommonButton, CommonValidationTextField } from "@/Attribute";
 import { BREADCRUMBS } from "@/Data";
 import * as Yup from "yup";
-import { ROUTES } from "@/Constants";
-
-const adminUser = {
-  id: 1, username: "Alex Morgan", email: "alex.morgan@lms-platform.com", phone: "+1 (555) 123-4567",
-  role: "Super Admin", avatar: "https://api.dicebear.com/7.x/adventurer/svg?seed=Alex", lastLogin: "Today at 10:30 AM",
-  memberSince: "Jan 2023", twoFactorEnabled: true, emailNotifications: true,
-};
+import { useAppSelector, useAppDispatch } from "@/Store/hooks";
+import { setUser } from "@/Store";
+import { Mutations } from "@/Api";
 
 const ProfileSchema = Yup.object().shape({
-  username: Yup.string().required("Required"),
-  email: Yup.string().email("Invalid email").required("Required"),
+  fullName: Yup.string().required("Required"),
+  phone: Yup.string().optional(),
+  profilePhoto: Yup.string().nullable().optional(),
 });
 
 const Profile: FC = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [user, setUser] = useState(adminUser);
-  const handleSave = (values: any) => {
-    setUser(prev => ({ ...prev, ...values }));
-    setIsDrawerOpen(false);
-    message.success("Profile updated!");
+  const dispatch = useAppDispatch();
+  
+  const user = useAppSelector((state) => state.auth.user);
+  const updateProfileMutation = Mutations.useUpdateProfile();
+
+  const username = user?.fullName || "Admin User";
+  const email = user?.email || "admin@example.com";
+  const phone = user?.phone || user?.phoneNumber || "Not provided";
+  const avatar = user?.profilePhoto || user?.profileImage || `https://api.dicebear.com/7.x/adventurer/svg?seed=${username}`;
+  const role = user?.role || "Admin";
+
+  const handleSave = async (values: any) => {
+    try {
+      const response = await updateProfileMutation.mutateAsync({
+        fullName: values.fullName,
+        phone: values.phone,
+        profilePhoto: values.profilePhoto,
+      });
+
+      dispatch(setUser({
+        ...user,
+        fullName: response.data.fullName,
+        phone: response.data.phone,
+        profilePhoto: response.data.profilePhoto,
+      }));
+
+      setIsDrawerOpen(false);
+    } catch (error) {
+      // Error is handled globally
+    }
   };
+
   return (
     <>
       <CommonBreadcrumbs title="My Profile" breadcrumbs={BREADCRUMBS.PROFILE?.BASE || []} />
@@ -38,19 +60,18 @@ const Profile: FC = () => {
           <motion.div variants={blurRevealUp} className="profile-header">
             <div className="profileheaderblur" />
             <div className="avatarcontainer group" onClick={() => setIsDrawerOpen(true)}>
-              <img src={user.avatar} alt={user.username} className="avatarimg" />
+              <img src={avatar} alt={username} className="avatarimg" />
               <div className="avataroverlay">
                 <EditOutlined className="avatarediticon" />
               </div>
             </div>
 
             <div className="profileinfo">
-              <h2 className="profileusername">{user.username}</h2>
-              <CommonTag color="blue" className="mt-1">{user.role}</CommonTag>
+              <h2 className="profileusername">{username}</h2>
+              <CommonTag color="blue" className="mt-1">{role}</CommonTag>
               <div className="profilemeta">
-                <span>✉️ {user.email}</span>
-                <span>🕐 Last login: {user.lastLogin}</span>
-                <span>📅 Member since {user.memberSince}</span>
+                <span>✉️ {email}</span>
+                <span>📅 Member since {new Date(user?.createdAt || Date.now()).toLocaleDateString()}</span>
               </div>
             </div>
 
@@ -58,104 +79,56 @@ const Profile: FC = () => {
               Edit
             </CommonButton>
           </motion.div>
-          <div className="bento-grid">
-            <div className="bento-maincol">
-              <motion.div variants={blurRevealUp}>
-                <CommonCard title="Personal Details" cardProps={{ className: "border-border rounded-2xl overflow-hidden" }}>
-                  <div className="details-grid">
-                    {[
-                      { l: "Full Name", v: user.username }, { l: "Email Address", v: user.email },
-                      { l: "Phone Number", v: user.phone || 'Not provided' }, { l: "Role", v: user.role }
-                    ].map((d, i) => (
-                      <div key={i}>
-                        <label className="detaillabel">{d.l}</label>
-                        <p className="detailvalue">{d.v}</p>
-                      </div>
-                    ))}
-                  </div>
-                </CommonCard>
-              </motion.div>
-              <motion.div variants={blurRevealUp}>
-                <CommonCard title="Preferences" cardProps={{ className: "border-border rounded-2xl overflow-hidden" }}>
-                  <div className="preferencesrow">
-                    <div className="min-w-0">
-                      <p className="text-sm font-semibold text-foreground">Email Notifications</p>
-                      <p className="text-xs text-muted">Receive system alerts and updates</p>
-                    </div>
-                    <Switch checked={user.emailNotifications} onChange={(c) => { setUser(prev => ({...prev, emailNotifications: c})); message.info(`Notifications ${c ? 'enabled' : 'disabled'}`); }} />
-                  </div>
-                </CommonCard>
-              </motion.div>
 
-              <motion.div variants={blurRevealUp}>
-                <CommonCard title="Danger Zone" cardProps={{ className: "border-danger/20 bg-danger/5 rounded-2xl overflow-hidden" }}>
-                  <p className="text-xs text-muted mb-4">Once you delete your account, there is no going back.</p>
-                  <CommonButton danger size="small" onClick={() => message.warning("Disabled in demo")}>Delete Account</CommonButton>
-                </CommonCard>
-              </motion.div>
-            </div>
-            <div className="lg:col-span-2 flex flex-col gap-5 md:gap-6">
-              <motion.div variants={blurRevealUp}>
-                <CommonCard title="Security" cardProps={{ className: "border-border rounded-2xl overflow-hidden" }}>
-                  <div className="space-y-3">
-                    <div className="security-item">
-                      <div className="security-iteminner">
-                        <LockOutlined className="security-itemicon" />
-                        <div className="min-w-0">
-                          <p className="securityitem-title">Password</p>
-                          <p className="securityitem-subtitle">Changed 30 days ago</p>
-                        </div>
-                      </div>
-                      <Link to={ROUTES.PROFILE.CHANGE_PASSWORD}>
-                        <CommonButton size="small" type="default" className="shrink-0">Change</CommonButton>
-                      </Link>
-                    </div>
-                    
-                    <div className="security-item">
-                      <div className="security-iteminner">
-                        <IeOutlined className={user.twoFactorEnabled ? "text-success" : "text-muted"} />
-                        <div className="min-w-0">
-                          <p className="securityitem-title">Two-Factor Auth</p>
-                          <p className="securityitem-subtitle">Extra security layer</p>
-                        </div>
-                      </div>
-                      <Switch checked={user.twoFactorEnabled} onChange={(c) => { setUser(prev => ({...prev, twoFactorEnabled: c})); message.success(`2FA ${c ? 'enabled' : 'disabled'}`); }} />
-                    </div>
+          {/* Removed the bento-grid and only kept the Personal Details card */}
+          <motion.div variants={blurRevealUp} className="mt-6">
+            <CommonCard title="Personal Details" cardProps={{ className: "border-border rounded-2xl overflow-hidden" }}>
+              <div className="details-grid">
+                {[
+                  { l: "Full Name", v: username }, 
+                  { l: "Email Address", v: email },
+                  { l: "Phone Number", v: phone }, 
+                  { l: "Role", v: role }
+                ].map((d, i) => (
+                  <div key={i}>
+                    <label className="detaillabel">{d.l}</label>
+                    <p className="detailvalue">{d.v}</p>
                   </div>
-                </CommonCard>
-              </motion.div>
-
-              <motion.div variants={blurRevealUp}>
-                <CommonCard title="Activity Status" cardProps={{ className: "border-border rounded-2xl overflow-hidden" }}>
-                  <div className="activitybox">
-                    <span className="activitydot" />
-                    <div className="min-w-0">
-                      <p className="text-sm font-semibold text-foreground">
-                        Currently Active <CommonTag color="success" className="ml-2">Online</CommonTag>
-                      </p>
-                      <p className="text-[10px] text-muted">Logged in from Chrome on macOS</p>
-                    </div>
-                  </div>
-                </CommonCard>
-              </motion.div>
-            </div>
-          </div>
+                ))}
+              </div>
+            </CommonCard>
+          </motion.div>
         </motion.div>
       </CommonPageWrapper>
 
       {/* Edit Profile Drawer */}
       <CommonDrawer title="Edit Profile" open={isDrawerOpen} onClose={() => setIsDrawerOpen(false)}>
-        <Formik enableReinitialize initialValues={{ username: user.username, email: user.email, phone: user.phone, profileImage: user.avatar }} validationSchema={ProfileSchema} onSubmit={handleSave}>
+        <Formik 
+          enableReinitialize 
+          initialValues={{ 
+            fullName: username, 
+            phone: phone !== "Not provided" ? phone : "", 
+            profilePhoto: avatar 
+          }} 
+          validationSchema={ProfileSchema} 
+          onSubmit={handleSave}
+        >
           {() => (
             <Form>
-              <CommonImageUpload name="profileImage" label="Profile Photo" shape="circle" size={100} />
+              <CommonImageUpload name="profilePhoto" label="Profile Photo" shape="circle" size={100} />
               <CommonFormSection title="Account Details">
-                <CommonValidationTextField name="username" label="Full Name" required />
-                <CommonValidationTextField name="email" label="Email Address" required />
+                <CommonValidationTextField name="fullName" label="Full Name" required />
                 <CommonValidationTextField name="phone" label="Phone Number" />
+                <CommonValidationTextField name="email" label="Email Address" value={email} disabled />
               </CommonFormSection>
               <div className="drawerfooter">
-                <CommonButton htmlType="submit" type="primary" title="Save Changes" block />
+                <CommonButton 
+                  htmlType="submit" 
+                  type="primary" 
+                  title="Save Changes" 
+                  block 
+                  loading={updateProfileMutation.isPending} 
+                />
               </div>
             </Form>
           )}

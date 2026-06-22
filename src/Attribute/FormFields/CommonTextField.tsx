@@ -7,7 +7,7 @@ import { type CommonValidationTextFieldProps } from "@/Types/Common";
 export const CommonValidationTextField: FC<CommonValidationTextFieldProps> = ({ 
   name, label, type = "text", placeholder, required, disabled, validating, clearable, 
   showPasswordToggle, startIcon, endIcon, maxDigits, isCurrency, currencyDisabled, 
-  onCurrencyLog, className, ...props 
+  onCurrencyLog, className, multiline, rows, ...props 
 }) => {
   const [field, meta] = name ? useField(name) : [{
     name: '',
@@ -20,7 +20,7 @@ export const CommonValidationTextField: FC<CommonValidationTextFieldProps> = ({
   const isPassword = type === "password";
   const showError = meta.touched && meta.error; 
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     if (maxDigits && e.target.value.length > maxDigits) return;
     field.onChange(e); 
   };
@@ -48,7 +48,9 @@ export const CommonValidationTextField: FC<CommonValidationTextFieldProps> = ({
     className: inputClassName 
   };
 
-  const inputNode = isPassword && showPasswordToggle ? (
+  const inputNode = multiline ? (
+    <Input.TextArea {...(sharedProps as any)} rows={rows || 4} />
+  ) : isPassword && showPasswordToggle ? (
     <Input.Password {...sharedProps} iconRender={(visible) => (visible ? <EyeOutlined /> : <EyeInvisibleOutlined />)} />
   ) : (
     <Input {...sharedProps} type={type} />

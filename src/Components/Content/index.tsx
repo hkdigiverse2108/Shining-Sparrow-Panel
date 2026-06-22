@@ -1,5 +1,5 @@
 import type { FC } from 'react';
-import { Popconfirm, message, Empty } from 'antd';
+import { Empty } from 'antd'; 
 import { DeleteOutlined, EyeOutlined, FilePdfOutlined, FileTextOutlined, FileImageOutlined, PlayCircleFilled, SoundOutlined } from '@ant-design/icons';
 import type { MediaItem } from '@/Store/Slices/MediaSlice';
 
@@ -64,16 +64,7 @@ export const AssetGrid: FC<AssetGridProps> = ({ assets, categories, onDelete, on
               >
                 <EyeOutlined style={{ fontSize: '12px' }} />
               </button>
-              
-              <Popconfirm title="Delete this asset?" onConfirm={() => { onDelete(item.id); message.success('Deleted!'); }}>
-                <button 
-                  type="button"
-                  onClick={(e) => e.stopPropagation()}
-                  className="bg-white/20 backdrop-blur-md p-2 rounded-full text-white hover:bg-danger transition-colors border border-white/20 cursor-pointer"
-                >
-                  <DeleteOutlined style={{ fontSize: '12px' }} />
-                </button>
-              </Popconfirm>
+              <button type="button" onClick={(e) => { e.stopPropagation(); onDelete(item.id); }} className="bg-white/20 backdrop-blur-md p-2 rounded-full text-white hover:bg-danger transition-colors border border-white/20 cursor-pointer" > <DeleteOutlined style={{ fontSize: '12px' }} /> </button>
             </div>
 
             {/* Footer Info */}

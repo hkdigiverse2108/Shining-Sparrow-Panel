@@ -1,0 +1,145 @@
+import { type FC, useMemo } from "react";
+import { Formik, Form } from "formik";
+import { CommonFormShell, CommonFormSection, CommonImageUpload, CommonMultipleImageUpload } from "@/Components";
+import { CommonButton, CommonValidationTextField, CommonValidationSelect, CommonRichTextEditor } from "@/Attribute";
+import * as Yup from "yup";
+
+interface HeroBannerFormProps {
+  open: boolean;
+  onClose: () => void;
+  onSave: (values: any) => void;
+  editing: any | null;
+  loading?: boolean;
+}
+
+const HeroBannerSchema = Yup.object({
+  type: Yup.string().required("Banner type is required"),
+  title: Yup.string().optional(),
+  description: Yup.string().optional(),
+});
+
+const bannerTypes = [
+  { label: "Web Banner", value: "web" },
+  { label: "App Banner", value: "app" },
+];
+
+export const HeroBannerForm: FC<HeroBannerFormProps> = ({ open, onClose, onSave, editing, loading = false }) => {
+  const defaults = {
+    type: "web", title: "", description: "", 
+    images: ["", ""], link: "", image: "",
+  };
+
+  const initialValues = useMemo(() => {
+    if (editing) {
+      // Ensure images array has at least 2 entries for Web type
+      const images = [...(editing.images || [])];
+      while (images.length < 2) images.push("");
+      return { ...defaults, ...editing, images };
+    }
+    return defaults;
+  }, [editing]);
+
+  if (!open) return null;
+
+  const handleSubmit = (v: any) => {
+    const payload: any = {
+      type: v.type,
+      title: v.title || "",
+      description: v.description || "",
+    };
+
+    if (v.type === "web") {
+      payload.images = v.images || [];
+    } else {
+      payload.image = v.image || "";
+      payload.link = v.link || "";
+    }
+
+    if (editing) {
+      payload.heroBannerId = editing._id;
+    }
+    onSave(payload);
+  };
+
+  return (
+    <Formik enableReinitialize initialValues={initialValues} validationSchema={HeroBannerSchema} onSubmit={handleSubmit}>
+      {({ errors, setFieldValue, values }) => (
+        <CommonFormShell
+          title={editing ? "Edit Hero Banner" : "Add Hero Banner"}
+          description="Configure marketing hero banners for web or app channels."
+          onClose={onClose}
+          closeLabel="Cancel"
+        >
+          <Form className="course-form-shell space-y-6">
+            <CommonFormSection title="Banner Classification">
+              <CommonValidationSelect 
+                name="type" 
+                label="Target Platform Type" 
+                options={bannerTypes} 
+                required 
+                fullWidth 
+                onChange={(val) => {
+                  setFieldValue("type", val);
+                }}
+              />
+              <CommonValidationTextField name="title" label="Banner Title" />
+              
+              <div className="col-span-full mb-4">
+                <CommonRichTextEditor
+                  name="description"
+                  label="Banner Description"
+                  onChange={(val) => setFieldValue('description', val)}
+                  value={values.description}
+                  className="w-full"
+                />
+              </div>
+            </CommonFormSection>
+
+            {values.type === "web" ? (
+              <CommonFormSection title="Web Banner Media (Upload Multiple Images)">
+                <CommonMultipleImageUpload 
+                  name="images" 
+                  label="Web Banner Images" 
+                  className="col-span-full" 
+                />
+              </CommonFormSection>
+            ) : (
+              <CommonFormSection title="App Banner Media & Action">
+                <CommonImageUpload 
+                  name="image" 
+                  label="App Banner Image" 
+                  shape="square" 
+                  size={120} 
+                  className="col-span-full" 
+                />
+                <CommonValidationTextField name="link" label="Redirect Link URL" className="col-span-full" />
+              </CommonFormSection>
+            )}
+
+            {Object.keys(errors).length > 0 && (
+              <div className="course-form-error">
+                <strong>Cannot submit because of validation errors:</strong>
+                <ul className="course-form-error-list">
+                  {Object.entries(errors).map(([key, value]) => (
+                    <li key={key}>{key}: {String(value)}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            <div className="course-form-actions">
+              <CommonButton 
+                htmlType="submit" 
+                type="primary" 
+                title={editing ? "Update Banner" : "Publish Banner"} 
+                loading={loading}
+                block 
+                className="course-button course-button--primary" 
+              />
+            </div>
+          </Form>
+        </CommonFormShell>
+      )}
+    </Formik>
+  );
+};

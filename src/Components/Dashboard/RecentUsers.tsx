@@ -1,48 +1,72 @@
-import { useMemo, type FC } from 'react';
+import React, { useMemo } from 'react';
 import { motion } from 'motion/react';
-import { Avatar } from 'antd';
 import { Link } from 'react-router-dom';
+import { Skeleton, Avatar } from 'antd';
+import { UserOutlined, MailOutlined } from '@ant-design/icons';
 import { ROUTES } from '@/Constants';
-import { CommonCard, CommonTag } from '@/Components';
-import { useAppSelector } from '@/Store/hooks';
-import { roleColors } from '@/Data';
 import { fadeInUp } from '@/Utils/animations';
+import { CommonCard } from '@/Components';
+import { Queries } from '@/Api';
 
-const RecentUsers: FC = () => {
-  const users = useAppSelector(state => state.users.data);
+const RecentUsers: React.FC = () => {
+  const { data: userRes, isLoading } = Queries.useGetUser({ page: 1, limit: 10 });
+
   const recentUsers = useMemo(() => {
-    return [...users]
-      .reverse()
-      .slice(1, 4);
-  }, [users]);
+    const data = userRes?.data?.user_data || userRes?.data || [];
+    const arr = Array.isArray(data) ? data : [];
+    return arr.slice(0, 5);
+  }, [userRes]);
+
+  const getRoleColor = (role: string) => {
+    const map: Record<string, string> = {
+      admin: 'bg-purple/10 text-purple',
+      instructor: 'bg-orange/10 text-orange',
+      student: 'bg-teal/10 text-teal',
+    };
+    return map[role?.toLowerCase()] || 'bg-muted/10 text-muted';
+  };
 
   return (
     <motion.div variants={fadeInUp}>
-      <CommonCard 
-        title="Recent Users" 
+      <CommonCard
+        title="Recent Users"
         extra={<Link to={ROUTES.USERS.BASE} className="text-sm text-primary hover:underline">View All</Link>}
-        cardProps={{ className: "h-full bg-surface!" }}
+        cardProps={{ className: 'h-full bg-surface!' }}
       >
-        <div className="dashboard-list space-y-3">
-          {recentUsers.map(user => (
-            <Link 
-              key={user.id} 
-              to={`${ROUTES.USERS.BASE}/${user.id}`}
-              className="flex items-center justify-between rounded-lg hover:bg-muted/50 transition-colors group"
-            >
-              <div className="flex items-center gap-3">
-                <Avatar src={user.profileImage} size={36} />
-                <div>
-                  <p className="text-sm font-medium text-foreground group-hover:text-primary transition-colors">
-                    {user.username}
+        {isLoading ? (
+          <Skeleton active avatar paragraph={{ rows: 3 }} />
+        ) : recentUsers.length === 0 ? (
+          <div className="text-center py-8 text-muted text-sm">No users found.</div>
+        ) : (
+          <div className="flex flex-col gap-3">
+            {recentUsers.map((user: any) => (
+              <div
+                key={user._id}
+                className="flex items-center gap-3 p-2 rounded-xl hover:bg-muted/30 transition-colors cursor-pointer group"
+                onClick={() => {}}
+              >
+                <Avatar
+                  src={user.profileImage || user.image}
+                  size={36}
+                  icon={<UserOutlined />}
+                  className="shrink-0 bg-primary/10 text-primary"
+                />
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors truncate">
+                    {user.name || user.username || 'Unknown User'}
                   </p>
-                  <p className="text-xs text-muted">{user.email}</p>
+                  <p className="text-xs text-muted flex items-center gap-1 truncate">
+                    <MailOutlined className="shrink-0" />
+                    {user.email}
+                  </p>
                 </div>
+                <span className={`text-xs font-semibold px-2 py-0.5 rounded-full shrink-0 ${getRoleColor(user.role)}`}>
+                  {user.role || 'user'}
+                </span>
               </div>
-              <CommonTag className={roleColors[user.role] || roleColors.student}>{user.role}</CommonTag>
-            </Link>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </CommonCard>
     </motion.div>
   );

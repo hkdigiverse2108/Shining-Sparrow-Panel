@@ -31,6 +31,18 @@ export const ForgotPasswordSchema = Yup.object({
         extraRules: (s) => s.email("Invalid email address"),
     }),
 });
+// Verify OTP
+export const VerifyOtpSchema = Yup.object().shape({
+    otp: Yup.string().required('OTP is required').min(4, 'OTP must be at least 4 digits'),
+});
+//Reset Password
+export const ResetPasswordSchema = Yup.object().shape({
+    newPassword: Yup.string().required('Required').min(6, 'Too Short!'),
+    confirmPassword: Yup.string()
+        .oneOf([Yup.ref('newPassword')], 'Passwords must match')
+        .required('Required'),
+});
+
 // Change Password
 export const ChangePasswordSchema = Yup.object({
     currentPassword: Validation("string", "Current Password"),
@@ -78,39 +90,46 @@ export const CurriculumSchema = Yup.object({
     duration: Validation("string", "Duration"),
 });
 
-//  User Schema
+// User Schema (For Adding new users)
 export const UserSchema = Yup.object({
-    username: Validation("string", "Username"),
-    email: Validation("string", "Email", {
-        extraRules: (s) => s.email("Invalid email address"),
-    }),
-    password: Validation("string", "Password", {
-        extraRules: (s) => s
-            .min(6, "Minimum 6 characters required")
-            .matches(/[!@#$%^&*()_+={}:;"'<>,.?/-]/, "Password must include at least one special character"),
-    }),
-    role: Validation("string", "Role"),
-    status: Validation("string", "Status"),
-    profileImage: Yup.string().nullable().optional(),
-    phone: Validation("string", "Phone Number"),
-    gender: Validation("string", "Gender"),
-    dateOfBirth: Yup.string().optional(),
-    address: Validation("string", "Address"),
-    permissions: Yup.array(Yup.string()).optional(),
+    fullName: Yup.string().required("Full Name is required"),
+    email: Yup.string().email("Invalid email address").required("Email is required"),
+    phoneNumber: Yup.string().optional(),
+    profilePhoto: Yup.string().nullable().optional(),
+    isBlocked: Yup.string().optional(), 
+    isEmailVerified: Yup.string().optional(),
+    designation: Yup.string().optional(),
+    password: Yup.string()
+        .required("Password is required")
+        .min(6, "Minimum 6 characters required")
+        .matches(/[!@#$%^&*()_+={}:;"'<>,.?/-]/, "Password must include at least one special character"),
 });
+
+// Edit User Schema (For Updating existing users)
 export const EditUserSchema = Yup.object({
-    username: Validation("string", "Username"),
-    email: Validation("string", "Email", {
-        extraRules: (s) => s.email("Invalid email address"),
-    }),
+    fullName: Yup.string().required("Full Name is required"),
+    email: Yup.string().email("Invalid email address").required("Email is required"),
+    phoneNumber: Yup.string().optional(),
+    profilePhoto: Yup.string().nullable().optional(),
+    designation: Yup.string().optional(),
+    isBlocked: Yup.string().optional(), 
+    isEmailVerified: Yup.string().optional(), 
     password: Yup.string().optional().min(6, "Minimum 6 characters required"),
-    role: Validation("string", "Role"),
-    status: Validation("string", "Status"),
-    // Optional fields
-    profileImage: Yup.string().nullable().optional(),
-    phone: Yup.string().optional(),
-    gender: Yup.string().optional(),
-    dateOfBirth: Yup.string().optional(),
-    address: Yup.string().optional(),
-    permissions: Yup.array(Yup.string()).optional(),
+});
+
+// Course Category
+export const CourseCategorySchema = Yup.object({
+    name: Yup.string().required("Category Name is required"),
+    image: Yup.string().nullable().optional(),
+    description: Yup.string().optional(),
+    isFeatured: Yup.string().optional(),
+    isBlocked: Yup.string().optional(),
+});
+
+export const EditCourseCategorySchema = Yup.object({
+    name: Yup.string().required("Category Name is required"),
+    image: Yup.string().nullable().optional(),
+    description: Yup.string().optional(),
+    isFeatured: Yup.string().optional(),
+    isBlocked: Yup.string().optional(),
 });

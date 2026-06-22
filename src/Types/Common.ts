@@ -6,8 +6,15 @@ import type { AdminSettingBase } from "./AdminSetting";
 import type { StatItem } from "@/Data/DashboardData";
 import type { Rule } from "antd/es/form";
 import type { User, UserTable } from "./User";
+import type { WorkshopBase } from "./Workshop";
+import type { CourseBase } from ".";
 
 type ShapeType = "circle" | "square" | "diamond" | "triangle";
+
+export interface Params {
+  [key: string]: any;
+}
+
 
 export interface FloatingShapeProps {
   className: string;
@@ -60,6 +67,8 @@ export interface CommonValidationTextFieldProps extends InputProps {
   error?: string;
   touched?: boolean;
   onCurrencyLog?: (value: "\u20b9" | "%") => void;
+  multiline?: boolean;
+  rows?: number;
 }
 
 export interface CommonCardProps {
@@ -87,6 +96,16 @@ export interface CommonFormModalProps {
   okText: string;
   fields: FormField[];
   initialValues?: Record<string, unknown>;
+}
+
+export interface CommonFormShellProps {
+  title: string;
+  description?: string;
+  children: ReactNode;
+  footer?: ReactNode;
+  onClose?: () => void;
+  closeLabel?: string;
+  className?: string;
 }
 
 export interface CommonTagProps {
@@ -168,6 +187,28 @@ export interface CommonImageUploadProps {
   className?: string;
 }
 
+export interface CommonMultipleImageUploadProps {
+  name: string;
+  label?: string;
+  maxCount?: number;
+  required?: boolean;
+  className?: string;
+}
+
+export interface CommonVideoUploadProps {
+  name: string;
+  label?: string;
+  required?: boolean;
+  className?: string;
+}
+
+export interface CommonAttachmentUploadProps {
+  name: string;
+  label?: string;
+  required?: boolean;
+  className?: string;
+}
+
 // ************ Common End ***********
 
 export interface AuthLayoutConfigProps {
@@ -231,18 +272,18 @@ export interface PageStatus {
 }
 
 export interface MessageStatus {
-  status: number;
-  message: string;
-  error: Record<string, unknown>;
+  status?: number;
+  message?: string;
+  error?: Record<string, unknown>;
 }
 
 export interface CommonDataType {
   _id: string;
-  isDeleted: boolean;
-  createdBy: null;
-  updatedBy: null;
-  createdAt: string;
-  updatedAt: string;
+  isDeleted?: boolean;
+  createdBy?: null;
+  updatedBy?: null;
+  createdAt?: string;
+  updatedAt?: string;
   isActive?: boolean;
 }
 
@@ -286,8 +327,6 @@ export interface HeaderProps {
   setCollapsed: (val: boolean) => void;
   isDark: boolean;
   setIsDark: (val: boolean) => void;
-  primaryColor: string;
-  setPrimaryColor: (val: string) => void;
 }
 
 export interface SidebarProps {
@@ -309,7 +348,6 @@ export type LayoutStateProps = {
     openSubmenu: string | null;
     isToggleTheme: string;
     adminSetting: AdminSettingBase | null;
-    primaryColor: string;
 };
 
 
@@ -372,7 +410,7 @@ export interface AdvancedSearchProps<T= any> {
 }
 
 
-export interface UserDrawerProps {
+export interface UserFormProps {
   open: boolean;
   onClose: () => void;
   onSave: (values: UserTable) => void;
@@ -391,8 +429,6 @@ export interface Workshop {
 export interface DashboardThemeToggleProps {
   isDark: boolean;
   setIsDark: (val: boolean) => void;
-  primaryColor: string;
-  setPrimaryColor: (val: string) => void;
 }
 
 // ************ COntact Start ***********
@@ -401,3 +437,42 @@ export interface ContactFormProps {
   onSubmit: (values: any) => void;
 }
 // ************ Contact End ***********
+
+
+// ************ Modal Start ***********
+
+export interface CommonModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  className?: string;
+  children: ReactNode;
+  showCloseButton?: boolean;
+  isFullscreen?: boolean;
+  title?: string;
+  subTitle?: string;
+}
+
+type UploadType = "image" | "pdf";
+
+export interface ModalStateSlice {
+  isUploadModal: { open: boolean; type: UploadType; multiple?: boolean };
+  selectedFiles: string[];
+  isWorkShopModal: { open: boolean; data: WorkshopBase | null };
+  isCourseModal: { open: boolean; data: CourseBase | null };
+}
+
+// ************ Modal End ***********
+
+// ************ Delete Start ***********
+
+export interface CommonDeleteModalProps {
+  open: boolean;
+  title?: string;
+  description?: string;
+  itemName?: string;
+  loading?: boolean;
+  onClose: () => void;
+  onConfirm?: () => void;
+}
+
+// ************ Delete End ***********

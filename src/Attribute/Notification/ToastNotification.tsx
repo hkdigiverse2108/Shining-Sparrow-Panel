@@ -13,7 +13,7 @@ export const showNotification = (type: NotificationType, title: string, descript
     message: title,
     description,
     placement: isMobile ? "top" : "topRight",
-    duration: 300,
+    duration: 3,
     className: isMobile
       ? `common-notification common-notification-${type} notification-mobile`
       : `common-notification common-notification-${type}`,

@@ -55,17 +55,17 @@ const Sidebar: FC<SidebarProps> = ({ isExpanded }) => {
     <Flex vertical style={{ height: '100%' }}>
       <div className="flex items-center justify-center" style={{ height: 64, borderBottom: '1px solid var(--border)' }} >
         {isActuallyCollapsed ? (
-          <div style={{ 
-            width: 36, height: 36, background: 'var(--primary)', borderRadius: 8, 
-            display: 'flex', alignItems: 'center', justifyContent: 'center', 
-            color: '#fff', fontWeight: 800, fontSize: '18px' 
-          }}>
-            M
-          </div>
+          <img 
+            src="/assets/images/Logo_icon.png" 
+            alt="Logo Icon" 
+            style={{ height: 36, width: 36, objectFit: 'contain' }} 
+          />
         ) : (
-          <h2 style={{ color: 'var(--primary)', margin: 0, fontWeight: 700, fontSize: '20px', whiteSpace: 'nowrap' }}>
-            MyApp
-          </h2>
+          <img 
+            src="/assets/images/Logo_full.png" 
+            alt="Logo Full" 
+            style={{ height: 44, width: 'auto', objectFit: 'contain', padding: '0 16px' }} 
+          />
         )}
       </div>
       <div style={{ flex: 1, overflowY: 'auto' }}>

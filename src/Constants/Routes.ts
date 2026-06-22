@@ -3,9 +3,12 @@ export const ROUTES = {
   DASHBOARD: "/dashboard",
   ACCESS_DENIED: "/access-denied",
   AUTH: {
-    REGISTER: "/auth/register",
+    REGISTER: "/auth/signup",
     LOGIN: "/auth/login",
-    VERIFY_OTP: "/auth/verify-otp",
+    VERIFY_OTP: "/auth/otp/verify",
+    FORGOT_PASSWORD: "/auth/forgot-password",
+    RESET_PASSWORD: "/auth/reset-password",
+    RESEND_OTP: "/auth/resend-otp",
   },
   FORGOT_PASSWORD: {
     BASE: "/auth/forgot-password",
@@ -26,10 +29,18 @@ export const ROUTES = {
     BASE: "/users",
     DETAIL: "/users/:id",
   },
+  BLOG: {
+    BASE: "/blog",
+  },
+  HERO_BANNER: {
+    BASE: "/hero-banner",
+  },
+  ABOUT_US: "/about-us",
   ACTIONCENTER: "/actioncenter",
   CONTACT: "/contact",
   ADMIN: "/admin",
   CALENDAR: "/calendar",
   SEARCH: "/search",
   CONTENT: "/content",
+  CHAT: "/chat",
 } as const;

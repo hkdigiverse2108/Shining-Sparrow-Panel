@@ -1,6 +1,5 @@
 import { type FC } from "react";
 import { UserOutlined, ClockCircleOutlined, BookOutlined, RocketOutlined, CalendarOutlined, TeamOutlined, DeleteOutlined, EditOutlined } from "@ant-design/icons";
-import { Popconfirm } from "antd";
 import type { SchedulePanelProps } from "@/Types";
 
 const getEventBadge = (type: string) => {
@@ -32,9 +31,7 @@ const SchedulePanel: FC<SchedulePanelProps> = ({ selectedDate, dayEvents, onEdit
                 {event.id && event.course === "Custom Event" && (
                   <div className="flex gap-2">
                     <EditOutlined className="text-xs text-muted hover:text-primary cursor-pointer" onClick={() => onEdit(event)} />
-                    <Popconfirm title="Delete this event?" onConfirm={() => onDelete(event.id)} okButtonProps={{ danger: true }}>
-                      <DeleteOutlined className="text-xs text-muted hover:text-danger cursor-pointer" />
-                    </Popconfirm>
+                    <DeleteOutlined className="text-xs text-muted hover:text-danger cursor-pointer" onClick={() => onDelete(event.id)} />
                   </div>
                 )}
               </div>

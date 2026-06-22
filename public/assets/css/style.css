@@ -2,5 +2,7 @@
 @import "./variables.css";
 @import "./layout.css";
 @import "./update.css";
+@import "./Course.css";
 @import "./dashboard.css";
 @import "./table.css";
+@import "./chat.css";

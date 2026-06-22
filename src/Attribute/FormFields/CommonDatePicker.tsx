@@ -45,7 +45,7 @@ export const CommonDatePicker: React.FC<CommonDatePickerProps> = ({
       className="modern-form-item w-full"
     >
       <DatePicker 
-        value={field.value ? dayjs(field.value, format) : (value ? dayjs(value, format) : null)} 
+        value={field.value ? (dayjs(field.value).isValid() ? dayjs(field.value) : dayjs(field.value, format)) : (value ? (dayjs(value).isValid() ? dayjs(value) : dayjs(value, format)) : null)} 
         onChange={handleChange} 
         onBlur={() => { if (formikContext && name) helpers.setTouched(true); }}
         format={format} 

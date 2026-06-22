@@ -4,10 +4,9 @@ import { Storage } from "@/Utils";
 import type { LayoutStateProps } from "@/Types";
 
 const storedTheme = Storage.getItem(STORAGE_KEYS.THEME) || "light";
-const storedColor = Storage.getItem(STORAGE_KEYS.PRIMARY_COLOR) || "#3b82f6";
+
 if (storedTheme === "dark") document.documentElement.classList.add("dark");
 else document.documentElement.classList.remove("dark");
-document.documentElement.style.setProperty('--primary', storedColor);
 
 const initialState: LayoutStateProps = {
     isExpanded: true,
@@ -18,7 +17,6 @@ const initialState: LayoutStateProps = {
     openSubmenu: null,
     isToggleTheme: storedTheme,
     adminSetting: null,
-    primaryColor: storedColor,
 };
 
 const layoutSlice = createSlice({
@@ -60,15 +58,10 @@ const layoutSlice = createSlice({
             Storage.setItem(STORAGE_KEYS.THEME, action.payload);
             if (action.payload === "dark") document.documentElement.classList.add("dark");
             else document.documentElement.classList.remove("dark");
-        },
-        setPrimaryColor: (state, action) => {
-            state.primaryColor = action.payload;
-            Storage.setItem(STORAGE_KEYS.PRIMARY_COLOR, action.payload);
-            document.documentElement.style.setProperty('--primary', action.payload);
         }
     },
 });
 
-export const { setAdminSetting, setIsMobile, setToggleSidebar, setToggleMobileSidebar, setIsHovered, setApplicationMenuOpen, setToggleSubmenu, setToggleTheme, setSidebarOpen, setPrimaryColor } = layoutSlice.actions;
+export const { setAdminSetting, setIsMobile, setToggleSidebar, setToggleMobileSidebar, setIsHovered, setApplicationMenuOpen, setToggleSubmenu, setToggleTheme, setSidebarOpen } = layoutSlice.actions;
 
 export default layoutSlice.reducer;
