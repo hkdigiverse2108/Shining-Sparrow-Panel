@@ -3,7 +3,12 @@ import { getToken } from "@/Utils";
 import { HTTP_STATUS } from "@/Constants";
 import { showNotification } from "@/Attribute";
 
-export async function Post<TInput, TResponse>(url: string, data?: TInput, isToken: boolean = true): Promise<TResponse> {
+export async function Post<TInput, TResponse>(
+  url: string,
+  data?: TInput,
+  isToken: boolean = true,
+  showSuccessToast: boolean = true
+): Promise<TResponse> {
   // console.log("requsting URl: ", url);
   const authToken = getToken();
   const isFormData = data instanceof FormData;
@@ -24,7 +29,9 @@ export async function Post<TInput, TResponse>(url: string, data?: TInput, isToke
     const resData = response.data;
 
     if (response.status === HTTP_STATUS.CREATED || response.status === HTTP_STATUS.OK) {
-      showNotification("success", resData.message);
+      if (showSuccessToast && resData.message) {
+        showNotification("success", resData.message);
+      }
       return resData;
     } else {
       return null as TResponse;

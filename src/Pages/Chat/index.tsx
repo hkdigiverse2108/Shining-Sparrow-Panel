@@ -27,6 +27,7 @@ const ChatPage: FC = () => {
 
   const socketRef = useRef<Socket | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const processedUserChatRef = useRef<string | null>(null);
 
   // Mutations
   const createRoomMutation = Mutations.useCreateRoom();
@@ -56,8 +57,15 @@ const ChatPage: FC = () => {
 
   // Handle Start Chat redirection from User Management
   useEffect(() => {
-    if (roomsList.length > 0 && location.state?.userId) {
-      const targetUserId = location.state.userId;
+    const targetUserId = location.state?.userId;
+    if (!targetUserId) {
+      processedUserChatRef.current = null;
+      return;
+    }
+
+    if (roomsList.length > 0 && processedUserChatRef.current !== targetUserId) {
+      processedUserChatRef.current = targetUserId;
+      
       const existingRoom = roomsList.find((room) => {
         if (room.type === 'global') return false;
         return room.participants.some((p) => p._id === targetUserId);
@@ -70,15 +78,11 @@ const ChatPage: FC = () => {
         createRoomMutation.mutate(
           { recipientId: targetUserId },
           {
-            onSuccess: () => {
-              refetchRooms().then((newRoomsRes) => {
-                const newRoom = newRoomsRes.data?.data?.room_data?.find((room: any) => 
-                  room.type === 'personal' && room.participants.some((p: any) => p._id === targetUserId)
-                );
-                if (newRoom) {
-                  setSelectedRoom(newRoom);
-                }
-              });
+            onSuccess: (resData: any) => {
+              if (resData?.data?.room) {
+                setSelectedRoom(resData.data.room);
+              }
+              refetchRooms();
             },
             onError: () => {
               showNotification('error', 'Failed to start chat with this user.');
@@ -282,7 +286,6 @@ const ChatPage: FC = () => {
             </div>
 
             <div className="chat-rooms-container">
-              {/* Sticky Community Section */}
               {globalRoom && (
                 <div className="chat-community-section">
                   <div className="chat-section-header">Community</div>
@@ -314,7 +317,6 @@ const ChatPage: FC = () => {
                 </div>
               )}
 
-              {/* Personal Chats Section */}
               <div className="chat-section-header">Personal Chats</div>
               <div style={{ flex: 1 }}>
                 {isLoadingRooms ? (

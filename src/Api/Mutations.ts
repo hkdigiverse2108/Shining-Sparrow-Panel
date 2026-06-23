@@ -104,7 +104,7 @@ export const Mutations = {
 
   // ************ Chat ***********
   useSendMessage: () => useMutations<SendMessagePayload, any>([KEYS.CHAT.BASE, "SEND"], (input) => Post(URL_KEYS.CHAT.SEND, input)),
-  useCreateRoom: () => useMutations<CreateRoomPayload, any>([KEYS.CHAT.BASE, "CREATE_ROOM"], (input) => Post(URL_KEYS.CHAT.CREATE_ROOM, input)),
+  useCreateRoom: () => useMutations<CreateRoomPayload, any>([KEYS.CHAT.BASE, "CREATE_ROOM"], (input) => Post(URL_KEYS.CHAT.CREATE_ROOM, input, true, false)),
 };
 
 
