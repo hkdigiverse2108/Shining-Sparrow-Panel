@@ -31,7 +31,7 @@ const ManageContentPage: FC = () => {
 
   const { data: courseRes, isLoading: courseLoading } = Queries.useGetCourses({ page: 1, limit: 1000 });
   const { data: lessRes, isLoading: lessLoading } = Queries.useGetLessons();
-  const { data: faqsRes, isLoading: faqsLoading } = Queries.useGetFAQs({ type: 'course' });
+  const { data: faqsRes, isLoading: faqsLoading } = Queries.useGetFAQs({ type: 'course', learningCatalogFilter: courseId });
 
   const deleteLessonMutation = Mutations.useDeleteLesson();
   const addFAQMutation = Mutations.useAddFAQ();
@@ -92,6 +92,7 @@ const ManageContentPage: FC = () => {
         gu: values.answerGu || null,
       },
       type: 'course',
+      learningCatalogId: courseId,
     };
     if (activeForm.type === 'editFAQ' && activeForm.data?._id) {
       payload.faqId = activeForm.data._id;

@@ -27,6 +27,7 @@ import WorkshopManageContentPage from "@/Components/Workshop/ManageWorkshop";
 import WorkshopCurriculumEditorPage from "@/Components/Workshop/CurriculumEditorPage";
 import Blog from "@/Pages/Blog";
 import HeroBanner from "@/Pages/HeroBanner";
+import FaqPage from "@/Pages/Faq";
 import AboutUs from "@/Pages/AboutUs";
 import Chat from "@/Pages/Chat";
 
@@ -66,6 +67,7 @@ export const PageRoutes = [
   { path: ROUTES.HERO_BANNER.BASE, name: PAGE_TITLE.HERO_BANNER, element: <HeroBanner /> },
   { path: ROUTES.ABOUT_US, name: PAGE_TITLE.ABOUT_US, element: <AboutUs /> },
   { path: ROUTES.CHAT, name: PAGE_TITLE.CHAT, element: <Chat /> },
+  { path: ROUTES.FAQ, name: PAGE_TITLE.FAQ, element: <FaqPage /> },
 ];
 
 export const AuthRoutes = [

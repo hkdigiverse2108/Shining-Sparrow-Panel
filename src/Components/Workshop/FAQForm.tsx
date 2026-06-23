@@ -2,13 +2,15 @@
 import { type FC, useMemo } from 'react';
 import { Formik, Form } from 'formik';
 import { CommonFormSection } from '@/Components';
-import { CommonButton, CommonValidationTextField } from '@/Attribute';
+import { CommonButton, CommonValidationTextField, CommonValidationSelect, CommonCheckbox } from '@/Attribute';
 import * as Yup from 'yup';
 
 interface FAQFormProps {
   editing: any | null;
   onSave: (values: any) => void;
   loading: boolean;
+  showTypeSelector?: boolean;
+  catalogOptions?: { value: string; label: string }[];
 }
 
 const FAQSchema = Yup.object({
@@ -18,9 +20,18 @@ const FAQSchema = Yup.object({
   answerEn: Yup.string().required('Answer (English) is required'),
   answerHi: Yup.string().nullable(),
   answerGu: Yup.string().nullable(),
+  type: Yup.string().oneOf(['home', 'course', 'workshop']),
+  learningCatalogId: Yup.string().nullable(),
+  isFeatured: Yup.boolean(),
 });
 
-export const FAQForm: FC<FAQFormProps> = ({ editing, onSave, loading }) => {
+const FAQ_TYPE_OPTIONS = [
+  { label: 'Global (Home Page)', value: 'home' },
+  { label: 'Course Specific', value: 'course' },
+  { label: 'Workshop Specific', value: 'workshop' },
+];
+
+export const FAQForm: FC<FAQFormProps> = ({ editing, onSave, loading, showTypeSelector = false, catalogOptions = [] }) => {
   const initialValues = useMemo(() => {
     if (editing) {
       return {
@@ -30,6 +41,9 @@ export const FAQForm: FC<FAQFormProps> = ({ editing, onSave, loading }) => {
         answerEn: editing.answer?.en || '',
         answerHi: editing.answer?.hi || '',
         answerGu: editing.answer?.gu || '',
+        type: editing.type || 'home',
+        learningCatalogId: editing.learningCatalogId || '',
+        isFeatured: editing.isFeatured || false,
       };
     }
     return {
@@ -39,15 +53,68 @@ export const FAQForm: FC<FAQFormProps> = ({ editing, onSave, loading }) => {
       answerEn: '',
       answerHi: '',
       answerGu: '',
+      type: 'home',
+      learningCatalogId: '',
+      isFeatured: false,
     };
   }, [editing]);
 
   return (
     <Formik enableReinitialize initialValues={initialValues} validationSchema={FAQSchema} onSubmit={onSave}>
-      {() => (
+      {({ values, setFieldValue }) => (
         <Form className="space-y-6">
           <h2 className="text-xl font-bold mb-4">{editing ? 'Edit FAQ' : 'Add FAQ'}</h2>
-          
+
+          {showTypeSelector && (
+            <CommonFormSection title="FAQ Classification">
+              <CommonValidationSelect
+                name="type"
+                label="FAQ Type"
+                options={FAQ_TYPE_OPTIONS}
+                required
+                fullWidth={false}
+              />
+
+              {values.type === 'course' && (
+                <CommonValidationSelect
+                  name="learningCatalogId"
+                  label="Select Course"
+                  options={catalogOptions}
+                  required
+                  fullWidth={false}
+                />
+              )}
+
+              {values.type === 'workshop' && (
+                <CommonValidationSelect
+                  name="learningCatalogId"
+                  label="Select Workshop"
+                  options={catalogOptions}
+                  required
+                  fullWidth={false}
+                />
+              )}
+
+              <div className="col-span-full pt-2">
+                <CommonCheckbox
+                  checked={values.isFeatured}
+                  onChange={(e) => setFieldValue('isFeatured', e.target.checked)}
+                  label="Mark as Featured (shown on homepage)"
+                />
+              </div>
+            </CommonFormSection>
+          )}
+
+          {!showTypeSelector && editing?.isFeatured !== undefined && (
+            <div className="col-span-full pt-2">
+              <CommonCheckbox
+                checked={values.isFeatured}
+                onChange={(e) => setFieldValue('isFeatured', e.target.checked)}
+                label="Mark as Featured (shown on homepage)"
+              />
+            </div>
+          )}
+
           <CommonFormSection title="English Content">
             <CommonValidationTextField name="questionEn" label="Question (English)" required className="col-span-full" />
             <CommonValidationTextField name="answerEn" label="Answer (English)" required className="col-span-full" placeholder="Write the answer in English here..." />

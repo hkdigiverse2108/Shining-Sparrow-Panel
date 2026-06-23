@@ -1,5 +1,5 @@
 
-import { DashboardOutlined, BookOutlined, TeamOutlined, UserOutlined, LogoutOutlined, KeyOutlined, ReadOutlined, PictureOutlined, CalendarOutlined, InfoCircleOutlined, MessageOutlined  } from '@ant-design/icons';
+import { DashboardOutlined, BookOutlined, TeamOutlined, UserOutlined, LogoutOutlined, KeyOutlined, ReadOutlined, PictureOutlined, CalendarOutlined, InfoCircleOutlined, MessageOutlined, QuestionCircleOutlined  } from '@ant-design/icons';
 import type { NavItem, UserMenuItems } from "@/Types";
 import { PAGE_TITLE, ROUTES } from "@/Constants";
 
@@ -10,6 +10,7 @@ export const NavItems: NavItem[] = [
   { icon: <CalendarOutlined />, name: PAGE_TITLE.WORKSHOP.BASE, path: ROUTES.WORKSHOP.BASE },
   { icon: <ReadOutlined />, name: PAGE_TITLE.BLOG, path: ROUTES.BLOG.BASE },
   { icon: <PictureOutlined />, name: PAGE_TITLE.HERO_BANNER, path: ROUTES.HERO_BANNER.BASE },
+  { icon: <QuestionCircleOutlined />, name: PAGE_TITLE.FAQ, path: ROUTES.FAQ },
   { icon: <InfoCircleOutlined />, name: PAGE_TITLE.ABOUT_US, path: ROUTES.ABOUT_US },
   { icon: <MessageOutlined />, name: PAGE_TITLE.CHAT, path: ROUTES.CHAT },
   // { icon: <CalendarOutlined />, name: PAGE_TITLE.CALENDAR, path: ROUTES.CALENDAR },

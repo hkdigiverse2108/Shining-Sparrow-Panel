@@ -37,7 +37,7 @@ const ManageWorkshop: FC = () => {
 
   const { data: workshopRes, isLoading: wsLoading } = Queries.useGetWorkshopById(workshopId!);
   const { data: currRes, isLoading: currLoading } = Queries.useGetWorkshopCurriculums({ workshopFilter: workshopId });
-  const { data: faqsRes, isLoading: faqsLoading } = Queries.useGetFAQs({ type: 'workshop' });
+  const { data: faqsRes, isLoading: faqsLoading } = Queries.useGetFAQs({ type: 'workshop', learningCatalogFilter: workshopId });
 
   const faqs = useMemo(() => faqsRes?.data?.faq_data || [], [faqsRes]);
 
@@ -171,6 +171,7 @@ const ManageWorkshop: FC = () => {
         gu: values.answerGu || null,
       },
       type: 'workshop',
+      learningCatalogId: workshopId,
     };
     if (activeForm.type === 'editFAQ' && activeForm.data?._id) payload.faqId = activeForm.data._id;
 

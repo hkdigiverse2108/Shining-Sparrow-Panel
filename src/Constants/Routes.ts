@@ -43,4 +43,5 @@ export const ROUTES = {
   SEARCH: "/search",
   CONTENT: "/content",
   CHAT: "/chat",
+  FAQ: "/faq",
 } as const;

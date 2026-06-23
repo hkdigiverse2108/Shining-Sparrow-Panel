@@ -25,5 +25,6 @@ export const PAGE_TITLE = {
   BLOG: "Blog",
   HERO_BANNER: "Hero Banner",
   ABOUT_US: "About Us",
-  CHAT: "Chat Support"
+  CHAT: "Chat Support",
+  FAQ: "FAQ",
 } as const;
