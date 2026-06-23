@@ -32,7 +32,6 @@ const Login: FC = () => {
             });
             
             dispatch(setCredentials(response.data));
-            showNotification('success', 'Login Successful');
             navigate(ROUTES.DASHBOARD);
           } catch (error: any) {
             const msg = error?.response?.data?.message || "Login failed";

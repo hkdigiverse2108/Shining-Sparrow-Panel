@@ -544,160 +544,6 @@
 .action-dev-link-text {
   @apply text-xs font-medium;
 }
-/* ===================== CALENDAR ===================== */
-.calendar-split-grid {
-  @apply grid grid-cols-1 lg:grid-cols-3 gap-6;
-}
-.calendar-panel {
-  @apply lg:col-span-2 bg-surface border border-border rounded-2xl p-4 md:p-5 overflow-hidden flex flex-col;
-}
-.calendar-agenda-panel {
-  @apply lg:col-span-1 bg-surface border border-border rounded-2xl p-4 md:p-5 flex flex-col max-h-[750px] lg:max-h-none;
-}
-.calendar-agenda-header {
-  @apply mb-4 pb-3 border-b border-border;
-}
-.calendar-agenda-date {
-  @apply text-lg font-bold text-foreground;
-}
-.calendar-agenda-day {
-  @apply text-xs text-muted;
-}
-.calendar-agenda-empty {
-  @apply flex flex-col items-center justify-center flex-1 text-muted py-16;
-}
-.calendar-agenda-list {
-  @apply flex flex-col gap-3 flex-1 overflow-y-auto pr-1;
-}
-.calendar-custom-header {
-  @apply flex items-center justify-between mb-4 pb-3 border-b border-border;
-}
-.calendar-header-nav {
-  @apply flex items-center gap-3;
-}
-.calendar-header-btn {
-  @apply w-8 h-8 rounded-lg flex items-center justify-center text-muted hover:text-foreground hover:bg-surface-muted transition-colors;
-}
-.calendar-header-title {
-  @apply text-sm font-bold text-foreground min-w-[140px] text-center;
-}
-.calendar-header-modes {
-  @apply flex items-center gap-1 bg-surface-muted rounded-lg p-1;
-}
-.calendar-mode-btn {
-  @apply px-3 py-1 text-[11px] font-semibold rounded-md transition-colors text-muted hover:text-foreground;
-}
-.calendar-mode-btn-active {
-  @apply bg-surface text-foreground shadow-sm;
-}
-.calendar-event-card {
-  @apply p-3 rounded-xl border border-border transition-all duration-200 hover:shadow-md cursor-pointer;
-}
-.calendar-event-type-lecture { @apply border-l-4 border-l-primary; }
-.calendar-event-type-workshop { @apply border-l-4 border-l-warning; }
-
-.calendar-event-badge {
-  @apply text-[9px] font-bold tracking-wider uppercase px-2 py-0.5 rounded-full inline-flex items-center gap-1;
-}
-.badge-lecture { @apply bg-primary/10 text-primary; }
-.badge-workshop { @apply bg-warning/10 text-warning; }
-
-.calendar-event-title {
-  @apply text-sm font-bold text-foreground mt-1.5;
-}
-.calendar-event-meta {
-  @apply flex flex-wrap items-center gap-x-3 gap-y-1 mt-1.5 text-[10px] text-muted;
-}
-.calendar-panel .ant-picker-calendar {
-  @apply bg-transparent border-none;
-}
-.calendar-panel .ant-picker-panel {
-  @apply bg-transparent border-none;
-}
-.calendar-panel .ant-picker-content {
-  @apply border-separate border-spacing-0;
-}
-.calendar-panel .ant-picker-content th {
-  @apply text-[10px] font-bold text-muted uppercase pb-2;
-}
-.calendar-panel .ant-picker-cell {
-  @apply py-1;
-}
-.ant-picker-cell .ant-picker-calendar-date-content .ant-picker-cell-inner{
-  @apply hidden!;
-}
-.calendar-panel .ant-picker-cell-inner {
-  @apply min-h-[45px]! md:min-h-[55px]! flex flex-col items-center justify-start pt-2 transition-all duration-200 rounded-xl relative min-w-[40px]! pt-[15px]! ;
-}
-.calendar-panel .ant-picker-cell:not(.ant-picker-cell-selected):not(.ant-picker-cell-today) .ant-picker-cell-inner:hover {
-  @apply bg-primary/5;
-}
-.calendar-panel .ant-picker-cell-today .ant-picker-cell-inner::before {
-  display: none;
-}
-.calendar-panel .ant-picker-cell-today .ant-picker-cell-inner {
-  @apply border-2 border-primary/20 bg-primary/5;
-}
-.calendar-panel .ant-picker-cell-selected .ant-picker-cell-inner {
-  @apply bg-primary/80! shadow-lg ;
-}
-.calendar-cell-content {
-  @apply flex flex-col items-center justify-start h-full w-full pt-0.5;
-}
-.calendar-date-number {
-  @apply text-xs font-medium text-foreground leading-none
-  hidden!;
-}
-.calendar-panel {
-  @apply lg:col-span-2 bg-surface border border-border rounded-2xl p-4 md:p-5 overflow-hidden flex flex-col lg:sticky lg:top-24 lg:self-start;
-}
-.calendar-panel .ant-picker-cell-selected .calendar-date-number {
-  @apply text-white font-bold;
-}
-.calendar-panel .ant-picker-cell-today .calendar-date-number {
-  @apply text-primary font-bold;
-}
-.calendar-event-dots {
-  @apply flex gap-1 mt-1 absolute bottom-2;
-}
-.calendar-dot {
-  @apply w-1.5 h-1.5 rounded-full;
-}
-.calendar-dot-lecture { @apply bg-primary; }
-.calendar-dot-workshop { @apply bg-warning; }
-.calendar-panel .ant-picker-cell-selected .calendar-dot {
-  @apply bg-white/80;
-}
-.calendar-dot-holiday { @apply bg-success; }
-.calendar-dot-meeting { @apply bg-info; }
-.calendar-dot-other { @apply bg-secondary; }
-.badge-holiday { @apply bg-success/10 text-success; }
-.badge-meeting { @apply bg-info/10 text-info; }
-.badge-other { @apply bg-secondary/10 text-secondary; }
-.day-timeline-event-holiday { @apply bg-success/5 border-l-4 border-l-success; }
-.day-timeline-event-meeting { @apply bg-info/5 border-l-4 border-l-info; }
-.day-timeline-event-other { @apply bg-secondary/5 border-l-4 border-l-secondary; }
-.calendar-add-btn {
-  @apply h-8 w-8 rounded-lg flex items-center justify-center text-primary bg-primary/10 hover:bg-primary hover:text-white transition-colors;
-}
-.day-timeline-container {
-  @apply flex-1 overflow-y-auto pr-2;
-}
-.day-timeline-row {
-  @apply flex items-start gap-4 min-h-[60px] border-b border-border last:border-b-0 py-2;
-}
-.day-timeline-time {
-  @apply w-16 flex-shrink-0 text-right text-[11px] font-semibold text-muted pt-1;
-}
-.day-timeline-events {
-  @apply flex-1 flex flex-col gap-2;
-}
-.day-timeline-event {
-  @apply p-3 rounded-lg border border-border;
-}
-.day-timeline-event-lecture { @apply bg-primary/5 border-l-4 border-l-primary; }
-.day-timeline-event-workshop { @apply bg-warning/5 border-l-4 border-l-warning; }
-
 /* ===================== PROFILE ===================== */
 .not-found-page {
   @apply min-h-screen flex items-center justify-center relative overflow-hidden p-4 bg-background;
@@ -965,127 +811,7 @@
   content: '';
   @apply absolute left-0 top-0 h-full w-1 rounded-r-md bg-primary!;
 }
-/* ===================== CONTENT ===================== */
-.content-layout {
-  @apply flex flex-col lg:flex-row gap-6 h-[calc(100vh-12rem)];
-}
-.content-left-panel {
-  @apply w-full lg:w-64 flex-shrink-0 bg-surface border border-border rounded-2xl p-4 flex flex-col;
-}
-.left-panel-title {
-  @apply text-xs font-bold uppercase tracking-widest text-muted mb-4 px-2;
-}
-.left-panel-list {
-  @apply flex flex-col gap-1 overflow-y-auto;
-}
-.left-panel-btn {
-  @apply flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium transition-all;
-}
-.left-panel-btn.is-active {
-  @apply bg-primary text-white shadow-sm shadow-primary/30;
-}
-.left-panel-btn.is-inactive {
-  @apply text-muted hover:bg-surface-muted hover:text-foreground;
-}
-.left-panel-btn-content {
-  @apply flex items-center gap-2.5;
-}
-.left-panel-badge {
-  @apply text-[10px] font-bold px-1.5 py-0.5 rounded-md;
-}
-.left-panel-badge.is-active {
-  @apply bg-white/20;
-}
-.left-panel-badge.is-inactive {
-  @apply bg-surface-muted;
-}
-.content-right-panel {
-  @apply flex-1 bg-surface border border-border rounded-2xl flex flex-col overflow-hidden;
-}
-.right-panel-header {
-  @apply p-5 border-b border-border flex flex-col md:flex-row justify-between items-start md:items-center gap-4;
-}
-.rignt-panel-assets {
-  @apply text-lg font-bold text-foreground; 
-}
-.rigth-asset-length {
-  @apply text-xs text-muted;
-}
-.right-panel-toolbar {
-  @apply flex items-center gap-3 w-full md:w-auto;
-}
-.asset-grid-container {
-  @apply flex-1 p-6 overflow-y-auto;
-}
-.modal-title {
-  @apply text-foreground;
-}
-.modal-close-icon {
-  @apply text-muted hover:text-foreground transition-colors;
-}
-.modal-body-wrapper {
-  @apply rounded-xl overflow-hidden;
-}
-.audio-preview-container {
-  @apply p-10 flex flex-col items-center justify-center bg-surface-muted gap-4 rounded-lg border border-border;
-}
-.doc-preview-wrapper {
-  @apply flex flex-col gap-4;
-}
-.doc-btn-wrapper {
-  @apply flex justify-center;
-}
-.asset-grid-wrapper {
-  @apply grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5;
-}
-.asset-card {
-  @apply relative aspect-[4/3] rounded-2xl overflow-hidden bg-surface-muted cursor-pointer border border-border;
-}
-.asset-visual-layer {
-  @apply absolute inset-0 pointer-events-none;
-}
-.asset-media-img {
-  @apply w-full h-full object-cover transition-transform duration-700 group-hover:scale-110;
-}
-.asset-video-overlay {
-  @apply absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/50 transition-colors;
-}
-.asset-play-icon-wrapper {
-  @apply bg-white/20 backdrop-blur-md p-4 rounded-full text-white border border-white/20;
-}
-.asset-gradient-overlay {
-  @apply absolute inset-0 bg-gradient-to-t from-black/90 via-black/10 to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-300;
-}
-.asset-doc-bg {
-  @apply w-full h-full flex flex-col items-center justify-center bg-surface;
-}
-.asset-doc-icon-box {
-  @apply w-16 h-16 rounded-2xl flex items-center justify-center text-3xl mb-3;
-}
-.asset-doc-label {
-  @apply text-xs font-bold uppercase tracking-widest;
-}
-.asset-actions {
-  @apply absolute top-3 right-3 z-20 flex gap-2 opacity-0 group-hover:opacity-100 translate-y-[-10px] group-hover:translate-y-0 transition-all duration-300 pointer-events-auto;
-}
-.asset-action-btn {
-  @apply bg-white/20 backdrop-blur-md p-2 rounded-full text-white border border-white/20 cursor-pointer transition-colors;
-}
-.asset-action-btn:hover {
-  @apply bg-white/40;
-}
-.asset-action-btn.danger:hover {
-  @apply bg-danger;
-}
-.asset-footer {
-  @apply absolute bottom-0 left-0 right-0 p-4 text-white z-10 pointer-events-none;
-}
-.asset-file-name {
-  @apply text-sm font-semibold truncate drop-shadow-md;
-}
-.asset-file-size {
-  @apply text-xs text-white/70 font-medium;
-}
+
 /* ===================== LOADER ===================== */
 .loader {
   @apply relative w-[60px] h-[80px];
@@ -1284,4 +1010,211 @@
 
 .chart-line-point:hover {
   r: 5;
+}
+
+/* ===================== PROFILE & SETTINGS PAGE ===================== */
+
+/* Force the layout content parent to be a flex column matching the viewport height minus header and margins */
+.profile-page-layout-content {
+  display: flex !important;
+  flex-direction: column !important;
+  height: calc(100vh - 100px) !important;
+  overflow: hidden !important;
+  padding-bottom: 12px !important;
+}
+
+.profile-page-layout-content .common-page-wrapper {
+  flex: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+  margin-top: 8px !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+.profile-page-layout-content .page-content-no-padding {
+  flex: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+
+/* Page layout: sidebar + content */
+.profile-page-layout {
+  @apply flex flex-col lg:flex-row gap-2 items-stretch w-full h-full min-h-0 overflow-hidden;
+}
+
+/* ── Sidebar card ── */
+.profile-sidebar-card {
+  @apply w-full lg:w-72 shrink-0 rounded-2xl border border-border bg-surface shadow-sm
+         flex flex-col items-center gap-4 p-6 overflow-y-auto;
+}
+
+.profile-sidebar-card::-webkit-scrollbar {
+  width: 6px;
+}
+.profile-sidebar-card::-webkit-scrollbar-thumb {
+  background-color: var(--border);
+  border-radius: 4px;
+}
+
+.profile-sidebar-avatar-wrap {
+  @apply relative;
+}
+
+.profile-sidebar-avatar {
+  @apply w-24 h-24 rounded-full object-cover ring-4 ring-primary/20 shadow-lg;
+}
+
+.profile-sidebar-avatar-placeholder {
+  @apply ring-4 ring-primary/20 shadow-lg;
+}
+
+.profile-sidebar-status-dot {
+  @apply absolute bottom-1 right-1 w-4 h-4 rounded-full bg-success border-2 border-surface;
+}
+
+.profile-sidebar-info {
+  @apply flex flex-col items-center gap-1 text-center;
+}
+
+.profile-sidebar-name {
+  @apply text-lg font-bold text-foreground leading-tight;
+}
+
+.profile-sidebar-role {
+  @apply text-xs text-muted;
+}
+
+.profile-sidebar-badge {
+  @apply mt-1 inline-flex items-center px-3 py-0.5 rounded-full text-[10px] font-semibold tracking-wider uppercase;
+}
+
+.badge-admin {
+  @apply bg-primary/10 text-primary;
+}
+
+.badge-user {
+  @apply bg-success/10 text-success;
+}
+
+/* ── Sidebar detail rows ── */
+.profile-sidebar-details {
+  @apply w-full flex flex-col gap-2 pt-2 border-t border-border;
+}
+
+.profile-detail-row {
+  @apply flex items-center gap-3 px-2 py-1.5 rounded-lg hover:bg-surface-muted transition-colors;
+}
+
+.profile-detail-icon {
+  @apply text-primary text-sm shrink-0;
+}
+
+.profile-detail-text {
+  @apply flex flex-col min-w-0;
+}
+
+.profile-detail-label {
+  @apply text-[10px] font-semibold uppercase tracking-wide text-muted;
+}
+
+.profile-detail-value {
+  @apply text-xs text-foreground font-medium truncate;
+}
+
+/* ── Sidebar social icons ── */
+.profile-sidebar-socials {
+  @apply flex items-center gap-3 pt-2 border-t border-border w-full justify-center;
+}
+
+.social-icon {
+  @apply text-muted text-base hover:text-primary transition-colors cursor-pointer;
+}
+
+/* ── Right content card ── */
+.profile-content-card {
+  @apply flex-1 min-w-0 rounded-2xl border border-border bg-surface shadow-sm p-6
+         flex flex-col overflow-hidden;
+}
+
+/* ── Tabs styling ── */
+.profile-tabs .ant-tabs-tab {
+  @apply text-muted font-medium;
+}
+
+.profile-tabs .ant-tabs-tab-active .ant-tabs-tab-btn {
+  @apply text-primary font-semibold;
+}
+
+.profile-tabs {
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+
+.profile-tabs > .ant-tabs-content-holder {
+  flex: 1 !important;
+  min-height: 0 !important;
+  overflow-y: auto !important;
+  padding-right: 4px;
+}
+
+.profile-tabs > .ant-tabs-content-holder::-webkit-scrollbar {
+  width: 6px;
+}
+
+.profile-tabs > .ant-tabs-content-holder::-webkit-scrollbar-thumb {
+  background-color: var(--border);
+  border-radius: 4px;
+}
+
+.profile-tabs .ant-tabs-content {
+  height: 100% !important;
+}
+
+.profile-tabs .ant-tabs-tabpane {
+  height: 100% !important;
+}
+
+.profile-tab-label {
+  @apply flex items-center gap-1.5;
+}
+
+/* ── View header (Personal info view) ── */
+.profile-view-header {
+  @apply flex items-center justify-between mb-5;
+}
+
+.profile-section-title {
+  @apply text-base font-bold text-foreground;
+}
+
+/* ── Details grid (view mode) ── */
+.profile-details-grid {
+  @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4;
+}
+
+.profile-detail-card {
+  @apply p-4 rounded-xl bg-surface-muted border border-border;
+}
+
+/* ── Form inside tabs ── */
+.profile-tab-form {
+  @apply flex flex-col gap-6;
+}
+
+/* ── Form action buttons ── */
+.profile-form-actions {
+  @apply flex items-center justify-end gap-3 pt-2 border-t border-border;
+}
+
+/* ── Loading state ── */
+.profile-loading {
+  @apply flex items-center justify-center py-20;
 }

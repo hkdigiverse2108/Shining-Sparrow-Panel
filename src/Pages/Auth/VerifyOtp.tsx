@@ -3,7 +3,7 @@ import { LockOutlined, RocketOutlined } from '@ant-design/icons';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Formik, Form } from 'formik';
 import { ROUTES } from '@/Constants';
-import { CommonButton, CommonValidationTextField, showNotification } from '@/Attribute';
+import { CommonButton, CommonValidationTextField } from '@/Attribute';
 import { Mutations } from '@/Api/Mutations';
 import { useAppDispatch } from '@/Store/hooks';
 import { setSignin as setCredentials } from '@/Store';
@@ -37,7 +37,6 @@ const VerifyOtp: FC = () => {
         onSubmit={async (values, { setSubmitting }) => {
           try {
             const response = await verifyOtp({ email, otp: values.otp });
-            showNotification('success', 'OTP Verified Successfully!');
             
             if (type === 'forgot') {
               navigate(ROUTES.AUTH.RESET_PASSWORD, { state: { email } });
@@ -63,7 +62,7 @@ const VerifyOtp: FC = () => {
       </Formik>
       <div className="auth-footer" style={{ display: 'flex', justifyContent: 'space-between' }}>
         <Link to={ROUTES.AUTH.LOGIN} className="auth-link">Back to Sign In</Link>
-        <button type="button" className="auth-link" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--primary-color)' }} onClick={async () => { try { await resendOtp({ email }); showNotification('success', 'OTP resent successfully.'); } catch (error) { console.log(error); } }} disabled={isResending} >
+        <button type="button" className="auth-link" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--primary-color)' }} onClick={async () => { try { await resendOtp({ email }); } catch (error) { console.log(error); } }} disabled={isResending} >
           {isResending ? 'Resending...' : 'Resend OTP'}
         </button>
       </div>

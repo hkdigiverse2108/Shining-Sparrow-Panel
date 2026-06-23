@@ -6,14 +6,33 @@ import type { UserFormProps } from "@/Types";
 import { EditUserSchema, UserSchema } from "@/Utils";
 
 export const UserForm: FC<UserFormProps> = ({ open, onClose, onSave, editingUser }) => {
-  const defaults = { fullName: "", email: "", password: "", profilePhoto: "", isBlocked: "false", phoneNumber: "", designation: "", isEmailVerified: "false" };
+  const defaults = { 
+    fullName: "", 
+    email: "", 
+    password: "", 
+    profilePhoto: "", 
+    isBlocked: "false", 
+    phoneNumber: "", 
+    designation: "", 
+    isEmailVerified: "false",
+    district: "",
+    std: "",
+    reachFrom: "",
+    schoolName: "",
+    referralCode: ""
+  };
   
   const initialValues = useMemo(() => editingUser ? { 
     ...defaults, 
-    ...editingUser, 
+    ...(editingUser as any), 
     password: "",
     isBlocked: String(editingUser.isBlocked || false),
-    isEmailVerified: String(editingUser.isEmailVerified || false)
+    isEmailVerified: String(editingUser.isEmailVerified || false),
+    district: (editingUser as any).district || "",
+    std: (editingUser as any).std || "",
+    reachFrom: (editingUser as any).reachFrom || "",
+    schoolName: (editingUser as any).schoolName || "",
+    referralCode: (editingUser as any).referralCode || ""
   } : defaults, [editingUser]);
 
   const validationSchema = editingUser ? EditUserSchema : UserSchema;
@@ -21,24 +40,23 @@ export const UserForm: FC<UserFormProps> = ({ open, onClose, onSave, editingUser
   const handleSubmit = (v: any) => {
     const payload: any = {};
 
+    payload.fullName = v.fullName;
+    payload.email = v.email;
+    payload.phoneNumber = v.phoneNumber;
+    payload.profilePhoto = v.profilePhoto;
+    payload.isBlocked = v.isBlocked === "true";
+    payload.designation = v.designation;
+    payload.isEmailVerified = v.isEmailVerified === "true";
+    payload.district = v.district;
+    payload.std = v.std;
+    payload.reachFrom = v.reachFrom;
+    payload.schoolName = v.schoolName;
+    payload.referralCode = v.referralCode;
+
     if (editingUser) {
-      payload.userId = editingUser.id; 
-      payload.fullName = v.fullName;
-      payload.email = v.email;
-      payload.phoneNumber = v.phoneNumber;
-      payload.profilePhoto = v.profilePhoto;
-      payload.isBlocked = v.isBlocked === "true";
-      payload.designation = v.designation;
-      payload.isEmailVerified = v.isEmailVerified === "true";
+      payload.userId = (editingUser as any)._id || editingUser.id; 
     } else {
-      payload.fullName = v.fullName;
-      payload.email = v.email;
-      payload.phoneNumber = v.phoneNumber;
       payload.password = v.password;
-      payload.profilePhoto = v.profilePhoto;
-      payload.isBlocked = v.isBlocked === "true";
-      payload.designation = v.designation;
-      payload.isEmailVerified = v.isEmailVerified === "true";
     }
 
     onSave(payload);
@@ -66,6 +84,14 @@ export const UserForm: FC<UserFormProps> = ({ open, onClose, onSave, editingUser
               {!editingUser && (
                 <CommonValidationTextField name="password" label="Password" type="password" showPasswordToggle placeholder="Enter password" required />
               )}
+            </CommonFormSection>
+
+            <CommonFormSection title="Academic & Referral Details">
+              <CommonValidationTextField name="schoolName" label="School Name" />
+              <CommonValidationTextField name="std" label="Standard (Std)" />
+              <CommonValidationTextField name="district" label="District" />
+              <CommonValidationTextField name="reachFrom" label="Referral Source (Reach From)" />
+              <CommonValidationTextField name="referralCode" label="Referral Code" />
             </CommonFormSection>
             
             <CommonFormSection title="Access & Status">

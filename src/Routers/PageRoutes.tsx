@@ -12,10 +12,7 @@ import Profile from "@/Pages/Profile";
 import ChangePassword from "@/Pages/Auth/ChangePassword";
 import Contact from "@/Pages/Contact";
 import UserManagement from "@/Pages/UserManagement";
-import ActionCenter from "@/Pages/ActionCenter";
-import CalendarAll from "@/Pages/Calendar";
 import UserDetails from "@/Components/User/UserDetails";
-import Content from "@/Pages/Content";
 import VerifyOtp from "@/Pages/Auth/VerifyOtp";
 import ResetPassword from "@/Pages/Auth/ResetPassword";
 import ManageContentPage from "@/Components/Course/ManageContentPage";
@@ -30,6 +27,7 @@ import HeroBanner from "@/Pages/HeroBanner";
 import FaqPage from "@/Pages/Faq";
 import AboutUs from "@/Pages/AboutUs";
 import Chat from "@/Pages/Chat";
+import Setting from "@/Pages/Profile";
 
 export const PageRoutes = [
   { path: ROUTES.DASHBOARD, name: PAGE_TITLE.DASHBOARD, element: <Dashboard /> },
@@ -57,17 +55,15 @@ export const PageRoutes = [
   { path: ROUTES.WORKSHOP.BASE, name: PAGE_TITLE.DASHBOARD, element: <Workshops /> },
   { path: ROUTES.PROFILE.BASE, name: PAGE_TITLE.PROFILE.BASE, element: <Profile /> },
   { path: ROUTES.PROFILE.CHANGE_PASSWORD, name: PAGE_TITLE.PROFILE.CHANGE_PASSWORD, element: <ChangePassword /> },
-  { path: ROUTES.ACTIONCENTER, name: PAGE_TITLE.ACTIONCENTER, element: <ActionCenter /> },
   { path: ROUTES.CONTACT, name: PAGE_TITLE.CONTACT, element: <Contact /> },
   { path: ROUTES.USERS.BASE, name: PAGE_TITLE.USERS.BASE, element: <UserManagement /> },
   { path: ROUTES.USERS.DETAIL, name: PAGE_TITLE.USERS.DETAILS, element: <UserDetails /> },
-  { path: ROUTES.CALENDAR, name: PAGE_TITLE.CALENDAR, element: <CalendarAll /> },
-  { path: ROUTES.CONTENT, name: PAGE_TITLE.CONTENT, element: <Content /> },
   { path: ROUTES.BLOG.BASE, name: PAGE_TITLE.BLOG, element: <Blog /> },
   { path: ROUTES.HERO_BANNER.BASE, name: PAGE_TITLE.HERO_BANNER, element: <HeroBanner /> },
   { path: ROUTES.ABOUT_US, name: PAGE_TITLE.ABOUT_US, element: <AboutUs /> },
   { path: ROUTES.CHAT, name: PAGE_TITLE.CHAT, element: <Chat /> },
   { path: ROUTES.FAQ, name: PAGE_TITLE.FAQ, element: <FaqPage /> },
+  { path: ROUTES.SETTING.BASE, name: "Settings", element: <Setting /> },
 ];
 
 export const AuthRoutes = [

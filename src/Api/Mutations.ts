@@ -2,7 +2,7 @@ import type { ForgotPasswordPayload, LoginPayload, LoginResponse, ResendOtpPaylo
 import { useMutations } from "./ReactQuery";
 import { KEYS, URL_KEYS } from "@/Constants";
 import { Delete, Post } from "./Methods";
-import type { AddUserPayload, MessageStatus, UpdateUserPayload, AddCoursePayload, UpdateCoursePayload, AddCurriculumPayload, UpdateCurriculumPayload, AddExamPayload, UpdateExamPayload, AddQuestionPayload, UpdateQuestionPayload, AddLessonPayload, UpdateLessonPayload, AddBlogPayload, UpdateBlogPayload, SendMessagePayload, CreateRoomPayload } from "@/Types";
+import type { AddUserPayload, MessageStatus, UpdateUserPayload, AddCoursePayload, UpdateCoursePayload, AddCurriculumPayload, UpdateCurriculumPayload, AddExamPayload, UpdateExamPayload, AddQuestionPayload, UpdateQuestionPayload, AddLessonPayload, UpdateLessonPayload, AddBlogPayload, UpdateBlogPayload, SendMessagePayload, CreateRoomPayload, AddSettingPayload, UpdateSettingPayload } from "@/Types";
 import type { AddWorkshopPayload, UpdateWorkshopPayload } from "@/Types/Workshop";
 
 export const Mutations = {
@@ -15,7 +15,7 @@ export const Mutations = {
 
   useVerifyOtp: () => useMutations<VerifyOtpPayload, LoginResponse>([KEYS.AUTH.VERIFY_OTP], (input) => Post(URL_KEYS.AUTH.VERIFY_OTP, input, false)),
 
-  useUpdatePassword: () => useMutations<UpdatePasswordPayload, MessageStatus>([KEYS.AUTH.RESET_PASSWORD], (input) => Post(URL_KEYS.AUTH.CHANGE_PASSWORD, input, false)),
+  useUpdatePassword: () => useMutations<UpdatePasswordPayload, MessageStatus>([KEYS.AUTH.RESET_PASSWORD], (input) => Post(URL_KEYS.AUTH.CHANGE_PASSWORD, input)),
 
   useResetPassword: () => useMutations<ResetPasswordPayload, MessageStatus>([KEYS.AUTH.RESET_PASSWORD], (input) => Post(URL_KEYS.AUTH.RESET_PASSWORD, input)),
 
@@ -105,6 +105,12 @@ export const Mutations = {
   // ************ Chat ***********
   useSendMessage: () => useMutations<SendMessagePayload, any>([KEYS.CHAT.BASE, "SEND"], (input) => Post(URL_KEYS.CHAT.SEND, input)),
   useCreateRoom: () => useMutations<CreateRoomPayload, any>([KEYS.CHAT.BASE, "CREATE_ROOM"], (input) => Post(URL_KEYS.CHAT.CREATE_ROOM, input, true, false)),
+
+  // ************ Setting ************
+
+  useAddSetting: () => useMutations<AddSettingPayload, MessageStatus>([KEYS.SETTING.ADD_EDIT, KEYS.SETTING.BASE ], (input) => Post(URL_KEYS.SETTING.ADD_EDIT, input)),
+
+  useUpdateSetting: () => useMutations<UpdateSettingPayload, MessageStatus>([KEYS.SETTING.ADD_EDIT, KEYS.SETTING.BASE], (input) => Post(URL_KEYS.SETTING.ADD_EDIT, input)),
 };
 
 

@@ -12,16 +12,12 @@ export const PAGE_TITLE = {
     BASE: "Profile",
     CHANGE_PASSWORD: "Change Password",
   },
-  ACTIONCENTER: "Action Center",
-  ROADMAP: "Roadmap",
   CONTACT: "Contact Us",
-  HISTORY: "History",
   USERS: {
     BASE: "Users",
     DETAILS: "Users Details"
   },
-  CALENDAR: "Calendar",
-  CONTENT: "Content",
+  SETTING: "Setting",
   BLOG: "Blog",
   HERO_BANNER: "Hero Banner",
   ABOUT_US: "About Us",

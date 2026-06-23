@@ -19,8 +19,8 @@ const UserDetails: FC = () => {
   const { data: userResponse, isLoading: isUserLoading } = Queries.useGetUserById(id!);
   const user = userResponse?.data;
   
-  const courses = useAppSelector((s) => s.courses.data);
-  const workshops = useAppSelector((s) => s.workshops.data);
+  const courses = useAppSelector((s: any) => s.courses?.data || []);
+  const workshops = useAppSelector((s: any) => s.workshops?.data || []);
 
   const isInstructor = user?.role === "instructor";
 
@@ -28,17 +28,17 @@ const UserDetails: FC = () => {
     if (!user) return [];
     const userId = user._id || user.id;
     return isInstructor 
-      ? courses.filter((c) => String(c.instructorId) === String(userId))
-      : courses.filter((c) => c.enrolledStudents?.map(String).includes(String(userId)));
+      ? courses.filter((c: any) => String(c.instructorId) === String(userId))
+      : courses.filter((c: any) => c.enrolledStudents?.map(String).includes(String(userId)));
   }, [user, courses, isInstructor]);
 
   const workshopsData = useMemo(() => {
     if (!user) return [];
     const userId = user._id || user.id;
     const filtered = isInstructor 
-      ? workshops.filter((w) => String(w.speakerId) === String(userId))
-      : workshops.filter((w) => w.registrations?.some((r) => String(r.userId) === String(userId)))
-          .map((w) => ({ ...w, ...w.registrations.find((r) => String(r.userId) === String(userId)) }));
+      ? workshops.filter((w: any) => String(w.speakerId) === String(userId))
+      : workshops.filter((w: any) => w.registrations?.some((r: any) => String(r.userId) === String(userId)))
+          .map((w: any) => ({ ...w, ...w.registrations.find((r: any) => String(r.userId) === String(userId)) }));
     return filtered;
   }, [user, workshops, isInstructor]);
 

@@ -3,7 +3,7 @@ import { LockOutlined, RocketOutlined } from '@ant-design/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Formik, Form } from 'formik';
 import { ROUTES } from '@/Constants';
-import { CommonButton, CommonValidationTextField, showNotification } from '@/Attribute';
+import { CommonButton, CommonValidationTextField } from '@/Attribute';
 import { Mutations } from '@/Api/Mutations';
 import { ResetPasswordSchema } from '@/Utils';
 
@@ -29,7 +29,6 @@ const ResetPassword: FC = () => {
               email, 
               newPassword: values.newPassword
             });
-            showNotification('success', 'Password reset successful! Please login.');
             navigate(ROUTES.AUTH.LOGIN);
           } catch (error) {
               console.log(error);

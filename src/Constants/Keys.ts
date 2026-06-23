@@ -100,4 +100,8 @@ export const KEYS = {
     ROOMS: "chat-rooms",
     MESSAGES: "chat-messages",
   },
+  SETTING: {
+    BASE: "settings",
+    ADD_EDIT: "add-edit",
+  },
 };

@@ -14,21 +14,10 @@ export const BREADCRUMBS = {
     BASE: [{ label: PAGE_TITLE.PROFILE.BASE }],
     CHANGE_PASSWORD: [{ label: PAGE_TITLE.PROFILE.CHANGE_PASSWORD }]
   },
-  ROADMAP: {
-    BASE: [{ label: PAGE_TITLE.ROADMAP }],
-  },
   CONTACT: [{label: PAGE_TITLE.CONTACT }],
-  HISTORY: {
-    BASE: [{ label: PAGE_TITLE.HISTORY }]
-  },
   USERS: {
     BASE: [{ label: PAGE_TITLE.USERS.BASE }],
     DETAILS: [{ label: PAGE_TITLE.USERS.BASE, href: ROUTES.USERS.BASE }, { label: PAGE_TITLE.USERS.DETAILS }]
-  },
-  ACTIONCENTER: [{ label: PAGE_TITLE.ACTIONCENTER }],
-  CALENDAR: [{ label: PAGE_TITLE.CALENDAR }],
-  CONTENT: {
-    BASE: [{ label: PAGE_TITLE.CONTENT }],
   },
   BLOG: {
     BASE: [{ label: PAGE_TITLE.BLOG }],

@@ -114,4 +114,8 @@ export const URL_KEYS = {
     MESSAGES: "/chat/messages",
     CREATE_ROOM: "/chat/room/create",
   },
+  SETTING: {
+    ALL: "/settings/all",
+    ADD_EDIT: "/settings/add-edit",
+  }
 } as const;

@@ -3,7 +3,7 @@ import { MailOutlined, ArrowLeftOutlined, RocketOutlined } from '@ant-design/ico
 import { Link, useNavigate } from 'react-router-dom';
 import { Formik, Form } from 'formik';
 import { ROUTES } from '@/Constants';
-import { CommonButton, CommonValidationTextField, showNotification } from '@/Attribute';
+import { CommonButton, CommonValidationTextField } from '@/Attribute';
 import { ForgotPasswordSchema } from '@/Utils';
 import { Mutations } from '@/Api/Mutations';
 
@@ -22,7 +22,6 @@ const ForgotPassword: FC = () => {
         onSubmit={async (values, { setSubmitting }) => {
           try {
             await forgotPassword({ email: values.email });
-            showNotification('success', 'OTP has been sent to your email.');
             navigate(ROUTES.AUTH.VERIFY_OTP, { state: { email: values.email, type: 'forgot' } });
           } catch (error) {
             console.log(error);

@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Formik, Form } from 'formik';
 import { RegisterSchema } from '@/Utils';
 import { ROUTES } from '@/Constants';
-import { CommonButton, CommonValidationTextField, showNotification } from '@/Attribute';
+import { CommonButton, CommonValidationTextField } from '@/Attribute';
 import { Mutations } from '@/Api/Mutations';
 
 const Register: FC = () => {
@@ -26,7 +26,6 @@ const Register: FC = () => {
               email: values.email,
               password: values.password,
             });
-            showNotification('success', 'Registration successful! Please check your email for OTP.');
             navigate(ROUTES.AUTH.VERIFY_OTP, { state: { email: values.email, type: 'signup' } });
           } catch (error) {
             console.log(error);

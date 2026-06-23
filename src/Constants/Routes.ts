@@ -35,13 +35,13 @@ export const ROUTES = {
   HERO_BANNER: {
     BASE: "/hero-banner",
   },
+  SETTING: {
+    BASE: "/setting",
+  },
   ABOUT_US: "/about-us",
-  ACTIONCENTER: "/actioncenter",
   CONTACT: "/contact",
   ADMIN: "/admin",
-  CALENDAR: "/calendar",
   SEARCH: "/search",
-  CONTENT: "/content",
   CHAT: "/chat",
   FAQ: "/faq",
 } as const;

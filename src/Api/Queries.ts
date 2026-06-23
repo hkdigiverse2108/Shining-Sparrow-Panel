@@ -1,4 +1,4 @@
-import type { BlogApiResponse, CurriculumApiResponse, ExamApiResponse, LessonApiResponse, Params, QuestionApiResponse, UserApiResponse, ChatRoomsApiResponse, ChatMessagesApiResponse } from "@/Types";
+import type { BlogApiResponse, CurriculumApiResponse, ExamApiResponse, LessonApiResponse, Params, QuestionApiResponse, UserApiResponse, ChatRoomsApiResponse, ChatMessagesApiResponse, SettingApiResponse } from "@/Types";
 import { useQueries } from "./ReactQuery";
 import { KEYS, URL_KEYS } from "@/Constants";
 import { Get } from "./Methods";
@@ -57,4 +57,7 @@ export const Queries = {
   // ************ Chat ***********
   useGetRooms: (params?: Params) => useQueries<ChatRoomsApiResponse>([KEYS.CHAT.ROOMS, params], () => Get(URL_KEYS.CHAT.ROOMS, params)),
   useGetMessages: (roomId: string, params?: Params) => useQueries<ChatMessagesApiResponse>([KEYS.CHAT.MESSAGES, roomId, params], () => Get(`${URL_KEYS.CHAT.MESSAGES}/${roomId}`, params), { enabled: !!roomId }),
+
+  // ************ Chat ***********
+  useGetSetting: (params?: Params) => useQueries<SettingApiResponse>([KEYS.SETTING.BASE, params], () => Get(URL_KEYS.SETTING.ALL, params)),
 };

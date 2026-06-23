@@ -13,10 +13,6 @@ export const NavItems: NavItem[] = [
   { icon: <QuestionCircleOutlined />, name: PAGE_TITLE.FAQ, path: ROUTES.FAQ },
   { icon: <InfoCircleOutlined />, name: PAGE_TITLE.ABOUT_US, path: ROUTES.ABOUT_US },
   { icon: <MessageOutlined />, name: PAGE_TITLE.CHAT, path: ROUTES.CHAT },
-  // { icon: <CalendarOutlined />, name: PAGE_TITLE.CALENDAR, path: ROUTES.CALENDAR },
-  // { icon: <ContactsOutlined />, name: PAGE_TITLE.CONTACT, path: ROUTES.CONTACT },
-  // { icon: <DatabaseOutlined />, name: PAGE_TITLE.CONTENT, path: ROUTES.CONTENT},
-  // { icon: <QuestionCircleOutlined />, name: PAGE_TITLE.ACTIONCENTER, path: ROUTES.ACTIONCENTER },
   
 ];
 

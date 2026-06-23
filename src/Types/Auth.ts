@@ -48,8 +48,8 @@ export interface VerifyOtpPayload {
 
 export interface UpdatePasswordPayload {
   email: string;
+  oldPassword: string;
   newPassword: string;
-  confirmPassword: string;
 }
 
 export interface UpdatePasswordFormValues {
