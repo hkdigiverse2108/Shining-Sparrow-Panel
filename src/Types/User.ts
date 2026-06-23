@@ -64,6 +64,6 @@ export interface UserApiResponse extends MessageStatus {
 export interface HandlerProps {
   onEdit: (user: UserTable) => void;
   onToggleStatus: (id: number) => void;
-  onDelete: (id: string) => void;
+  onDelete: (user: any) => void;
   onStartChat?: (user: any) => void;
 }

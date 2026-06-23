@@ -1,6 +1,6 @@
 import { useState, useMemo, type FC } from 'react';
 import { Button, Tag, Avatar } from 'antd';
-import { DeleteOutlined, EditOutlined, LockOutlined, UnlockOutlined, FolderOpenOutlined } from '@ant-design/icons';
+import { DeleteOutlined, EditOutlined, FolderOpenOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { KEYS } from '@/Constants';
 import { BREADCRUMBS } from '@/Data';
@@ -13,7 +13,7 @@ import { Mutations, Queries } from '@/Api';
 import type { ColumnType } from 'antd/es/table';
 import type { CourseBase, CourseColumnProps } from '@/Types';
 
-const getCourseColumns = ({ onEdit, onManage, onToggleStatus, onDelete, current = 1, pageSize = 10 }: CourseColumnProps & { current?: number; pageSize?: number }): ColumnType<CourseBase>[] => [
+const getCourseColumns = ({ onEdit, onManage, onDelete, current = 1, pageSize = 10 }: CourseColumnProps & { current?: number; pageSize?: number }): ColumnType<CourseBase>[] => [
   {
     title: "Sr. No.",
     key: "srNo",
@@ -42,9 +42,9 @@ const getCourseColumns = ({ onEdit, onManage, onToggleStatus, onDelete, current 
     sorter: (a: any, b: any) => a.price - b.price,
     render: (v: any, r: any) => (
       <div>
-        <span className="font-semibold">₹{v}</span>
-        {r.mrpPrice > v && (
-          <span className="text-muted line-through text-xs ml-1">₹{r.mrpPrice}</span>
+        <span className="font-semibold">₹{r.mrpPrice || v}</span>
+        {v > r.mrpPrice && r.mrpPrice > 0 && (
+          <span className="text-muted line-through text-xs ml-1">₹{v}</span>
         )}
       </div>
     ) 
@@ -59,7 +59,7 @@ const getCourseColumns = ({ onEdit, onManage, onToggleStatus, onDelete, current 
     title: "Duration", 
     dataIndex: "duration", 
     width: 110,
-    render: (v: any) => <span className="text-text-muted">{v ? `${v} hrs` : "N/A"}</span> 
+    render: (v: any) => <span className="text-text-muted">{v ? `${v} days` : "N/A"}</span> 
   },
   {
     title: "Enrolled", 
@@ -77,10 +77,10 @@ const getCourseColumns = ({ onEdit, onManage, onToggleStatus, onDelete, current 
   {
     title: "Actions", 
     dataIndex: "actions",
-    width: 180,
+    width: 130,
     fixed: 'right' as const, 
     render: (_: any, r: any) => (
-      <div className="flex gap-1">
+      <div className="flex gap-1 justify-center">
         <Button 
           type="text" 
           size="small" 
@@ -89,12 +89,6 @@ const getCourseColumns = ({ onEdit, onManage, onToggleStatus, onDelete, current 
           title="Manage Content"
         />
         <Button type="text" size="small" icon={<EditOutlined />} onClick={() => onEdit(r)} />
-        <Button 
-          type="text" 
-          size="small" 
-          icon={r.isBlocked ? <UnlockOutlined /> : <LockOutlined />} 
-          onClick={() => onToggleStatus(r)} 
-        />
         <Button type="text" size="small" danger icon={<DeleteOutlined />} onClick={() => onDelete(r)} />
       </div>
     ),
@@ -154,7 +148,14 @@ const Courses: FC = () => {
   };
   
   const handleToggleStatus = (course: any) => {
-    console.log(`Toggle status clicked for ${course.name}`);
+    editCourseMutation.mutate(
+      { courseId: course._id, isBlocked: !course.isBlocked } as any,
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: [KEYS.COURSE.BASE] });
+        }
+      }
+    );
   };
 
   const handleDeleteClick = (course: any) => { 

@@ -1043,14 +1043,15 @@
 }
 
 /* Page layout: sidebar + content */
+/* Page layout: sidebar + content */
 .profile-page-layout {
-  @apply flex flex-col lg:flex-row gap-2 items-stretch w-full h-full min-h-0 overflow-hidden;
+  @apply flex flex-col lg:flex-row gap-4 items-stretch w-full h-full min-h-0 overflow-hidden;
 }
 
 /* ── Sidebar card ── */
 .profile-sidebar-card {
   @apply w-full lg:w-72 shrink-0 rounded-2xl border border-border bg-surface shadow-sm
-         flex flex-col items-center gap-4 p-6 overflow-y-auto;
+         flex flex-col items-center gap-4 p-6 overflow-y-auto relative overflow-hidden;
 }
 
 .profile-sidebar-card::-webkit-scrollbar {
@@ -1061,16 +1062,20 @@
   border-radius: 4px;
 }
 
+.profile-sidebar-cover-banner {
+  @apply absolute top-0 left-0 right-0 h-24 bg-gradient-to-r from-primary/30 via-indigo/25 to-purple/20 z-0;
+}
+
 .profile-sidebar-avatar-wrap {
-  @apply relative;
+  @apply relative mt-6 z-10;
 }
 
 .profile-sidebar-avatar {
-  @apply w-24 h-24 rounded-full object-cover ring-4 ring-primary/20 shadow-lg;
+  @apply w-24 h-24 rounded-full object-cover ring-4 ring-surface shadow-lg transition-transform duration-300 hover:scale-105;
 }
 
 .profile-sidebar-avatar-placeholder {
-  @apply ring-4 ring-primary/20 shadow-lg;
+  @apply ring-4 ring-surface shadow-lg;
 }
 
 .profile-sidebar-status-dot {
@@ -1078,7 +1083,7 @@
 }
 
 .profile-sidebar-info {
-  @apply flex flex-col items-center gap-1 text-center;
+  @apply flex flex-col items-center gap-1 text-center z-10;
 }
 
 .profile-sidebar-name {
@@ -1090,28 +1095,28 @@
 }
 
 .profile-sidebar-badge {
-  @apply mt-1 inline-flex items-center px-3 py-0.5 rounded-full text-[10px] font-semibold tracking-wider uppercase;
+  @apply mt-1 inline-flex items-center px-3 py-1 rounded-full text-[10px] font-semibold tracking-wider uppercase border border-transparent shadow-sm;
 }
 
 .badge-admin {
-  @apply bg-primary/10 text-primary;
+  @apply bg-primary-soft/40 text-primary border-primary/20;
 }
 
 .badge-user {
-  @apply bg-success/10 text-success;
+  @apply bg-success/15 text-success border-success/20;
 }
 
 /* ── Sidebar detail rows ── */
 .profile-sidebar-details {
-  @apply w-full flex flex-col gap-2 pt-2 border-t border-border;
+  @apply w-full flex flex-col gap-2 pt-4 border-t border-border z-10;
 }
 
 .profile-detail-row {
-  @apply flex items-center gap-3 px-2 py-1.5 rounded-lg hover:bg-surface-muted transition-colors;
+  @apply flex items-center gap-3 px-2.5 py-2 rounded-xl hover:bg-surface-muted/65 transition-all duration-300;
 }
 
 .profile-detail-icon {
-  @apply text-primary text-sm shrink-0;
+  @apply text-primary text-sm shrink-0 bg-primary/10 p-1.5 rounded-lg;
 }
 
 .profile-detail-text {
@@ -1119,20 +1124,20 @@
 }
 
 .profile-detail-label {
-  @apply text-[10px] font-semibold uppercase tracking-wide text-muted;
+  @apply text-[9px] font-bold uppercase tracking-wider text-muted;
 }
 
 .profile-detail-value {
-  @apply text-xs text-foreground font-medium truncate;
+  @apply text-xs text-foreground font-semibold truncate;
 }
 
 /* ── Sidebar social icons ── */
 .profile-sidebar-socials {
-  @apply flex items-center gap-3 pt-2 border-t border-border w-full justify-center;
+  @apply flex items-center gap-4 pt-4 border-t border-border w-full justify-center mt-auto z-10;
 }
 
 .social-icon {
-  @apply text-muted text-base hover:text-primary transition-colors cursor-pointer;
+  @apply text-muted text-base hover:text-primary transition-all duration-300 cursor-pointer hover:scale-110;
 }
 
 /* ── Right content card ── */
@@ -1201,12 +1206,36 @@
 }
 
 .profile-detail-card {
-  @apply p-4 rounded-xl bg-surface-muted border border-border;
+  @apply p-4 rounded-xl bg-surface-muted border border-border flex items-center gap-4 transition-all duration-300 hover:shadow-md hover:border-primary/30 hover:bg-surface;
+}
+
+.profile-detail-card-icon {
+  @apply text-lg text-primary bg-primary/10 p-2.5 rounded-xl shrink-0 transition-colors duration-300;
+}
+
+.profile-detail-card:hover .profile-detail-card-icon {
+  @apply bg-primary text-white;
+}
+
+.profile-detail-card-content {
+  @apply flex flex-col min-w-0;
+}
+
+.detaillabel {
+  @apply text-[9px] font-bold uppercase tracking-wider text-muted mb-0.5;
+}
+
+.detailvalue {
+  @apply text-sm text-foreground font-semibold truncate;
 }
 
 /* ── Form inside tabs ── */
 .profile-tab-form {
   @apply flex flex-col gap-6;
+}
+
+.profile-form-section-card {
+  @apply p-6 rounded-2xl bg-surface-muted/30 border border-border/80 shadow-sm transition-all duration-300 hover:border-primary/20 hover:shadow-md;
 }
 
 /* ── Form action buttons ── */
@@ -1218,3 +1247,21 @@
 .profile-loading {
   @apply flex items-center justify-center py-20;
 }
+
+/* ===================== FAQ PAGE ===================== */
+.faq-list-item-card {
+  @apply bg-surface border border-border/80 shadow-sm rounded-2xl p-5 sm:p-6 transition-all duration-300 hover:shadow-md hover:border-primary/20 hover:bg-surface-muted/10 relative overflow-hidden pl-7 sm:pl-8 border-l-4;
+}
+
+.faq-list-item-card.type-home {
+  @apply border-l-success;
+}
+
+.faq-list-item-card.type-course {
+  @apply border-l-primary;
+}
+
+.faq-list-item-card.type-workshop {
+  @apply border-l-purple;
+}
+

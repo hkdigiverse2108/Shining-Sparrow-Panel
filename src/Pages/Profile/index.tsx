@@ -109,15 +109,19 @@ const PersonalInfoTab: FC<{
       >
         {({ values }) => (
           <Form className="profile-tab-form">
-            <CommonFormSection title="Profile Picture">
-              <CommonImageUpload name="profilePhoto" label="Photo" shape="circle" size={120} className="col-span-full" />
-            </CommonFormSection>
-            <CommonFormSection title="Personal Information">
-              <CommonValidationTextField name="fullName" label="Full Name" required />
-              <CommonValidationTextField name="phone" label="Phone Number" />
-              <CommonValidationTextField name="designation" label="Designation" />
-              <CommonValidationTextField name="email" label="Email Address" value={values.email} disabled />
-            </CommonFormSection>
+            <div className="profile-form-section-card">
+              <CommonFormSection title="Profile Picture">
+                <CommonImageUpload name="profilePhoto" label="Photo" shape="circle" size={120} className="col-span-full" />
+              </CommonFormSection>
+            </div>
+            <div className="profile-form-section-card">
+              <CommonFormSection title="Personal Information">
+                <CommonValidationTextField name="fullName" label="Full Name" required />
+                <CommonValidationTextField name="phone" label="Phone Number" />
+                <CommonValidationTextField name="designation" label="Designation" />
+                <CommonValidationTextField name="email" label="Email Address" value={values.email} disabled />
+              </CommonFormSection>
+            </div>
             <div className="profile-form-actions">
               <CommonButton type="default" icon={<CloseOutlined />} onClick={() => setIsEditing(false)} title="Cancel" />
               <CommonButton htmlType="submit" type="primary" icon={<SaveOutlined />} title="Save Changes" loading={updateProfileMutation.isPending} className="course-button course-button--primary" />
@@ -137,16 +141,19 @@ const PersonalInfoTab: FC<{
         </div>
         <div className="profile-details-grid">
           {[
-            { label: "Full Name", value: username },
-            { label: "Email Address", value: email },
-            { label: "Phone Number", value: phone },
-            { label: "Designation", value: designation },
-            { label: "Role", value: user?.role || "Admin" },
-            { label: "Member Since", value: new Date(user?.createdAt || Date.now()).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" }) },
+            { label: "Full Name", value: username, icon: <UserOutlined /> },
+            { label: "Email Address", value: email, icon: <MailOutlined /> },
+            { label: "Phone Number", value: phone, icon: <PhoneOutlined /> },
+            { label: "Designation", value: designation, icon: <EditOutlined /> },
+            { label: "Role", value: user?.role || "Admin", icon: <LockOutlined /> },
+            { label: "Member Since", value: new Date(user?.createdAt || Date.now()).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" }), icon: <CalendarOutlined /> },
           ].map((d, i) => (
             <div key={i} className="profile-detail-card">
-              <label className="detaillabel">{d.label}</label>
-              <p className="detailvalue">{d.value || "Not provided"}</p>
+              <div className="profile-detail-card-icon">{d.icon}</div>
+              <div className="profile-detail-card-content">
+                <label className="detaillabel">{d.label}</label>
+                <p className="detailvalue">{d.value || "Not provided"}</p>
+              </div>
             </div>
           ))}
         </div>
@@ -181,11 +188,13 @@ const ChangePasswordTab: FC<{ email: string }> = ({ email }) => {
     >
       {() => (
         <Form className="profile-tab-form">
-          <CommonFormSection title="Change Password">
-            <CommonValidationTextField name="oldPassword" label="Old Password" type="password" showPasswordToggle required />
-            <CommonValidationTextField name="newPassword" label="New Password" type="password" showPasswordToggle required />
-            <CommonValidationTextField name="confirmPassword" label="Confirm New Password" type="password" showPasswordToggle required />
-          </CommonFormSection>
+          <div className="profile-form-section-card">
+            <CommonFormSection title="Change Password">
+              <CommonValidationTextField name="oldPassword" label="Old Password" type="password" showPasswordToggle required />
+              <CommonValidationTextField name="newPassword" label="New Password" type="password" showPasswordToggle required />
+              <CommonValidationTextField name="confirmPassword" label="Confirm New Password" type="password" showPasswordToggle required />
+            </CommonFormSection>
+          </div>
           <div className="profile-form-actions">
             <CommonButton htmlType="submit" type="primary" icon={<LockOutlined />} title="Update Password" loading={updatePasswordMutation.isPending} className="course-button course-button--primary" />
           </div>
@@ -303,43 +312,53 @@ const SiteSettingsTab: FC = () => {
     >
       {({ values }) => (
         <Form className="profile-tab-form">
-          <CommonFormSection title="Branding">
-            <CommonImageUpload name="logo" label="Site Logo" shape="square" size={80} className="col-span-full" />
-          </CommonFormSection>
+          <div className="profile-form-section-card">
+            <CommonFormSection title="Branding">
+              <CommonImageUpload name="logo" label="Site Logo" shape="square" size={80} className="col-span-full" />
+            </CommonFormSection>
+          </div>
 
-          <CommonFormSection title="Contact Information">
-            <CommonValidationTextField name="address" label="Address" />
-            <CommonValidationTextField name="phoneNumber" label="Phone Number" />
-            <CommonValidationTextField name="email" label="Contact Email" />
-            <CommonValidationTextField name="link" label="Website / App Link" />
-          </CommonFormSection>
+          <div className="profile-form-section-card">
+            <CommonFormSection title="Contact Information">
+              <CommonValidationTextField name="address" label="Address" />
+              <CommonValidationTextField name="phoneNumber" label="Phone Number" />
+              <CommonValidationTextField name="email" label="Contact Email" />
+              <CommonValidationTextField name="link" label="Website / App Link" />
+            </CommonFormSection>
+          </div>
 
-          <CommonFormSection title="Stats & Metrics">
-            <CommonValidationTextField name="enrolledLearners" label="Total Enrolled Learners" type="number" />
-            <CommonValidationTextField name="classCompleted" label="Classes Completed" type="number" />
-            <CommonValidationTextField name="satisfactionRate" label="Satisfaction Rate (%)" type="number" />
-          </CommonFormSection>
+          <div className="profile-form-section-card">
+            <CommonFormSection title="Stats & Metrics">
+              <CommonValidationTextField name="enrolledLearners" label="Total Enrolled Learners" type="number" />
+              <CommonValidationTextField name="classCompleted" label="Classes Completed" type="number" />
+              <CommonValidationTextField name="satisfactionRate" label="Satisfaction Rate (%)" type="number" />
+            </CommonFormSection>
+          </div>
 
-          <CommonFormSection title="Payment Gateway (Razorpay)">
-            <CommonValidationTextField 
-              name="razorpayKey" 
-              label="Razorpay Key ID" 
-              type="password" 
-              endIcon={<CopyButton value={values.razorpayKey} />}
-            />
-            <CommonValidationTextField 
-              name="razorpaySecret" 
-              label="Razorpay Secret (leave blank to keep existing)" 
-              type="password" 
-            />
-          </CommonFormSection>
+          <div className="profile-form-section-card">
+            <CommonFormSection title="Payment Gateway (Razorpay)">
+              <CommonValidationTextField 
+                name="razorpayKey" 
+                label="Razorpay Key ID" 
+                type="password" 
+                endIcon={<CopyButton value={values.razorpayKey} />}
+              />
+              <CommonValidationTextField 
+                name="razorpaySecret" 
+                label="Razorpay Secret (leave blank to keep existing)" 
+                type="password" 
+              />
+            </CommonFormSection>
+          </div>
 
-          <CommonFormSection title="Social Media Links">
-            <CommonValidationTextField name="facebook" label="Facebook URL" />
-            <CommonValidationTextField name="instagram" label="Instagram URL" />
-            <CommonValidationTextField name="linkedin" label="LinkedIn URL" />
-            <CommonValidationTextField name="twitter" label="Twitter / X URL" />
-          </CommonFormSection>
+          <div className="profile-form-section-card">
+            <CommonFormSection title="Social Media Links">
+              <CommonValidationTextField name="facebook" label="Facebook URL" />
+              <CommonValidationTextField name="instagram" label="Instagram URL" />
+              <CommonValidationTextField name="linkedin" label="LinkedIn URL" />
+              <CommonValidationTextField name="twitter" label="Twitter / X URL" />
+            </CommonFormSection>
+          </div>
 
           <div className="profile-form-actions">
             <CommonButton htmlType="submit" type="primary" icon={<SaveOutlined />} title={isExisting ? "Update Settings" : "Save Settings"} loading={isPending} className="course-button course-button--primary" />
@@ -354,6 +373,8 @@ const SiteSettingsTab: FC = () => {
 
 const Profile: FC = () => {
   const user = useAppSelector((state) => state.auth.user);
+  const { data: settingData } = Queries.useGetSetting();
+  const setting = settingData?.data;
 
   // Manage layout container height and scrolling for profile page
   useEffect(() => {
@@ -415,6 +436,11 @@ const Profile: FC = () => {
     },
   ];
 
+  const facebook = setting?.socialMediaLinks?.facebook;
+  const instagram = setting?.socialMediaLinks?.instagram;
+  const linkedin = setting?.socialMediaLinks?.linkedin;
+  const twitter = setting?.socialMediaLinks?.twitter;
+
   return (
     <>
       <CommonBreadcrumbs title="My Profile & Settings" breadcrumbs={BREADCRUMBS.PROFILE?.BASE || []} />
@@ -422,6 +448,9 @@ const Profile: FC = () => {
         <motion.div variants={staggerContainer} initial="hidden" animate="visible" className="profile-page-layout">
           {/* Left Sidebar */}
           <motion.div variants={blurRevealUp} className="profile-sidebar-card">
+            {/* Header Banner Background */}
+            <div className="profile-sidebar-cover-banner" />
+
             <div className="profile-sidebar-avatar-wrap">
               {avatar ? (
                 <img src={avatar} alt={username} className="profile-sidebar-avatar" />
@@ -454,10 +483,34 @@ const Profile: FC = () => {
 
             {/* Social links from settings — shown if available */}
             <div className="profile-sidebar-socials">
-              <FacebookOutlined className="social-icon" title="Facebook" />
-              <InstagramOutlined className="social-icon" title="Instagram" />
-              <LinkedinOutlined className="social-icon" title="LinkedIn" />
-              <TwitterOutlined className="social-icon" title="Twitter" />
+              {facebook ? (
+                <a href={facebook} target="_blank" rel="noopener noreferrer" className="social-icon-link">
+                  <FacebookOutlined className="social-icon" title="Facebook" />
+                </a>
+              ) : (
+                <FacebookOutlined className="social-icon opacity-30 cursor-not-allowed" title="Facebook (Not Configured)" />
+              )}
+              {instagram ? (
+                <a href={instagram} target="_blank" rel="noopener noreferrer" className="social-icon-link">
+                  <InstagramOutlined className="social-icon" title="Instagram" />
+                </a>
+              ) : (
+                <InstagramOutlined className="social-icon opacity-30 cursor-not-allowed" title="Instagram (Not Configured)" />
+              )}
+              {linkedin ? (
+                <a href={linkedin} target="_blank" rel="noopener noreferrer" className="social-icon-link">
+                  <LinkedinOutlined className="social-icon" title="LinkedIn" />
+                </a>
+              ) : (
+                <LinkedinOutlined className="social-icon opacity-30 cursor-not-allowed" title="LinkedIn (Not Configured)" />
+              )}
+              {twitter ? (
+                <a href={twitter} target="_blank" rel="noopener noreferrer" className="social-icon-link">
+                  <TwitterOutlined className="social-icon" title="Twitter / X" />
+                </a>
+              ) : (
+                <TwitterOutlined className="social-icon opacity-30 cursor-not-allowed" title="Twitter / X (Not Configured)" />
+              )}
             </div>
           </motion.div>
 

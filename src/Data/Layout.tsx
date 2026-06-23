@@ -1,5 +1,9 @@
 
-import { DashboardOutlined, BookOutlined, TeamOutlined, UserOutlined, LogoutOutlined, KeyOutlined, ReadOutlined, PictureOutlined, CalendarOutlined, InfoCircleOutlined, MessageOutlined, QuestionCircleOutlined  } from '@ant-design/icons';
+import {
+  DashboardOutlined, BookOutlined, TeamOutlined, UserOutlined, LogoutOutlined
+  
+  , ReadOutlined, PictureOutlined, CalendarOutlined, InfoCircleOutlined, MessageOutlined, QuestionCircleOutlined
+} from '@ant-design/icons';
 import type { NavItem, UserMenuItems } from "@/Types";
 import { PAGE_TITLE, ROUTES } from "@/Constants";
 
@@ -18,7 +22,6 @@ export const NavItems: NavItem[] = [
 
 export const UserMenuData: UserMenuItems[] = [
   { key: 'profile', icon: <UserOutlined />, label: 'Profile' },
-  { key: 'change-password', icon: <KeyOutlined />, label: 'Change Password ' },
   { type: 'divider' as const },
   { key: 'logout', icon: <LogoutOutlined />, label: 'Logout', danger: true },
 ];

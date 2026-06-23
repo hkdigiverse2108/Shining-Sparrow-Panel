@@ -1,6 +1,6 @@
 import { useState, useMemo, type FC } from 'react';
 import { Button, Tag, Avatar } from 'antd'; 
-import { DeleteOutlined, EditOutlined, LockOutlined, UnlockOutlined, StarOutlined } from '@ant-design/icons';
+import { DeleteOutlined, EditOutlined, StarOutlined } from '@ant-design/icons';
 import { KEYS } from '@/Constants';
 import { BREADCRUMBS } from '@/Data';
 import { CommonPageWrapper, CommonBreadcrumbs, CommonTable, BlogForm, CommonSummaryCards, CommonDeleteModal, } from '@/Components';
@@ -11,7 +11,7 @@ import { useDebounce } from '@/Utils';
 import { Mutations, Queries } from '@/Api';
 import type { ColumnType } from 'antd/es/table';
 
-const getBlogColumns = ({ onEdit, onToggleStatus, onDelete, current = 1, pageSize = 10 }: any): ColumnType<any>[] => [
+const getBlogColumns = ({ onEdit, onDelete, current = 1, pageSize = 10 }: any): ColumnType<any>[] => [
   { title: "Sr. No.", key: "srNo", width: 80, render: (_: any, __: any, index: number) => (current - 1) * pageSize + index + 1 },
   { title: "Image", dataIndex: "coverImage", width: 70, render: (v: any) => <Avatar shape="square" size={40} src={v} className="bg-surface-muted">{!v && "N/A"}</Avatar> },
   { title: "Title", dataIndex: "title", width: 230, render: (v: any) => <span className="font-medium">{v}</span> },
@@ -19,7 +19,7 @@ const getBlogColumns = ({ onEdit, onToggleStatus, onDelete, current = 1, pageSiz
   { title: "Author", dataIndex: "author", width: 120, render: (v: any) => <span className="text-text-muted">{v || "Admin"}</span> },
   { title: "Featured", dataIndex: "isFeatured", width: 90, render: (v: any) => <Tag color={v ? "gold" : "purple"} icon={<StarOutlined />}>{v ? "Featured" : "Standard"}</Tag> },
   { title: "Status", dataIndex: "isBlocked", width: 90, render: (v: any) => <Tag color={v ? "red" : "green"}>{v ? "Blocked" : "Active"}</Tag> },
-  { title: "Actions", dataIndex: "actions", width: 150, fixed: 'right' as const, render: (_: any, r: any) => ( <div className="flex gap-1"> <Button type="text" size="small" icon={<EditOutlined />} onClick={() => onEdit(r)} /> <Button type="text" size="small" icon={r.isBlocked ? <UnlockOutlined /> : <LockOutlined />} onClick={() => onToggleStatus(r)} /> <Button type="text" size="small" danger icon={<DeleteOutlined />} onClick={() => onDelete(r)} /> </div> ), },
+  { title: "Actions", dataIndex: "actions", width: 100, fixed: 'right' as const, render: (_: any, r: any) => ( <div className="flex gap-1 justify-center"> <Button type="text" size="small" icon={<EditOutlined />} onClick={() => onEdit(r)} /> <Button type="text" size="small" danger icon={<DeleteOutlined />} onClick={() => onDelete(r)} /> </div> ), },
 ];
 
 const Blog: FC = () => {
@@ -73,7 +73,14 @@ const Blog: FC = () => {
   };
   
   const handleToggleStatus = (blog: any) => {
-    console.log(`Toggle status clicked for ${blog.title}`);
+    editBlogMutation.mutate(
+      { blogId: blog._id, isBlocked: !blog.isBlocked } as any,
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: [KEYS.BLOG.BASE] });
+        }
+      }
+    );
   };
 
   // Updated to open the modal instead of directly deleting

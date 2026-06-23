@@ -1,26 +1,25 @@
-import { Avatar, Button, Popconfirm } from "antd";
-import { BookOutlined, CrownOutlined, DeleteOutlined, EditOutlined, LockOutlined, UnlockOutlined, UserOutlined, CommentOutlined } from "@ant-design/icons";
+import { Avatar, Button } from "antd";
+import { DeleteOutlined, EditOutlined, LockOutlined, UnlockOutlined, CommentOutlined, UserOutlined } from "@ant-design/icons";
 import type { ColumnType, HandlerProps } from "@/Types";
 import { CommonTag } from "@/Components/Common/CommonTag";
-import { roleColors, userStatusColors } from "@/Data";
+import { userStatusColors } from "@/Data";
 import { Link } from "react-router-dom";
 import { ROUTES } from "@/Constants";
 import dayjs from "dayjs";
 
-const roleIcons: Record<string, React.ReactNode> = { 
-  admin: <CrownOutlined />, 
-  instructor: <UserOutlined />, 
-  student: <BookOutlined />,
-  user: <UserOutlined /> 
-};
-
-export const getUserColumns = ({ onEdit, onToggleStatus, onDelete, onStartChat }: HandlerProps): ColumnType<any>[] => [
+export const getUserColumns = ({ onEdit, onToggleStatus, onDelete, onStartChat, current = 1, pageSize = 10 }: HandlerProps & { current?: number; pageSize?: number }): ColumnType<any>[] => [
+  {
+    title: "Sr. No.",
+    key: "srNo",
+    width: 80,
+    render: (_: any, __: any, index: number) => (current - 1) * pageSize + index + 1
+  },
   {
     title: "User", 
     dataIndex: "fullName",
     render: (_, r) => (
       <div className="user-cell-profile">
-        <Avatar src={r.profilePhoto} size={40} />
+        <Avatar src={r.profilePhoto || undefined} size={40} icon={<UserOutlined />} />
         <div className="user-cell-info">
           <Link to={`${ROUTES.USERS.BASE}/${r._id}`} className="user-cell-name hover:!text-primary transition-colors">
             {r.fullName}
@@ -41,9 +40,9 @@ export const getUserColumns = ({ onEdit, onToggleStatus, onDelete, onStartChat }
     render: (v) => <span className="user-cell-phoe">{v}</span> 
   },
   {
-    title: "Role", 
-    dataIndex: "role", 
-    render: (v) => <CommonTag className={roleColors[v] || roleColors.user} icon={roleIcons[v]}>{v}</CommonTag> 
+    title: "OTR", 
+    dataIndex: "otr", 
+    render: (v) => <span className="user-cell-otr">{v || "N/A"}</span> 
   },
   {
     title: "Status", 
@@ -71,9 +70,7 @@ export const getUserColumns = ({ onEdit, onToggleStatus, onDelete, onStartChat }
           onClick={() => onToggleStatus(r)} 
           className="user-action-btn" 
         />
-        <Popconfirm title="Delete user?" onConfirm={() => onDelete(r._id)}>
-          <Button type="text" size="small" danger icon={<DeleteOutlined />} />
-        </Popconfirm>
+        <Button type="text" size="small" danger icon={<DeleteOutlined />} onClick={() => onDelete(r)} />
       </div>
     ),
   },

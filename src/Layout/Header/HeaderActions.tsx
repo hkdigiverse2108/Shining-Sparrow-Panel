@@ -1,7 +1,7 @@
 import React from "react";
 import { Avatar, Dropdown, Space } from "antd";
 import { useNavigate } from "react-router-dom";
-import { UserOutlined, LogoutOutlined, SettingOutlined, } from "@ant-design/icons";
+import { UserOutlined, LogoutOutlined, } from "@ant-design/icons";
 import { ROUTES } from "@/Constants";
 
 const HeaderActions: React.FC = () => {
@@ -24,7 +24,6 @@ const HeaderActions: React.FC = () => {
   };
   const userMenuItems = [
     { key: "profile", icon: <UserOutlined />, label: "Profile", },
-    { key: "change-password", icon: <SettingOutlined />, label: "Chnage Password", },
     { type: "divider" as const, },
     { key: "logout", icon: <LogoutOutlined />, label: "Logout", danger: true, },
   ];

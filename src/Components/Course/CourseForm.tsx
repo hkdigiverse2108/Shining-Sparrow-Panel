@@ -9,9 +9,9 @@ import type { CourseHandlerProps } from "@/Types";
 const CourseSchema = Yup.object({
   name: Yup.string().required("Course Name is required"),
   description: Yup.string().optional(),
-  price: Yup.number().required("Price is required").min(0),
-  mrpPrice: Yup.number().required("MRP Price is required").min(0),
-  duration: Yup.number().optional(),
+  price: Yup.number().required("Main Price is required").min(0),
+  mrpPrice: Yup.number().required("Price after Discount is required").min(0),
+  duration: Yup.number().optional().min(0, "Duration must be positive"),
   courseCurriculumIds: Yup.array(Yup.string()).optional(),
 });
 
@@ -74,21 +74,14 @@ export const CourseForm: FC<CourseHandlerProps> = ({ open, onClose, onSave, edit
         >
           <Form className="course-form-shell">
             <CommonFormSection title="Course Details">
-              <CommonImageUpload name="image" label="Course Thumbnail" shape="square" size={120} className="col-span-full" />
+              <CommonImageUpload name="image" label="Course Thumbnail" shape="square" size={140} className="col-span-full" />
               <CommonValidationTextField name="name" label="Course Name" required />
-              <CommonValidationTextField name="price" label="Price (₹)" type="number" required />
+              <CommonValidationTextField name="price" label="Main Price (₹)" type="number" required placeholder="Enter main price" />
+              <CommonValidationTextField name="mrpPrice" label="Price after Discount (₹)" type="number" required placeholder="Enter price after discount" />
+              <CommonValidationTextField name="duration" label="Validity (in Days)" type="number" placeholder="e.g. 45" />
+              
               <CommonRichTextEditor name="description" label="Description" className="col-span-full" />
-              <CommonValidationTextField name="mrpPrice" label="MRP Price (₹)" type="number" required />
-              <CommonValidationTextField name="duration" label="Duration (Hours)" type="number" />
-              <CommonValidationSelect
-                name="courseCurriculumIds"
-                label="Bundle Courses (Included free)"
-                multiple
-                options={courseOptions}
-                fullWidth
-                maxTagCount={3}
-                placeholder="Select courses to include in this bundle"
-              />
+              <CommonValidationSelect name="courseCurriculumIds" label="Bundle Courses (Included free)" multiple options={courseOptions} fullWidth maxTagCount={3} placeholder="Select courses to include in this bundle" />
             </CommonFormSection>
 
             {Object.keys(errors).length > 0 && (

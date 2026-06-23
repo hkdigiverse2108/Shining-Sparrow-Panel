@@ -1,6 +1,6 @@
 import { useState, useMemo, type FC } from 'react';
 import { Button, Tag, Spin, Select } from 'antd';
-import { DeleteOutlined, PlusOutlined, QuestionCircleOutlined, EditOutlined } from '@ant-design/icons';
+import { DeleteOutlined, PlusOutlined, QuestionCircleOutlined, EditOutlined, StarFilled } from '@ant-design/icons';
 import { KEYS } from '@/Constants';
 import { BREADCRUMBS } from '@/Data';
 import { CommonPageWrapper, CommonBreadcrumbs, CommonDeleteModal } from '@/Components';
@@ -200,7 +200,7 @@ const Faq: FC = () => {
               ) : (
                 <div className="space-y-4">
                   {faqs.map((faq: any) => (
-                    <div key={faq._id} className="bg-surface border border-border shadow-sm rounded-2xl p-4 sm:p-6 hover:shadow-md transition-shadow group">
+                    <div key={faq._id} className={`faq-list-item-card type-${faq.type}`}>
                       <div className="flex justify-between items-start gap-4">
                         <div className="space-y-3 flex-1">
                           {/* English */}
@@ -237,33 +237,34 @@ const Faq: FC = () => {
                           )}
                         </div>
 
-                        <div className="flex flex-col gap-2 flex-shrink-0">
+                        <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 scale-95 group-hover:scale-100 shrink-0">
                           <Button
                             shape="circle"
                             icon={<EditOutlined />}
-                            className="opacity-0 group-hover:opacity-100 transition-opacity"
                             onClick={() => handleEditClick(faq)}
+                            className="hover:text-primary hover:border-primary"
                           />
                           <Button
                             shape="circle"
                             danger
                             icon={<DeleteOutlined />}
-                            className="opacity-0 group-hover:opacity-100 transition-opacity"
                             onClick={(e) => { e.stopPropagation(); handleDeleteClick(faq); }}
                           />
                         </div>
                       </div>
 
                       {/* Type & Featured Tags */}
-                      <div className="mt-3 flex items-center gap-2">
+                      <div className="mt-3 flex items-center gap-2 pl-7">
                         <Tag
                           color={faq.type === 'home' ? 'green' : faq.type === 'course' ? 'blue' : 'purple'}
-                          className="font-semibold border-none"
+                          className="font-semibold border-none uppercase text-[10px] tracking-wider px-2 py-0.5"
                         >
-                          {faq.type}
+                          {faq.type === 'home' ? 'Global' : faq.type}
                         </Tag>
                         {faq.isFeatured && (
-                          <Tag color="gold" className="font-semibold border-none">Featured</Tag>
+                          <Tag color="gold" className="font-semibold border-none uppercase text-[10px] tracking-wider px-2 py-0.5 flex items-center gap-1">
+                            <StarFilled className="text-[10px] text-amber-500" /> Featured
+                          </Tag>
                         )}
                       </div>
                     </div>
