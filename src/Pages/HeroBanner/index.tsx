@@ -99,7 +99,7 @@ const HeroBanner: FC = () => {
                     const isWeb = banner.type === 'web';
                     const imageSrc = isWeb 
                       ? (banner.images?.[0] || '') 
-                      : (banner.image || '');
+                      : (banner.images?.[0] || banner.image || '');
 
                     return (
                       <div 

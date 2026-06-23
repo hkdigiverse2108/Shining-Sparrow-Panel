@@ -1,4 +1,69 @@
 @import "tailwindcss";
+
+@theme {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-color: var(--primary-color);
+  --color-active: var(--active);
+  --color-warning: var(--warning);
+  --color-primary-dark: var(--primary-dark);
+  --color-primary-ring: var(--primary-ring);
+  --color-border: var(--border);
+  --color-border-hover: var(--border-hover);
+  --color-muted: var(--muted);
+  --color-text-muted: var(--text-muted);
+  --color-visual-side: var(--visual-side);
+  --color-orb-subtle: var(--orb-subtle);
+  --color-surface-muted: var(--surface-muted);
+  --color-primary-soft: var(--primary-soft);
+  --color-success: var(--success);
+  --color-success-dark: var(--success-dark);
+  --color-danger: var(--danger);
+  --color-danger-dark: var(--danger-dark);
+  --color-info: var(--info);
+  --color-secondary: var(--secondary);
+  --color-purple: var(--purple);
+  --color-pink: var(--pink);
+  --color-indigo: var(--indigo);
+  --color-teal: var(--teal);
+  --color-orange: var(--orange);
+}
+
 @import "../public/assets/css/variables.css";
-@import  "../public/assets/css/style.css";
+@import "../public/assets/css/style.css";
+
+/* Description wrap fix and no scrollbars */
+.content-card-description,
+.content-card-description * {
+  white-space: normal !important;
+  word-break: break-word !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis;
+}
+
+/* Global scrollbar styling that adapts to theme */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-hover);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* Enable dark browser scrollbars/controls */
+.dark {
+  color-scheme: dark;
+}
 

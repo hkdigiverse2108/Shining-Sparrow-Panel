@@ -1,13 +1,14 @@
 import { useMemo, type FC } from "react";
 import { useParams, Link } from "react-router-dom";
 import { motion } from "motion/react";
-import { Avatar } from "antd";
+import { Avatar, Spin } from "antd";
 import { CommonBreadcrumbs, CommonPageWrapper, CommonCard, CommonTag } from "@/Components";
 import { blurRevealUp, staggerContainer } from "@/Utils/animations";
 import { useAppSelector } from "@/Store/hooks";
 import { ROUTES } from "@/Constants";
 import { BREADCRUMBS, roleColors, userStatusColors } from "@/Data";
 import { CommonButton } from "@/Attribute";
+import { Queries } from "@/Api";
 
 const wsStatusColors: Record<string, string> = {
   registered: "processing", attended: "success", absent: "error", cancelled: "default",
@@ -15,7 +16,9 @@ const wsStatusColors: Record<string, string> = {
 
 const UserDetails: FC = () => {
   const { id } = useParams<{ id: string }>();
-  const user = useAppSelector((s) => s.users.data.find((u) => u.id === Number(id)));
+  const { data: userResponse, isLoading: isUserLoading } = Queries.useGetUserById(id!);
+  const user = userResponse?.data;
+  
   const courses = useAppSelector((s) => s.courses.data);
   const workshops = useAppSelector((s) => s.workshops.data);
 
@@ -23,19 +26,27 @@ const UserDetails: FC = () => {
 
   const coursesData = useMemo(() => {
     if (!user) return [];
+    const userId = user._id || user.id;
     return isInstructor 
-      ? courses.filter((c) => c.instructorId === user.id)
-      : courses.filter((c) => c.enrolledStudents.includes(user.id));
+      ? courses.filter((c) => String(c.instructorId) === String(userId))
+      : courses.filter((c) => c.enrolledStudents?.map(String).includes(String(userId)));
   }, [user, courses, isInstructor]);
 
   const workshopsData = useMemo(() => {
     if (!user) return [];
+    const userId = user._id || user.id;
     const filtered = isInstructor 
-      ? workshops.filter((w) => w.speakerId === user.id)
-      : workshops.filter((w) => w.registrations?.some((r) => r.userId === user.id))
-          .map((w) => ({ ...w, ...w.registrations.find((r) => r.userId === user.id) }));
+      ? workshops.filter((w) => String(w.speakerId) === String(userId))
+      : workshops.filter((w) => w.registrations?.some((r) => String(r.userId) === String(userId)))
+          .map((w) => ({ ...w, ...w.registrations.find((r) => String(r.userId) === String(userId)) }));
     return filtered;
   }, [user, workshops, isInstructor]);
+
+  if (isUserLoading) return (
+    <CommonPageWrapper>
+      <div className="flex justify-center items-center py-20"><Spin size="large" /></div>
+    </CommonPageWrapper>
+  );
 
   if (!user || user.role === "admin") return (
     <CommonPageWrapper>
@@ -56,17 +67,17 @@ const UserDetails: FC = () => {
           <motion.div variants={blurRevealUp} className="mb-6">
             <CommonCard cardProps={{ className: "border-border" }}>
               <div className="flex flex-col md:flex-row items-center gap-6">
-                <Avatar src={user.profileImage} size={88} className="shadow-lg shrink-0" />
+                <Avatar src={user.profilePhoto || user.profileImage} size={88} className="shadow-lg shrink-0" />
                 <div className="flex-1 text-center md:text-left">
-                  <h2 className="text-2xl font-bold text-foreground">{user.username}</h2>
+                  <h2 className="text-2xl font-bold text-foreground">{user.fullName || user.username}</h2>
                   <div className="flex flex-wrap gap-2 mt-2 justify-center md:justify-start">
                     <CommonTag className={roleColors[user.role] || roleColors.student}>{user.role}</CommonTag>
-                    <CommonTag className={userStatusColors[user.status] || userStatusColors.inactive}>{user.status}</CommonTag>
+                    <CommonTag className={userStatusColors[user.isBlocked ? "blocked" : "active"] || userStatusColors.inactive}>{user.isBlocked ? "Blocked" : "Active"}</CommonTag>
                   </div>
                   <div className="flex flex-wrap gap-x-5 gap-y-1 mt-3 text-sm text-muted-foreground justify-center md:justify-start">
                     <span>✉️ {user.email}</span>
-                    <span>📞 {user.phone || "Not provided"}</span>
-                    <span>📅 Joined {user.createdAt}</span>
+                    <span>📞 {user.phoneNumber || user.phone || "Not provided"}</span>
+                    <span>📅 Joined {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : "N/A"}</span>
                   </div>
                 </div>
               </div>

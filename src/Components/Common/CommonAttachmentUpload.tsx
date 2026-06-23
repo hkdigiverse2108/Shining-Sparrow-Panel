@@ -2,7 +2,7 @@ import { type FC, useRef, useState, useMemo, useEffect } from "react";
 import { Form, Button, Segmented, Input, Progress, message } from "antd";
 import { 
   FileTextOutlined, CloudUploadOutlined, LinkOutlined, 
-  DeleteOutlined, InfoCircleOutlined, PaperClipOutlined,
+  DeleteOutlined, PaperClipOutlined,
   FilePdfOutlined, FileExcelOutlined, FileWordOutlined,
   FilePptOutlined, FileZipOutlined
 } from "@ant-design/icons";

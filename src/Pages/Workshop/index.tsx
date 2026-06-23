@@ -163,7 +163,7 @@ const Workshops: FC = () => {
   const handleManageContent = (workshop: any) => { navigate(`/workshops/${workshop._id}/manage`); };
 
   const columns = useMemo(() => getWorkshopColumns({ 
-    onEdit: (w) => { setEditingWorkshop(w); setIsFormOpen(true); }, 
+    onEdit: (w: any) => { setEditingWorkshop(w); setIsFormOpen(true); }, 
     onManage: handleManageContent,
     onToggleStatus: handleToggleStatus,
     onDelete: handleDeleteClick,

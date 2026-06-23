@@ -1,7 +1,6 @@
 // components/Workshop/CurriculumForm.tsx
-import { type FC, useMemo, useState } from 'react';
+import { type FC, useMemo } from 'react';
 import { Formik, Form } from 'formik';
-import { Segmented, Upload, Button, Progress, message } from 'antd';
 import { CommonFormShell, CommonFormSection, CommonImageUpload, CommonVideoUpload, CommonAttachmentUpload } from '@/Components';
 import { CommonButton, CommonValidationTextField, CommonDatePicker, CommonRichTextEditor } from '@/Attribute';
 import * as Yup from 'yup';
@@ -28,21 +27,8 @@ export const WorkshopCurriculumForm: FC<WorkshopCurriculumFormProps> = ({ editin
       duration: Yup.number().optional().min(0, 'Duration must be non-negative'),
     });
   }, [existingPriorities]);
-  const defaults = {
-    title: '',
-    description: '',
-    videoLink: '',
-    duration: '',
-    priority: 0,
-    thumbnail: '',
-    attachment: '',
-    date: null
-  };
-
+  const defaults = { title: '', description: '', videoLink: '', duration: '', priority: 0, thumbnail: '', attachment: '', date: null };
   const initialValues = useMemo(() => (editing ? { ...defaults, ...editing } : defaults), [editing]);
-
-
-
   const handleSubmit = (v: any) => {
     const payload = { ...v };
     if (editing) payload.workshopCurriculumId = editing._id;

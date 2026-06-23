@@ -91,7 +91,7 @@ export const BlogForm: FC<BlogFormProps> = ({ open, onClose, onSave, editing, lo
               <div className="col-span-2 flex items-center gap-3 mt-2">
                 <span className="text-sm font-medium text-gray-700">Featured Blog:</span>
                 <Switch
-                  name="isFeatured" 
+                  // name="isFeatured" 
                   checked={values.isFeatured} 
                   onChange={(val: any) => setFieldValue('isFeatured', val)} 
                 />

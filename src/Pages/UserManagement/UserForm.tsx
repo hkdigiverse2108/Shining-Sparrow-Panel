@@ -1,6 +1,6 @@
 import { type FC, useMemo } from "react";
 import { Formik, Form } from "formik";
-import { CommonDrawer, CommonFormSection, CommonImageUpload } from "@/Components";
+import { CommonFormShell, CommonFormSection, CommonImageUpload } from "@/Components";
 import { CommonButton, CommonValidationTextField, CommonValidationSelect } from "@/Attribute";
 import type { UserFormProps } from "@/Types";
 import { EditUserSchema, UserSchema } from "@/Utils";
@@ -44,16 +44,22 @@ export const UserForm: FC<UserFormProps> = ({ open, onClose, onSave, editingUser
     onSave(payload);
   };
 
+  if (!open) return null;
+
   return (
-    <CommonDrawer title={editingUser ? "Edit User" : "Add User"} open={open} onClose={onClose}>
-      <Formik enableReinitialize initialValues={initialValues} validationSchema={validationSchema} onSubmit={handleSubmit}>
-        {() => (
-          <Form>
-            <CommonImageUpload name="profilePhoto" label="Profile Image" shape="circle" size={100} />
-            
-            <CommonFormSection title="Account Details">
-              <CommonValidationTextField name="fullName" label="Full Name" />
-              <CommonValidationTextField name="email" label="Email" />
+    <Formik enableReinitialize initialValues={initialValues} validationSchema={validationSchema} onSubmit={handleSubmit}>
+      {() => (
+        <CommonFormShell
+          title={editingUser ? "Edit User" : "Add User"}
+          description="Configure account details, designation, and status permissions."
+          onClose={onClose}
+          closeLabel="Cancel"
+        >
+          <Form className="course-form-shell">
+            <CommonFormSection title="Account Profile">
+              <CommonImageUpload name="profilePhoto" label="Profile Image" shape="circle" size={100} className="col-span-full" />
+              <CommonValidationTextField name="fullName" label="Full Name" required />
+              <CommonValidationTextField name="email" label="Email" required />
               <CommonValidationTextField name="phoneNumber" label="Phone Number" />
               <CommonValidationTextField name="designation" label="Designation" />
               
@@ -67,12 +73,12 @@ export const UserForm: FC<UserFormProps> = ({ open, onClose, onSave, editingUser
               <CommonValidationSelect name="isEmailVerified" label="Email Verified" options={[ { label: "Verified", value: "true" }, { label: "Not Verified", value: "false" } ]} />    
             </CommonFormSection>
             
-            <div className="user-drawer-footer">
-              <CommonButton htmlType="submit" type="primary" title={editingUser ? "Update User" : "Create User"} block />
+            <div className="course-form-actions">
+              <CommonButton htmlType="submit" type="primary" title={editingUser ? "Update User" : "Create User"} block className="course-button course-button--primary" />
             </div>
           </Form>
-        )}
-      </Formik>
-    </CommonDrawer>
+        </CommonFormShell>
+      )}
+    </Formik>
   );
 };

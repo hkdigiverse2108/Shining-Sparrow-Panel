@@ -1,4 +1,4 @@
-import { type FC, useEffect } from "react";
+import { type FC } from "react";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { Spin } from "antd";

@@ -15,7 +15,7 @@ const ExamEditorPage: FC = () => {
   const queryClient = useQueryClient();
 
   const { data: courseRes, isLoading: courseLoading } = Queries.useGetCourses({ page: 1, limit: 1000 });
-  const { data: lessRes, isLoading: lessLoading } = Queries.useGetLessons();
+  const { isLoading: lessLoading } = Queries.useGetLessons();
   const { data: examRes, isLoading: examLoading } = Queries.useGetExams();
 
   const addExamMutation = Mutations.useAddExam();
@@ -23,7 +23,6 @@ const ExamEditorPage: FC = () => {
   const isMutationLoading = addExamMutation.isPending || editExamMutation.isPending;
 
   const course = useMemo(() => extractArray(courseRes).find((c: any) => c._id === courseId), [courseRes, courseId]);
-  const lesson = useMemo(() => extractArray(lessRes).find((l: any) => l._id === lessonId), [lessRes, lessonId]);
   const lessonExam = useMemo(() => {
     return extractArray(examRes).find((e: any) => String(e.courseLessonId?._id ?? e.courseLessonId) === String(lessonId));
   }, [examRes, lessonId]);

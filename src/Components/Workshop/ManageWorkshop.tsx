@@ -1,5 +1,5 @@
 import { useState, useMemo, type FC } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { Spin, Popconfirm, Button, Segmented, Rate } from 'antd';
 import {
   FolderOutlined, PlusOutlined, EditOutlined, DeleteOutlined,
@@ -30,7 +30,6 @@ type FormMode =
 
 const ManageWorkshop: FC = () => {
   const { workshopId } = useParams<{ workshopId: string }>();
-  const navigate = useNavigate();
   const queryClient = useQueryClient();
 
   const [activeForm, setActiveForm] = useState<FormMode>({ type: 'view' });
@@ -38,6 +37,9 @@ const ManageWorkshop: FC = () => {
 
   const { data: workshopRes, isLoading: wsLoading } = Queries.useGetWorkshopById(workshopId!);
   const { data: currRes, isLoading: currLoading } = Queries.useGetWorkshopCurriculums({ workshopFilter: workshopId });
+  const { data: faqsRes, isLoading: faqsLoading } = Queries.useGetFAQs({ type: 'workshop' });
+
+  const faqs = useMemo(() => faqsRes?.data?.faq_data || [], [faqsRes]);
 
   const editWorkshopMutation = Mutations.useUpdateWorkshop();
   const addCurrMutation = Mutations.useAddWorkshopCurriculum();
@@ -127,7 +129,7 @@ const ManageWorkshop: FC = () => {
       onSuccess: (res: any) => {
         const testimonialId = res.data?._id;
         if (!values._id && testimonialId) {
-          const updatedIds = [...(workshop.workshopTestimonials || []).map((t: any) => t._id || t), testimonialId];
+          const updatedIds = [...(workshop?.workshopTestimonials || []).map((t: any) => t._id || t), testimonialId];
           editWorkshopMutation.mutate({ workshopId, workshopTestimonials: updatedIds }, {
             onSuccess: () => {
               queryClient.invalidateQueries({ queryKey: [KEYS.WORKSHOP.BASE] });
@@ -143,7 +145,7 @@ const ManageWorkshop: FC = () => {
   };
 
   const handleDeleteTestimonial = (testimonialId: string) => {
-    const updatedIds = (workshop.workshopTestimonials || []).map((t: any) => t._id || t).filter((id: any) => id !== testimonialId);
+    const updatedIds = (workshop?.workshopTestimonials || []).map((t: any) => t._id || t).filter((id: any) => id !== testimonialId);
     editWorkshopMutation.mutate({ workshopId, workshopTestimonials: updatedIds }, {
       onSuccess: () => {
         deleteTestimonialMutation.mutate(testimonialId, {
@@ -158,9 +160,16 @@ const ManageWorkshop: FC = () => {
 
   const handleSaveFAQ = (values: any) => {
     const payload: any = {
-      question: { en: values.questionEn },
-      answer: { en: values.answerEn },
-      learningCatalogId: workshopId,
+      question: {
+        en: values.questionEn,
+        hi: values.questionHi || null,
+        gu: values.questionGu || null,
+      },
+      answer: {
+        en: values.answerEn,
+        hi: values.answerHi || null,
+        gu: values.answerGu || null,
+      },
       type: 'workshop',
     };
     if (activeForm.type === 'editFAQ' && activeForm.data?._id) payload.faqId = activeForm.data._id;
@@ -168,37 +177,22 @@ const ManageWorkshop: FC = () => {
     const isEdit = !!payload.faqId;
     const mutation = isEdit ? editFAQMutation : addFAQMutation;
     mutation.mutate(payload, {
-      onSuccess: (res: any) => {
-        const faqId = res.data?._id;
-        if (!isEdit && faqId) {
-          const updatedIds = [...(workshop.workshopFAQ || []).map((f: any) => f._id || f), faqId];
-          editWorkshopMutation.mutate({ workshopId, workshopFAQ: updatedIds }, {
-            onSuccess: () => {
-              queryClient.invalidateQueries({ queryKey: [KEYS.WORKSHOP.BASE] });
-              setActiveForm({ type: 'view' });
-            },
-          });
-        } else {
-          queryClient.invalidateQueries({ queryKey: [KEYS.WORKSHOP.BASE] });
-          setActiveForm({ type: 'view' });
-        }
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: [KEYS.FAQ.BASE] });
+        setActiveForm({ type: 'view' });
       },
     });
   };
 
   const handleDeleteFAQ = (faqId: string) => {
-    const updatedIds = (workshop.workshopFAQ || []).map((f: any) => f._id || f).filter((id: any) => id !== faqId);
-    editWorkshopMutation.mutate({ workshopId, workshopFAQ: updatedIds }, {
+    deleteFAQMutation.mutate(faqId, {
       onSuccess: () => {
-        deleteFAQMutation.mutate(faqId, {
-          onSuccess: () => queryClient.invalidateQueries({ queryKey: [KEYS.WORKSHOP.BASE] }),
-          onError: () => queryClient.invalidateQueries({ queryKey: [KEYS.WORKSHOP.BASE] }),
-        });
+        queryClient.invalidateQueries({ queryKey: [KEYS.FAQ.BASE] });
       },
     });
   };
 
-  if (wsLoading || currLoading) {
+  if (wsLoading || currLoading || faqsLoading) {
     return <div className="flex justify-center items-center h-screen"><Spin size="large" /></div>;
   }
 
@@ -211,15 +205,15 @@ const ManageWorkshop: FC = () => {
         title={`Workshop Builder: ${workshop?.title || 'Workshop'}`}
         breadcrumbs={[{ label: 'Workshops', href: '/workshops' }, { label: `Manage: ${workshop?.title || 'Workshop'}` }]}
       />
-      <CommonPageWrapper className="flex-1 min-h-screen bg-gray-50/50 pb-20">
+      <CommonPageWrapper className="flex-1 min-h-screen bg-background pb-20">
         <div className="max-w-5xl mx-auto space-y-8 mt-6">
 
           {/* ── Active Form View ── */}
           {activeForm.type !== 'view' ? (
-            <div className="bg-white border border-gray-200/80 shadow-md rounded-2xl p-4 sm:p-6 md:p-8 max-w-2xl mx-auto">
-              <div className="flex items-center gap-3 mb-8 pb-4 border-b border-gray-100">
-                <Button type="text" icon={<ArrowLeftOutlined />} onClick={() => setActiveForm({ type: 'view' })} className="text-gray-500 hover:text-gray-900 rounded-full hover:bg-gray-100" />
-                <span className="font-semibold text-gray-700 text-sm">Back to Workshop Builder</span>
+            <div className="bg-surface border border-border shadow-md rounded-2xl p-4 sm:p-6 md:p-8 max-w-2xl mx-auto">
+              <div className="flex items-center gap-3 mb-8 pb-4 border-b border-border">
+                <Button type="text" icon={<ArrowLeftOutlined />} onClick={() => setActiveForm({ type: 'view' })} className="text-text-muted hover:text-foreground rounded-full hover:bg-surface-muted" />
+                <span className="font-semibold text-foreground text-sm">Back to Workshop Builder</span>
               </div>
 
               {activeForm.type === 'addSession' && <WorkshopCurriculumForm editing={null} onSave={handleSaveSession} loading={isMutationLoading} existingPriorities={sessionPrioritiesForAdd} />}
@@ -232,29 +226,29 @@ const ManageWorkshop: FC = () => {
           ) : (
             <>
               {/* ── Workshop Header ── */}
-              <div className="bg-white border border-gray-200/80 shadow-sm rounded-2xl p-4 sm:p-6 md:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
+              <div className="bg-surface border border-border shadow-sm rounded-2xl p-4 sm:p-6 md:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div className="space-y-2">
                   <div className="flex items-center gap-2.5">
-                    <div className="p-2 bg-amber-50 text-amber-600 rounded-lg"><BookOutlined className="text-xl" /></div>
-                    <h2 className="text-2xl font-bold tracking-tight text-gray-900">{workshop?.title}</h2>
+                    <div className="p-2 bg-amber-500/10 text-amber-600 rounded-lg"><BookOutlined className="text-xl" /></div>
+                    <h2 className="text-2xl font-bold tracking-tight text-foreground">{workshop?.title}</h2>
                   </div>
-                  <p className="text-gray-500 text-sm leading-relaxed max-w-2xl">
+                  <p className="text-text-muted text-sm leading-relaxed max-w-2xl">
                     {workshop?.about || 'No description provided. Add sessions and configure dates below.'}
                   </p>
                   <div className="flex flex-wrap gap-2 pt-2">
-                    <span className="text-xs font-semibold text-gray-500 bg-gray-100 px-2.5 py-1 rounded-full">{curriculums.length} Session{curriculums.length !== 1 ? 's' : ''}</span>
+                    <span className="text-xs font-semibold text-text-muted bg-surface-muted px-2.5 py-1 rounded-full">{curriculums.length} Session{curriculums.length !== 1 ? 's' : ''}</span>
                     {(workshop?.workshopTestimonials || []).length > 0 && (
-                      <span className="text-xs font-semibold text-gray-500 bg-gray-100 px-2.5 py-1 rounded-full">{(workshop.workshopTestimonials || []).length} Testimonial{(workshop.workshopTestimonials || []).length !== 1 ? 's' : ''}</span>
+                      <span className="text-xs font-semibold text-text-muted bg-surface-muted px-2.5 py-1 rounded-full">{(workshop?.workshopTestimonials || []).length} Testimonial{(workshop?.workshopTestimonials || []).length !== 1 ? 's' : ''}</span>
                     )}
-                    {(workshop?.workshopFAQ || []).length > 0 && (
-                      <span className="text-xs font-semibold text-gray-500 bg-gray-100 px-2.5 py-1 rounded-full">{(workshop.workshopFAQ || []).length} FAQ{(workshop.workshopFAQ || []).length !== 1 ? 's' : ''}</span>
+                    {faqs.length > 0 && (
+                      <span className="text-xs font-semibold text-text-muted bg-surface-muted px-2.5 py-1 rounded-full">{faqs.length} FAQ{faqs.length !== 1 ? 's' : ''}</span>
                     )}
                     {workshop?.duration && (
-                      <span className="text-xs font-semibold text-gray-500 bg-gray-100 px-2.5 py-1 rounded-full flex items-center gap-1">
+                      <span className="text-xs font-semibold text-text-muted bg-surface-muted px-2.5 py-1 rounded-full flex items-center gap-1">
                         <ClockCircleOutlined className="text-[10px]" /> {workshop.duration}
                       </span>
                     )}
-                    <span className="text-xs font-semibold text-emerald-600 bg-emerald-50 border border-emerald-100 px-2.5 py-1 rounded-full">
+                    <span className="text-xs font-semibold text-emerald-600 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full">
                       {workshop?.price === 0 ? 'Free' : `₹${workshop?.price}`}
                     </span>
                   </div>
@@ -262,7 +256,7 @@ const ManageWorkshop: FC = () => {
                 <Button
                   type="primary"
                   icon={<PlusOutlined />}
-                  onClick={() => setActiveForm({ type: tabAddMode[activeTab] as FormMode['type'] })}
+                  onClick={() => setActiveForm({ type: tabAddMode[activeTab] as 'addSession' | 'addTestimonial' | 'addFAQ' })}
                   className="bg-indigo-600 hover:!bg-indigo-700 text-white rounded-lg h-10 px-5 font-medium"
                 >
                   {tabAddLabel[activeTab]}
@@ -279,7 +273,7 @@ const ManageWorkshop: FC = () => {
                   ]}
                   value={activeTab}
                   onChange={(val) => setActiveTab(val as typeof activeTab)}
-                  className="p-1 bg-white border border-gray-200 shadow-sm rounded-xl font-medium"
+                  className="p-1 bg-surface border border-border shadow-sm rounded-xl font-medium"
                 />
               </div>
 
@@ -287,10 +281,10 @@ const ManageWorkshop: FC = () => {
               {activeTab === 'schedule' && (
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2"><UnorderedListOutlined className="text-gray-400" /> Workshop Schedule</h3>
-                    <span className="text-xs font-semibold text-gray-400 bg-gray-100 px-2.5 py-1 rounded-full">Sorted by priority</span>
+                    <h3 className="text-lg font-bold text-foreground flex items-center gap-2"><UnorderedListOutlined className="text-muted" /> Workshop Schedule</h3>
+                    <span className="text-xs font-semibold text-muted bg-surface-muted px-2.5 py-1 rounded-full">Sorted by priority</span>
                   </div>
-                  <div className="bg-white border border-gray-200/80 shadow-sm rounded-2xl overflow-hidden divide-y divide-gray-100">
+                  <div className="bg-surface border border-border shadow-sm rounded-2xl overflow-hidden divide-y divide-border">
                     {curriculums.length > 0 ? curriculums.map((curr: any, index: number) => (
                       <ContentItemCard
                         key={curr._id}
@@ -299,7 +293,7 @@ const ManageWorkshop: FC = () => {
                         description={curr.description}
                         thumbnail={curr.thumbnail}
                         thumbnailFallbackText={String(index + 1)}
-                        className="!rounded-none !border-0 !shadow-none hover:bg-gray-50/40"
+                        className="!rounded-none !border-0 !shadow-none hover:bg-surface-muted/40"
                         badges={[
                           ...(curr.date ? [dateBadge(curr.date)] : []),
                           ...(curr.duration > 0 ? [durationBadge(`${curr.duration} mins`)] : []),
@@ -328,12 +322,12 @@ const ManageWorkshop: FC = () => {
               {activeTab === 'testimonials' && (
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2"><CommentOutlined className="text-gray-400" /> Customer Testimonials</h3>
-                    <span className="text-xs font-semibold text-gray-400 bg-gray-100 px-2.5 py-1 rounded-full">{(workshop?.workshopTestimonials || []).length} Testimonial{(workshop?.workshopTestimonials || []).length !== 1 ? 's' : ''}</span>
+                    <h3 className="text-lg font-bold text-foreground flex items-center gap-2"><CommentOutlined className="text-muted" /> Customer Testimonials</h3>
+                    <span className="text-xs font-semibold text-muted bg-surface-muted px-2.5 py-1 rounded-full">{(workshop?.workshopTestimonials || []).length} Testimonial{(workshop?.workshopTestimonials || []).length !== 1 ? 's' : ''}</span>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {(workshop?.workshopTestimonials || []).length > 0 ? workshop.workshopTestimonials.map((test: any) => (
-                      <div key={test._id} className="bg-white border border-gray-200/80 shadow-sm rounded-2xl p-4 sm:p-6 flex flex-col justify-between hover:shadow-md transition-shadow group">
+                    {(workshop?.workshopTestimonials || []).length > 0 ? workshop?.workshopTestimonials.map((test: any) => (
+                      <div key={test._id} className="bg-surface border border-border shadow-sm rounded-2xl p-4 sm:p-6 flex flex-col justify-between hover:shadow-md transition-shadow group">
                         <div className="flex justify-between items-start mb-4">
                           <Rate disabled defaultValue={test.rate || 5} className="text-xs" />
                           <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -343,15 +337,15 @@ const ManageWorkshop: FC = () => {
                             </Popconfirm>
                           </div>
                         </div>
-                        <p className="text-sm text-gray-600 italic leading-relaxed mb-6">"{test.description || 'No review text provided.'}"</p>
-                        <div className="flex items-center gap-3 border-t border-gray-100 pt-4 mt-auto">
+                        <p className="text-sm text-text-muted italic leading-relaxed mb-6">"{test.description || 'No review text provided.'}"</p>
+                        <div className="flex items-center gap-3 border-t border-border pt-4 mt-auto">
                           {test.image
-                            ? <img src={test.image} alt={test.name} className="w-10 h-10 rounded-full object-cover border border-gray-100 shadow-sm" />
-                            : <div className="w-10 h-10 rounded-full bg-indigo-50 border border-indigo-150 flex items-center justify-center font-semibold text-sm">{test.name?.charAt(0).toUpperCase()}</div>
+                            ? <img src={test.image} alt={test.name} className="w-10 h-10 rounded-full object-cover border border-border shadow-sm" />
+                            : <div className="w-10 h-10 rounded-full bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center font-semibold text-sm">{test.name?.charAt(0).toUpperCase()}</div>
                           }
                           <div>
-                            <h5 className="font-semibold text-gray-950 text-sm">{test.name}</h5>
-                            {test.designation && <span className="text-xs text-gray-400">{test.designation}</span>}
+                            <h5 className="font-semibold text-foreground text-sm">{test.name}</h5>
+                            {test.designation && <span className="text-xs text-muted">{test.designation}</span>}
                           </div>
                         </div>
                       </div>
@@ -368,22 +362,50 @@ const ManageWorkshop: FC = () => {
               {activeTab === 'faqs' && (
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2"><QuestionCircleOutlined className="text-gray-400" /> Workshop FAQs</h3>
-                    <span className="text-xs font-semibold text-gray-400 bg-gray-100 px-2.5 py-1 rounded-full">{(workshop?.workshopFAQ || []).length} FAQ{(workshop?.workshopFAQ || []).length !== 1 ? 's' : ''}</span>
+                    <h3 className="text-lg font-bold text-foreground flex items-center gap-2"><QuestionCircleOutlined className="text-muted" /> Workshop FAQs</h3>
+                    <span className="text-xs font-semibold text-muted bg-surface-muted px-2.5 py-1 rounded-full">{faqs.length} FAQ{faqs.length !== 1 ? 's' : ''}</span>
                   </div>
                   <div className="space-y-4">
-                    {(workshop?.workshopFAQ || []).length > 0 ? workshop.workshopFAQ.map((faq: any) => (
-                      <div key={faq._id} className="bg-white border border-gray-200/80 shadow-sm rounded-2xl p-4 sm:p-6 hover:shadow-md transition-shadow group">
+                    {faqs.length > 0 ? faqs.map((faq: any) => (
+                      <div key={faq._id} className="bg-surface border border-border shadow-sm rounded-2xl p-4 sm:p-6 hover:shadow-md transition-shadow group">
                         <div className="flex justify-between items-start gap-4">
-                          <div className="space-y-2 flex-1">
-                            <h4 className="font-semibold text-gray-900 text-base flex items-start gap-2 leading-snug">
-                              <span className="text-xs font-bold text-indigo-650 bg-indigo-50 border border-indigo-100/50 w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">Q</span>
-                              {faq.question?.en}
-                            </h4>
-                            <div className="text-sm text-gray-600 pl-7 leading-relaxed flex items-start gap-2">
-                              <span className="text-xs font-bold text-emerald-600 bg-emerald-50 border border-emerald-100/50 w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">A</span>
-                              <span className="flex-1">{faq.answer?.en}</span>
+                          <div className="space-y-3 flex-1">
+                            {/* English */}
+                            <div className="space-y-1">
+                              <h4 className="font-semibold text-foreground text-base flex items-start gap-2 leading-snug">
+                                <span className="text-[10px] font-bold text-indigo-500 bg-indigo-500/10 border border-indigo-500/20 w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">EN</span>
+                                {faq.question?.en}
+                              </h4>
+                              <div className="text-sm text-text-muted pl-7 leading-relaxed flex items-start gap-2">
+                                <span className="flex-1 content-card-description">{faq.answer?.en}</span>
+                              </div>
                             </div>
+
+                            {/* Hindi */}
+                            {faq.question?.hi && (
+                              <div className="space-y-1 pt-2 border-t border-border/50">
+                                <h4 className="font-medium text-foreground/90 text-sm flex items-start gap-2 leading-snug">
+                                  <span className="text-[10px] font-bold text-orange-500 bg-orange-500/10 border border-orange-500/20 w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">HI</span>
+                                  {faq.question.hi}
+                                </h4>
+                                <div className="text-sm text-text-muted pl-7 leading-relaxed flex items-start gap-2">
+                                  <span className="flex-1 content-card-description">{faq.answer?.hi}</span>
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Gujarati */}
+                            {faq.question?.gu && (
+                              <div className="space-y-1 pt-2 border-t border-border/50">
+                                <h4 className="font-medium text-foreground/90 text-sm flex items-start gap-2 leading-snug">
+                                  <span className="text-[10px] font-bold text-teal-600 bg-teal-500/10 border border-teal-500/20 w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">GU</span>
+                                  {faq.question.gu}
+                                </h4>
+                                <div className="text-sm text-text-muted pl-7 leading-relaxed flex items-start gap-2">
+                                  <span className="flex-1 content-card-description">{faq.answer?.gu}</span>
+                                </div>
+                              </div>
+                            )}
                           </div>
                           <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
                             <Button type="text" size="small" icon={<EditOutlined />} onClick={() => setActiveForm({ type: 'editFAQ', data: faq })} className="h-7 w-7 rounded-full flex items-center justify-center p-0" />

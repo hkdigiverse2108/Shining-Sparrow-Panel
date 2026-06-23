@@ -734,7 +734,7 @@
 
 /* ===================== USER ===================== */
 .user-metrics-grid {
-  @apply grid grid-cols-3 gap-2 md:gap-5 mb-6;
+  @apply grid grid-cols-1 sm:grid-cols-3 gap-2 md:gap-5 mb-6;
 }
 .user-metric-card {
   @apply flex flex-col items-center text-center p-3 gap-1 bg-surface border border-border rounded-xl transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 sm:flex-row sm:items-center sm:text-left sm:p-4 md:p-5 sm:gap-4 sm:rounded-2xl;

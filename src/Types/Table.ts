@@ -1,12 +1,13 @@
 export interface ColumnType<T> {
-    title: string;
-    dataIndex: string;
-    key?: string;
+    title?: any;
+    dataIndex?: any;
+    key?: any;
 
-    sorter?: boolean;
+    sorter?: any;
     hidden?: boolean;
 
-    render?: (value: any, record: T, index: number) => React.ReactNode;
+    render?: (value: any, record: T, index: number) => any;
+    [key: string]: any;
 }
 
 export interface CommonTableProps<T> {
@@ -42,4 +43,5 @@ export interface CommonTableProps<T> {
 
     // summary
     summaryFields?: string[];
+    scroll?: any;
 }

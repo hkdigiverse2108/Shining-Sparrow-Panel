@@ -57,12 +57,12 @@ export interface ContentItemCardProps {
 // ─── Badge colour map ─────────────────────────────────────────────────────────
 
 const BADGE_CLASS: Record<BadgeColor, string> = {
-  neutral: 'bg-gray-50 border-gray-100 text-gray-600',
-  indigo:  'bg-indigo-50 border-indigo-100 text-indigo-700 hover:bg-indigo-100',
-  emerald: 'bg-emerald-50 border-emerald-100 text-emerald-700 hover:bg-emerald-100',
-  amber:   'bg-amber-50 border-amber-100 text-amber-700 hover:bg-amber-100',
-  green:   'bg-green-50 border-green-100 text-green-700',
-  red:     'bg-red-50 border-red-100 text-red-700',
+  neutral: 'bg-surface-muted border-border text-text-muted',
+  indigo:  'bg-indigo-500/10 border-indigo-500/20 text-indigo-500 hover:bg-indigo-500/20',
+  emerald: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600 hover:bg-emerald-500/20',
+  amber:   'bg-amber-500/10 border-amber-500/20 text-amber-600 hover:bg-amber-500/20',
+  green:   'bg-green-500/10 border-green-500/20 text-green-600',
+  red:     'bg-red-500/10 border-red-500/20 text-red-655',
 };
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -80,7 +80,7 @@ const ContentItemCard: React.FC<ContentItemCardProps> = ({
 }) => {
   return (
     <div
-      className={`flex flex-col md:flex-row md:items-center justify-between p-4 bg-white border border-gray-100 rounded-xl hover:shadow-md transition-all gap-4 ${className}`}
+      className={`flex flex-col md:flex-row md:items-center justify-between p-4 bg-surface border border-border rounded-xl hover:shadow-md transition-all gap-4 ${className}`}
     >
       {/* Left: thumbnail + info */}
       <div className="flex items-start gap-4 overflow-hidden flex-1">
@@ -88,26 +88,26 @@ const ContentItemCard: React.FC<ContentItemCardProps> = ({
           <img
             src={thumbnail}
             alt={title}
-            className="w-16 h-16 object-cover rounded-lg border border-gray-100 shadow-sm flex-shrink-0"
+            className="w-16 h-16 object-cover rounded-lg border border-border shadow-sm flex-shrink-0"
             onError={(e) => {
               (e.target as HTMLImageElement).src = 'https://placehold.co/100x100?text=Item';
             }}
           />
         ) : (
-          <div className="w-16 h-16 bg-indigo-50 border border-indigo-100 text-indigo-600 rounded-lg flex items-center justify-center font-bold text-lg flex-shrink-0">
+          <div className="w-16 h-16 bg-indigo-500/10 border border-indigo-500/20 text-indigo-500 rounded-lg flex items-center justify-center font-bold text-lg flex-shrink-0">
             {thumbnailFallbackText ?? String(index + 1).padStart(2, '0')}
           </div>
         )}
 
         <div className="space-y-1.5 overflow-hidden flex-1">
           <div>
-            <h4 className="text-base font-semibold text-gray-800 truncate">{title}</h4>
-            {subtitle && <p className="text-xs text-gray-500 truncate">{subtitle}</p>}
+            <h4 className="text-base font-semibold text-foreground truncate">{title}</h4>
+            {subtitle && <p className="text-xs text-text-muted truncate">{subtitle}</p>}
           </div>
 
           {description && (
             <div
-              className="text-xs text-gray-500 line-clamp-2 max-w-xl"
+              className="text-xs text-text-muted line-clamp-2 max-w-xl content-card-description"
               dangerouslySetInnerHTML={{ __html: description }}
             />
           )}
@@ -156,7 +156,7 @@ const ContentItemCard: React.FC<ContentItemCardProps> = ({
                 danger={action.danger}
                 loading={action.loading}
                 onClick={action.onClick}
-                className={`rounded-lg ${action.danger ? 'hover:bg-red-50' : 'hover:bg-gray-100'}`}
+                className={`rounded-lg ${action.danger ? 'hover:bg-red-500/10' : 'hover:bg-surface-muted'}`}
               />
             );
 

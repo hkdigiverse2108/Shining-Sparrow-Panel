@@ -21,7 +21,7 @@ export const Mutations = {
 
   useResendOtp: () => useMutations<ResendOtpPayload, MessageStatus>([KEYS.AUTH.RESEND_OTP], (input) => Post(URL_KEYS.AUTH.RESEND_OTP, input, false)),
 
-  useUpdateProfile: () => useMutations<UpdateProfilePayload, MessageStatus>( [KEYS.AUTH.UPDATE_PROFILE], (input) => Post(URL_KEYS.AUTH.UPDATE_PROFILE, input) ),
+  useUpdateProfile: () => useMutations<UpdateProfilePayload, any>( [KEYS.AUTH.UPDATE_PROFILE], (input) => Post(URL_KEYS.AUTH.UPDATE_PROFILE, input) ),
 
   // ************ User ***********
   useAddUser: () => useMutations<AddUserPayload, MessageStatus>([KEYS.USER.BASE, "ADD"], (input) => Post(URL_KEYS.USER.ADD, input)),

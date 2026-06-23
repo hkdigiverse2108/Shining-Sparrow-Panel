@@ -16,6 +16,14 @@ const DashboardLayout: FC = () => {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, [dispatch]);
+
+  useEffect(() => {
+    if (isDark) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [isDark]);
   const setCollapsed = (val: boolean) => {
     const collapsed = !isExpanded;
     if (val !== collapsed) {

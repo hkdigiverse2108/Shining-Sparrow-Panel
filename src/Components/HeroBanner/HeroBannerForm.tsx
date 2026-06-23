@@ -1,6 +1,6 @@
 import { type FC, useMemo } from "react";
 import { Formik, Form } from "formik";
-import { CommonFormShell, CommonFormSection, CommonImageUpload, CommonMultipleImageUpload } from "@/Components";
+import { CommonFormShell, CommonFormSection, CommonMultipleImageUpload } from "@/Components";
 import { CommonButton, CommonValidationTextField, CommonValidationSelect, CommonRichTextEditor } from "@/Attribute";
 import * as Yup from "yup";
 
@@ -31,8 +31,11 @@ export const HeroBannerForm: FC<HeroBannerFormProps> = ({ open, onClose, onSave,
 
   const initialValues = useMemo(() => {
     if (editing) {
-      // Ensure images array has at least 2 entries for Web type
       const images = [...(editing.images || [])];
+      // Migrating old single image if images array is empty
+      if (images.length === 0 && editing.image) {
+        images.push(editing.image);
+      }
       while (images.length < 2) images.push("");
       return { ...defaults, ...editing, images };
     }
@@ -46,13 +49,13 @@ export const HeroBannerForm: FC<HeroBannerFormProps> = ({ open, onClose, onSave,
       type: v.type,
       title: v.title || "",
       description: v.description || "",
+      images: v.images || [],
     };
 
-    if (v.type === "web") {
-      payload.images = v.images || [];
-    } else {
-      payload.image = v.image || "";
+    if (v.type === "app") {
       payload.link = v.link || "";
+      // Set single image fallback for app-side backwards compatibility
+      payload.image = v.images?.[0] || "";
     }
 
     if (editing) {
@@ -78,9 +81,9 @@ export const HeroBannerForm: FC<HeroBannerFormProps> = ({ open, onClose, onSave,
                 options={bannerTypes} 
                 required 
                 fullWidth 
-                onChange={(val) => {
-                  setFieldValue("type", val);
-                }}
+                // onChange={(val) => {
+                //   setFieldValue("type", val);
+                // }}
               />
               <CommonValidationTextField name="title" label="Banner Title" />
               
@@ -105,11 +108,9 @@ export const HeroBannerForm: FC<HeroBannerFormProps> = ({ open, onClose, onSave,
               </CommonFormSection>
             ) : (
               <CommonFormSection title="App Banner Media & Action">
-                <CommonImageUpload 
-                  name="image" 
-                  label="App Banner Image" 
-                  shape="square" 
-                  size={120} 
+                <CommonMultipleImageUpload 
+                  name="images" 
+                  label="App Banner Images" 
                   className="col-span-full" 
                 />
                 <CommonValidationTextField name="link" label="Redirect Link URL" className="col-span-full" />

@@ -96,7 +96,7 @@ const Blog: FC = () => {
   };
 
   const columns = useMemo(() => getBlogColumns({ 
-    onEdit: (b) => { setEditingBlog(b); setIsFormOpen(true); }, 
+    onEdit: (b: any) => { setEditingBlog(b); setIsFormOpen(true); }, 
     onToggleStatus: handleToggleStatus,
     onDelete: handleDeleteClick, // Passed the new click handler
     current,
@@ -120,7 +120,7 @@ const Blog: FC = () => {
           <motion.div variants={staggerContainer} initial="hidden" animate="visible">
             <CommonSummaryCards total={totalBlogs} active={blogs.filter((b: any) => !b.isBlocked).length} blocked={blogs.filter((b: any) => b.isBlocked).length} subject="Blogs" />
             <motion.div variants={blurRevealUp}>
-              <CommonTable columns={columns} data={blogs} loading={isLoading || addBlogMutation.isPending || editBlogMutation.isPending} searchPlaceholder="Search blogs..." onSearch={handleSearch} onAdd={() => { setEditingBlog(null); setIsFormOpen(true); }} fileName="Blogs" title="Blog Management" current={current} pageSize={pageSize} total={totalBlogs} onTableChange={handleTableChange} scroll={{ x: 900 }} />
+              <CommonTable columns={columns} data={blogs} loading={isLoading || addBlogMutation.isPending || editBlogMutation.isPending} searchPlaceholder="Search blogs..." onSearch={handleSearch} onAdd={() => { setEditingBlog(null); setIsFormOpen(true); }} fileName="Blogs" title="Blog Management" current={current} pageSize={pageSize} total={totalBlogs} onTableChange={handleTableChange} />
             </motion.div>
           </motion.div>
         )}

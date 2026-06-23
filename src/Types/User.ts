@@ -65,4 +65,5 @@ export interface HandlerProps {
   onEdit: (user: UserTable) => void;
   onToggleStatus: (id: number) => void;
   onDelete: (id: string) => void;
+  onStartChat?: (user: any) => void;
 }

@@ -66,6 +66,7 @@ import type { CommonDataType, MessageStatus, PageStatus } from "./Common";
 
 export interface WorkshopFormValues {
     id?: string; 
+    workshopId?: string;
     image?: string;
     title?: string;
     subTitle?: string;
@@ -73,7 +74,6 @@ export interface WorkshopFormValues {
     pdfAttach?: string;
     workshopCurriculum?: string[];
     workshopTestimonials?: string[];
-    workshopFAQ?: string[];
     price?: number;
     mrpPrice?: number;
     validFor?: string;

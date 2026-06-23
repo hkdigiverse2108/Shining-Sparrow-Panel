@@ -220,7 +220,7 @@ export const QuestionForm: FC<QuestionFormProps> = ({ editing, onSave, loading }
                             <button
                               type="button"
                               onClick={() => {
-                                const newSteps = values.calculationSteps.filter((_, i) => i !== index);
+                                const newSteps = values.calculationSteps.filter((_: any, i: any) => i !== index);
                                 setFieldValue('calculationSteps', newSteps);
                               }}
                               className="text-red-400 hover:text-red-600 p-0.5 text-xs font-bold font-sans transition-colors animate-fade-in"

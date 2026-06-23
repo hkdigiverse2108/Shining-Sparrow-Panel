@@ -1,18 +1,20 @@
 import { useState, useEffect, useRef, useMemo, type FC } from 'react';
-import { Avatar, Input, Button, Spin, Empty, Badge, Tag, Modal, Tooltip } from 'antd';
-import { SendOutlined, MessageOutlined, UserOutlined, PlusOutlined, SearchOutlined, ArrowLeftOutlined } from '@ant-design/icons';
+import { Avatar, Input, Button, Spin, Empty, Badge, Tag } from 'antd';
+import { SendOutlined, MessageOutlined, UserOutlined, SearchOutlined, ArrowLeftOutlined } from '@ant-design/icons';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { io, Socket } from 'socket.io-client';
 import { Queries } from '@/Api/Queries';
 import { Mutations } from '@/Api/Mutations';
 import { useAppSelector } from '@/Store/hooks';
 import { getToken } from '@/Utils';
-import { BREADCRUMBS } from '@/Data';
-import { CommonBreadcrumbs, CommonPageWrapper } from '@/Components';
+import { CommonPageWrapper } from '@/Components';
 import { showNotification } from '@/Attribute';
 import type { ChatRoom, ChatMessage } from '@/Types/Chat';
 
 const ChatPage: FC = () => {
   const currentUser = useAppSelector((state) => state.auth.user);
+  const location = useLocation();
+  const navigate = useNavigate();
   
   const [selectedRoom, setSelectedRoom] = useState<ChatRoom | null>(null);
   const [roomsList, setRoomsList] = useState<ChatRoom[]>([]);
@@ -20,13 +22,14 @@ const ChatPage: FC = () => {
   const [inputText, setInputText] = useState('');
   const [isConnected, setIsConnected] = useState(false);
   
-  // Search & Modal States
+  // Search State
   const [chatSearchQuery, setChatSearchQuery] = useState('');
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [userSearchQuery, setUserSearchQuery] = useState('');
 
   const socketRef = useRef<Socket | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Mutations
+  const createRoomMutation = Mutations.useCreateRoom();
 
   // Manage layout container height and scrolling for chat page only
   useEffect(() => {
@@ -44,18 +47,50 @@ const ChatPage: FC = () => {
   // 1. Fetch rooms list
   const { data: roomsData, isLoading: isLoadingRooms, refetch: refetchRooms } = Queries.useGetRooms();
 
-  // 2. Fetch users list (for Start Chat Modal)
-  const { data: usersData, isLoading: isLoadingUsers } = Queries.useGetUser({
-    page: 1,
-    limit: 100
-  });
-
   // Initialize rooms state when data loads
   useEffect(() => {
     if (roomsData?.data?.room_data) {
       setRoomsList(roomsData.data.room_data);
     }
   }, [roomsData]);
+
+  // Handle Start Chat redirection from User Management
+  useEffect(() => {
+    if (roomsList.length > 0 && location.state?.userId) {
+      const targetUserId = location.state.userId;
+      const existingRoom = roomsList.find((room) => {
+        if (room.type === 'global') return false;
+        return room.participants.some((p) => p._id === targetUserId);
+      });
+
+      if (existingRoom) {
+        setSelectedRoom(existingRoom);
+      } else {
+        // Create new room automatically
+        createRoomMutation.mutate(
+          { recipientId: targetUserId },
+          {
+            onSuccess: () => {
+              refetchRooms().then((newRoomsRes) => {
+                const newRoom = newRoomsRes.data?.data?.room_data?.find((room: any) => 
+                  room.type === 'personal' && room.participants.some((p: any) => p._id === targetUserId)
+                );
+                if (newRoom) {
+                  setSelectedRoom(newRoom);
+                }
+              });
+            },
+            onError: () => {
+              showNotification('error', 'Failed to start chat with this user.');
+            }
+          }
+        );
+      }
+
+      // Clear route state to prevent repeating on refresh
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [roomsList, location.state, navigate, location.pathname, createRoomMutation, refetchRooms]);
 
   // 3. Fetch messages when room changes
   const { data: messagesData, isLoading: isLoadingMessages } = Queries.useGetMessages(
@@ -197,13 +232,7 @@ const ChatPage: FC = () => {
     return `${import.meta.env.VITE_API_BASE_URL}/images/${photo}`;
   };
 
-  // Helper: Find existing room for a specific user ID
-  const findRoomForUser = (userId: string) => {
-    return roomsList.find((room) => {
-      if (room.type === 'global') return false;
-      return room.participants.some((p) => p._id === userId);
-    });
-  };
+
 
   // Filter conversations list (left side) based on search input
   const filteredPersonalRooms = useMemo(() => {
@@ -221,35 +250,7 @@ const ChatPage: FC = () => {
     return roomsList.find((room) => room.type === 'global') || null;
   }, [roomsList]);
 
-  // Filter users inside Start Chat Modal
-  const filteredUsers = useMemo(() => {
-    const allUsers = usersData?.data?.user_data || [];
-    // Filter out current admin user
-    const otherUsers = allUsers.filter((u) => u._id !== currentUser?._id);
 
-    if (!userSearchQuery.trim()) return otherUsers;
-    const q = userSearchQuery.toLowerCase();
-    return otherUsers.filter(
-      (u) =>
-        u.fullName?.toLowerCase().includes(q) ||
-        u.email?.toLowerCase().includes(q)
-    );
-  }, [usersData, userSearchQuery, currentUser]);
-
-  // Handle selecting a user from the modal
-  const handleSelectUser = (userItem: any) => {
-    const existingRoom = findRoomForUser(userItem._id);
-    if (existingRoom) {
-      setSelectedRoom(existingRoom);
-      setIsModalOpen(false);
-      setUserSearchQuery('');
-    } else {
-      showNotification(
-        'warning',
-        'No chat session exists with this user. Chats must be initiated by regular users.'
-      );
-    }
-  };
 
   return (
     <>
@@ -262,14 +263,6 @@ const ChatPage: FC = () => {
               <div className="chat-sidebar-top">
                 <h3 className="chat-sidebar-title">Conversations</h3>
                 <div className="flex items-center gap-2">
-                  <Tooltip title="Start Chat / Search User">
-                    <Button
-                      type="text"
-                      icon={<PlusOutlined />}
-                      shape="circle"
-                      onClick={() => setIsModalOpen(true)}
-                    />
-                  </Tooltip>
                   <Badge
                     status={isConnected ? 'success' : 'error'}
                     title={isConnected ? 'Server Connected' : 'Disconnected'}
@@ -503,65 +496,6 @@ const ChatPage: FC = () => {
           </div>
         </div>
       </CommonPageWrapper>
-
-      {/* Start Chat Modal */}
-      <Modal
-        title="Start Chat with User"
-        open={isModalOpen}
-        onCancel={() => {
-          setIsModalOpen(false);
-          setUserSearchQuery('');
-        }}
-        footer={null}
-        width={500}
-      >
-        <div style={{ marginBottom: '16px' }}>
-          <Input
-            placeholder="Search users by name or email..."
-            prefix={<SearchOutlined style={{ color: 'var(--text-muted)' }} />}
-            value={userSearchQuery}
-            onChange={(e) => setUserSearchQuery(e.target.value)}
-            allowClear
-          />
-        </div>
-
-        <div className="chat-modal-user-list">
-          {isLoadingUsers ? (
-            <div className="text-center p-4">
-              <Spin />
-            </div>
-          ) : filteredUsers.length > 0 ? (
-            filteredUsers.map((userItem: any) => {
-              const hasRoom = !!findRoomForUser(userItem._id);
-              
-              return (
-                <div key={userItem._id} className="chat-modal-user-item">
-                  <div className="chat-modal-user-info">
-                    <Avatar
-                      icon={<UserOutlined />}
-                      src={getProfilePhotoUrl(userItem.profilePhoto)}
-                    />
-                    <div className="chat-modal-user-details">
-                      <h5 className="chat-modal-user-name">{userItem.fullName || 'User'}</h5>
-                      <span className="chat-modal-user-email">{userItem.email}</span>
-                    </div>
-                  </div>
-                  <div className="chat-modal-user-action">
-                    <Button
-                      type={hasRoom ? 'primary' : 'default'}
-                      onClick={() => handleSelectUser(userItem)}
-                    >
-                      {hasRoom ? 'Open Chat' : 'Start Chat'}
-                    </Button>
-                  </div>
-                </div>
-              );
-            })
-          ) : (
-            <div className="text-center p-4 text-xs text-[var(--text-muted)]">No users found.</div>
-          )}
-        </div>
-      </Modal>
     </>
   );
 };

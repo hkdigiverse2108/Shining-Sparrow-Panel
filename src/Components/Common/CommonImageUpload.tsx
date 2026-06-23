@@ -83,8 +83,6 @@ export const CommonImageUpload: FC<CommonImageUploadProps> = ({
   };
 
   const handleRemove = () => helpers.setValue("");
-  
-  const borderRadiusStyle = shape === "circle" ? "50%" : "16px";
   const ringStyle = shape === "circle" ? "rounded-full" : "rounded-2xl";
 
   return (

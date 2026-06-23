@@ -27,7 +27,7 @@ const WorkshopSummary: React.FC = () => {
   const blockedCount = useMemo(() => workshops.filter((w: any) => w.isBlocked).length, [workshops]);
 
   return (
-    <motion.div variants={fadeInUp} className="col-span-full">
+    <motion.div variants={fadeInUp} className="col-span-full mt-5">
       <CommonCard
         title="Workshops"
         extra={

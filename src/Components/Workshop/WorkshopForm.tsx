@@ -2,7 +2,7 @@
 import { type FC, useMemo } from "react";
 import { Formik, Form } from "formik";
 import { CommonFormShell, CommonFormSection, CommonImageUpload } from "@/Components";
-import { CommonButton, CommonValidationTextField, CommonRichTextEditor } from "@/Attribute";
+import { CommonButton, CommonValidationTextField } from "@/Attribute";
 import * as Yup from "yup";
 
 const WorkshopSchema = Yup.object({

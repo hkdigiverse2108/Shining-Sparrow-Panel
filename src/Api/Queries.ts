@@ -9,6 +9,7 @@ export const Queries = {
 
   // ************ User ***********
   useGetUser: (params?: Params) => useQueries<UserApiResponse>([KEYS.USER.BASE, params], () => Get(URL_KEYS.USER.GET, params)),
+  useGetUserById: (id: string, options?: any) => useQueries<any>([KEYS.USER.BASE, "DETAIL", id], () => Get(`${URL_KEYS.USER.BASE}/${id}`), options),
 
   // ************ Course ***********
   useGetCourses: (params?: Params) => useQueries<CourseApiResponse>([KEYS.COURSE.BASE, params], () => Get(URL_KEYS.COURSE.GET, params)),
@@ -30,7 +31,7 @@ export const Queries = {
   // ************ Workshop ***********
   useGetWorkshops: (params?: Params) => useQueries<WorkshopApiResponse>([KEYS.WORKSHOP.BASE, params], () => Get(URL_KEYS.WORKSHOP.GET, params)),
 
-  useGetWorkshopById: (id: string) => useQueries<WorkshopApiResponse>([KEYS.WORKSHOP.BASE, "DETAIL", id], () => Get(`${URL_KEYS.WORKSHOP.BASE}/${id}`)),
+  useGetWorkshopById: (id: string) => useQueries<any>([KEYS.WORKSHOP.BASE, "DETAIL", id], () => Get(`${URL_KEYS.WORKSHOP.BASE}/${id}`)),
 
   // ************ Workshop Curriculum ***********
   useGetWorkshopCurriculums: (params?: Params) => useQueries<any>([KEYS.WORKSHOP_CURRICULUM.BASE, params], () => Get(URL_KEYS.WORKSHOP_CURRICULUM.GET, params)),

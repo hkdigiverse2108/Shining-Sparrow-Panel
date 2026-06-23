@@ -1,6 +1,5 @@
-import { type FC, useMemo, useState } from 'react';
+import { type FC, useMemo } from 'react';
 import { Formik, Form } from 'formik';
-import { Segmented, Upload, Button, Progress, message } from 'antd';
 import { CommonFormSection, CommonFormShell, CommonImageUpload, CommonVideoUpload, CommonAttachmentUpload } from '@/Components';
 import { CommonButton, CommonValidationTextField, CommonRichTextEditor, CommonValidationSelect } from '@/Attribute';
 import * as Yup from 'yup';
