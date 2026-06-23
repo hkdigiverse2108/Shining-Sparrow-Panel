@@ -21,6 +21,11 @@ export interface ChatMessage {
   roomId: string;
   senderId: ChatParticipant;
   message: string;
+  attachment?: {
+    url: string;
+    type: 'image' | 'pdf' | 'doc';
+    name: string;
+  };
   isDeleted: boolean;
   createdAt: string;
   updatedAt: string;
@@ -46,6 +51,11 @@ export interface ChatMessagesApiResponse {
 export interface SendMessagePayload {
   roomId?: string; // Optional for global room message
   message: string;
+  attachment?: {
+    url: string;
+    type: 'image' | 'pdf' | 'doc';
+    name: string;
+  };
 }
 
 export interface CreateRoomPayload {

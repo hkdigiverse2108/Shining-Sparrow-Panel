@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef, useMemo, type FC } from 'react';
+import { useState, useEffect, useRef, useMemo, useCallback, type FC, type ChangeEvent } from 'react';
 import { Avatar, Input, Button, Spin, Empty, Badge, Tag } from 'antd';
-import { SendOutlined, MessageOutlined, UserOutlined, SearchOutlined, ArrowLeftOutlined } from '@ant-design/icons';
+import { SendOutlined, MessageOutlined, UserOutlined, SearchOutlined, ArrowLeftOutlined, PaperClipOutlined, FileOutlined, FilePdfOutlined, CloseOutlined, DownloadOutlined } from '@ant-design/icons';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { io, Socket } from 'socket.io-client';
 import { Queries } from '@/Api/Queries';
@@ -9,7 +9,9 @@ import { useAppSelector } from '@/Store/hooks';
 import { getToken } from '@/Utils';
 import { CommonPageWrapper } from '@/Components';
 import { showNotification } from '@/Attribute';
+import { Post } from '@/Api/Methods';
 import type { ChatRoom, ChatMessage } from '@/Types/Chat';
+import { useQueryClient } from '@tanstack/react-query';
 
 const ChatPage: FC = () => {
   const currentUser = useAppSelector((state) => state.auth.user);
@@ -21,13 +23,24 @@ const ChatPage: FC = () => {
   const [messagesList, setMessagesList] = useState<ChatMessage[]>([]);
   const [inputText, setInputText] = useState('');
   const [isConnected, setIsConnected] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
   
   // Search State
   const [chatSearchQuery, setChatSearchQuery] = useState('');
 
   const socketRef = useRef<Socket | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const processedUserChatRef = useRef<string | null>(null);
+
+  const queryClient = useQueryClient();
+
+  const selectedRoomRef = useRef<ChatRoom | null>(null);
+
+  useEffect(() => {
+    selectedRoomRef.current = selectedRoom;
+  }, [selectedRoom]);
 
   // Mutations
   const createRoomMutation = Mutations.useCreateRoom();
@@ -48,10 +61,17 @@ const ChatPage: FC = () => {
   // 1. Fetch rooms list
   const { data: roomsData, isLoading: isLoadingRooms, refetch: refetchRooms } = Queries.useGetRooms();
 
+  const refetchRoomsRef = useRef(refetchRooms);
+  useEffect(() => {
+    refetchRoomsRef.current = refetchRooms;
+  }, [refetchRooms]);
+
   // Initialize rooms state when data loads
   useEffect(() => {
     if (roomsData?.data?.room_data) {
-      setRoomsList(roomsData.data.room_data);
+      Promise.resolve().then(() => {
+        setRoomsList(roomsData.data.room_data);
+      });
     }
   }, [roomsData]);
 
@@ -72,7 +92,9 @@ const ChatPage: FC = () => {
       });
 
       if (existingRoom) {
-        setSelectedRoom(existingRoom);
+        Promise.resolve().then(() => {
+          setSelectedRoom(existingRoom);
+        });
       } else {
         // Create new room automatically
         createRoomMutation.mutate(
@@ -101,13 +123,22 @@ const ChatPage: FC = () => {
     selectedRoom?._id || ''
   );
 
+  // Scroll messages wrapper to the bottom
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   // Initialize messages list state when messages data changes
   useEffect(() => {
     if (selectedRoom && messagesData?.data?.message_data) {
-      setMessagesList(messagesData.data.message_data);
-      setTimeout(scrollToBottom, 50);
+      Promise.resolve().then(() => {
+        setMessagesList(messagesData.data.message_data);
+        setTimeout(scrollToBottom, 50);
+      });
     } else if (!selectedRoom) {
-      setMessagesList([]);
+      Promise.resolve().then(() => {
+        setMessagesList([]);
+      });
     }
   }, [messagesData, selectedRoom]);
 
@@ -116,30 +147,46 @@ const ChatPage: FC = () => {
     const token = getToken();
     if (!token) return;
 
-    const socketUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5555';
+    let socketUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5555';
+    // Dynamically replace localhost/127.0.0.1 with current hostname for local network support
+    if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      socketUrl = socketUrl.replace('localhost', window.location.hostname).replace('127.0.0.1', window.location.hostname);
+    }
+
     const socket = io(socketUrl, {
       auth: { token },
-      transports: ['websocket', 'polling']
+      transports: ['websocket', 'polling'],
+      reconnection: true,
+      reconnectionAttempts: Infinity,
+      reconnectionDelay: 1000,
+      reconnectionDelayMax: 5000,
     });
 
     socketRef.current = socket;
 
     socket.on('connect', () => {
       setIsConnected(true);
-      console.log('Connected to chat server');
     });
 
     socket.on('disconnect', () => {
       setIsConnected(false);
-      console.log('Disconnected from chat server');
+    });
+
+    socket.on('connect_error', (err) => {
+      console.error('Socket connection error:', err.message);
+      setIsConnected(false);
     });
 
     // Real-time message listener
     socket.on('new_message', (data: { roomId: string; message: ChatMessage }) => {
       const { roomId, message } = data;
       
+      // Invalidate queries to trigger React Query refetches
+      queryClient.invalidateQueries({ queryKey: ['chat-rooms'] });
+      queryClient.invalidateQueries({ queryKey: ['chat-messages', roomId] });
+
       // If the message belongs to the active room, append to messages list
-      if (selectedRoom && selectedRoom._id === roomId) {
+      if (selectedRoomRef.current && selectedRoomRef.current._id === roomId) {
         setMessagesList((prev) => {
           if (prev.some((m) => m._id === message._id)) return prev;
           return [...prev, message];
@@ -152,9 +199,10 @@ const ChatPage: FC = () => {
         return prev
           .map((room) => {
             if (room._id === roomId) {
+              const preview = message.message || (message.attachment ? `[${message.attachment.name}]` : '');
               return {
                 ...room,
-                lastMessage: message.message,
+                lastMessage: preview,
                 lastMessageAt: message.createdAt,
               };
             }
@@ -166,36 +214,108 @@ const ChatPage: FC = () => {
 
     // Real-time room created listener
     socket.on('room_created', () => {
-      refetchRooms();
+      refetchRoomsRef.current();
     });
 
     return () => {
       socket.disconnect();
       socketRef.current = null;
     };
-  }, [selectedRoom, refetchRooms]);
+  }, []);
 
-  // Scroll messages wrapper to the bottom
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
 
   // 5. Send Message Mutation
   const sendMessageMutation = Mutations.useSendMessage();
 
-  const handleSendMessage = () => {
-    if (!inputText.trim()) return;
+  const handleSendMessage = async () => {
+    if (!inputText.trim() && !selectedFile) return;
 
-    const payload = {
-      message: inputText.trim(),
-      roomId: selectedRoom?.type === 'global' ? undefined : selectedRoom?._id,
-    };
+    const msg = inputText.trim();
+    const file = selectedFile;
+    setInputText('');
+    setSelectedFile(null);
 
-    sendMessageMutation.mutate(payload, {
-      onSuccess: () => {
-        setInputText('');
+    try {
+      let attachmentPayload: ChatMessage['attachment'] | undefined;
+
+      if (file) {
+        setUploading(true);
+        let fieldName = 'doc';
+        let attachType: 'image' | 'pdf' | 'doc' = 'doc';
+
+        if (file.type.startsWith('image/')) {
+          fieldName = 'images';
+          attachType = 'image';
+        } else if (file.type === 'application/pdf') {
+          fieldName = 'pdf';
+          attachType = 'pdf';
+        }
+
+        const formData = new FormData();
+        formData.append(fieldName, file);
+        if (fieldName === 'images') {
+          formData.append('category', 'chat');
+        }
+
+        const uploadResult: any = await Post('/upload', formData, true, false);
+        const uploaded = uploadResult?.data;
+        let url = '';
+        if (attachType === 'image') {
+          url = uploaded?.images?.[0] || '';
+        } else if (attachType === 'pdf') {
+          url = uploaded?.pdfs?.[0] || '';
+        } else {
+          url = uploaded?.docs?.[0] || '';
+        }
+
+        if (!url) {
+          console.error('Upload response missing URL:', uploadResult);
+          throw new Error('Upload returned no URL');
+        }
+        attachmentPayload = { url, type: attachType, name: file.name };
       }
-    });
+
+      const payload: any = {
+        message: msg || '',
+        roomId: selectedRoom?.type === 'global' ? undefined : selectedRoom?._id,
+      };
+      if (attachmentPayload) payload.attachment = attachmentPayload;
+
+      sendMessageMutation.mutate(payload, {
+        onSuccess: () => {
+          setInputText('');
+          queryClient.invalidateQueries({ queryKey: ['chat-rooms'] });
+          if (selectedRoom?._id) {
+            queryClient.invalidateQueries({ queryKey: ['chat-messages', selectedRoom._id] });
+          }
+        },
+        onError: (err: any) => {
+          console.error('Send message failed:', err);
+          setInputText(msg);
+          setSelectedFile(file);
+          showNotification('error', err?.message || 'Failed to send message');
+        },
+      });
+    } catch (err: any) {
+      console.error('File upload error:', err);
+      setInputText(msg);
+      setSelectedFile(file);
+      showNotification('error', err?.message || 'File upload failed');
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
+  const handleFileSelect = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setSelectedFile(file);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  const handleClearSelectedFile = () => {
+    setSelectedFile(null);
   };
 
   // Helper: Format message timestamp
@@ -222,10 +342,10 @@ const ChatPage: FC = () => {
   };
 
   // Helper: Get other participant details (for personal chat)
-  const getOtherParticipant = (room: ChatRoom) => {
+  const getOtherParticipant = useCallback((room: ChatRoom) => {
     if (room.type === 'global') return null;
     return room.participants.find((p) => p._id !== currentUser?._id) || room.participants[0] || null;
-  };
+  }, [currentUser?._id]);
 
   // Helper: Get photo url or base64
   const getProfilePhotoUrl = (photo?: string | null) => {
@@ -247,7 +367,7 @@ const ChatPage: FC = () => {
       const otherUser = getOtherParticipant(room);
       return otherUser?.fullName?.toLowerCase().includes(q);
     });
-  }, [roomsList, chatSearchQuery]);
+  }, [roomsList, chatSearchQuery, getOtherParticipant]);
 
   // Global room (Community)
   const globalRoom = useMemo(() => {
@@ -443,7 +563,38 @@ const ChatPage: FC = () => {
                                   </span>
                                 )}
                                 <div className="chat-message-bubble">
-                                  {msg.message}
+                                  {msg.message && <div className={msg.attachment ? 'mb-2' : ''}>{msg.message}</div>}
+                                  {msg.attachment && (
+                                    <div className={msg.message ? 'mt-2' : ''}>
+                                      {msg.attachment.type === 'image' ? (
+                                        <a href={msg.attachment.url} target="_blank" rel="noopener noreferrer">
+                                          <img
+                                            src={msg.attachment.url}
+                                            alt={msg.attachment.name}
+                                            style={{ maxWidth: '100%', maxHeight: 200, borderRadius: 8, objectFit: 'cover', cursor: 'pointer' }}
+                                          />
+                                        </a>
+                                      ) : (
+                                        <a
+                                          href={msg.attachment.url}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          style={{
+                                            display: 'flex', alignItems: 'center', gap: 8,
+                                            padding: '6px 10px', borderRadius: 8,
+                                            background: isSentByMe ? 'rgba(255,255,255,0.15)' : 'var(--bg-tertiary, #f5f5f5)',
+                                            color: 'inherit', fontSize: 12, textDecoration: 'none',
+                                          }}
+                                        >
+                                          {msg.attachment.type === 'pdf' ? <FilePdfOutlined /> : <FileOutlined />}
+                                          <span style={{ flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                            {msg.attachment.name}
+                                          </span>
+                                          <DownloadOutlined />
+                                        </a>
+                                      )}
+                                    </div>
+                                  )}
                                   <div className="chat-message-time" style={{ textAlign: isSentByMe ? 'right' : 'left' }}>
                                     {formatTime(msg.createdAt)}
                                   </div>
@@ -464,9 +615,61 @@ const ChatPage: FC = () => {
 
                 {/* Footer Composer */}
                 <div className="chat-footer">
+                  {/* File Preview */}
+                  {selectedFile && (
+                    <div style={{
+                      display: 'flex', alignItems: 'center', gap: 8,
+                      padding: '6px 12px', margin: '0 12px 8px',
+                      background: 'var(--bg-secondary, #fafafa)',
+                      border: '1px solid var(--border-color, #e8e8e8)',
+                      borderRadius: 8,
+                    }}>
+                      {selectedFile.type.startsWith('image/') ? (
+                        <img
+                          src={URL.createObjectURL(selectedFile)}
+                          alt="preview"
+                          style={{ width: 36, height: 36, borderRadius: 6, objectFit: 'cover' }}
+                        />
+                      ) : (
+                        <div style={{
+                          width: 36, height: 36, borderRadius: 6,
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          background: 'var(--primary-light, rgba(24,144,255,0.1))',
+                        }}>
+                          {selectedFile.type === 'application/pdf' ? <FilePdfOutlined /> : <FileOutlined />}
+                        </div>
+                      )}
+                      <span style={{ flex: 1, fontSize: 12, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {selectedFile.name}
+                      </span>
+                      <Button
+                        type="text"
+                        size="small"
+                        icon={<CloseOutlined />}
+                        onClick={handleClearSelectedFile}
+                        disabled={uploading}
+                        style={{ color: 'var(--text-muted, #999)' }}
+                      />
+                    </div>
+                  )}
+
                   <div className="chat-composer-wrapper">
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/*,.pdf,.doc,.docx"
+                      style={{ display: 'none' }}
+                      onChange={handleFileSelect}
+                    />
+                    <Button
+                      type="text"
+                      icon={<PaperClipOutlined />}
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={uploading}
+                      style={{ border: 'none', boxShadow: 'none', color: 'var(--text-muted, #999)' }}
+                    />
                     <Input
-                      placeholder="Type a message..."
+                      placeholder={selectedFile ? 'Add a caption...' : 'Type a message...'}
                       value={inputText}
                       onChange={(e) => setInputText(e.target.value)}
                       onPressEnter={(e) => {
@@ -476,13 +679,14 @@ const ChatPage: FC = () => {
                         }
                       }}
                       className="chat-composer-input"
-                      disabled={sendMessageMutation.isPending}
+                      disabled={sendMessageMutation.isPending || uploading}
                     />
                     <Button
                       type="primary"
-                      icon={<SendOutlined />}
+                      icon={uploading ? undefined : <SendOutlined />}
                       onClick={handleSendMessage}
-                      loading={sendMessageMutation.isPending}
+                      loading={uploading || sendMessageMutation.isPending}
+                      disabled={(!inputText.trim() && !selectedFile) || uploading}
                       className="chat-send-btn"
                     />
                   </div>
