@@ -1,6 +1,6 @@
 import { useMemo, useState, type FC } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Spin, Button, Segmented, Popconfirm } from 'antd';
+import { Spin, Button, Segmented, Popconfirm, Tag } from 'antd';
 import {
   BookOutlined, BarsOutlined, LockOutlined, UnlockOutlined,
   AppstoreOutlined, FolderOutlined, FileTextOutlined, PlusOutlined,
@@ -14,7 +14,7 @@ import { CommonBreadcrumbs, CommonPageWrapper, ContentItemCard, EmptyContentPane
 import { FAQForm } from '@/Components/Workshop/FAQForm';
 import {
   priorityBadge, durationBadge, videoBadge, attachmentBadge,
-  lockBadge, editAction, deleteAction,
+  lockBadge, editAction, deleteAction, blockAction, blockedBadge,
 } from '@/Components/Common/ContentItemCard';
 import { extractArray } from '@/Utils';
 
@@ -77,9 +77,32 @@ const ManageContentPage: FC = () => {
   const { data: faqsRes, isLoading: faqsLoading } = Queries.useGetFAQs({ type: 'course', learningCatalogFilter: courseId });
 
   const deleteLessonMutation = Mutations.useDeleteLesson();
+  const editLessonMutation = Mutations.useUpdateLesson();
   const addFAQMutation = Mutations.useAddFAQ();
   const editFAQMutation = Mutations.useUpdateFAQ();
   const deleteFAQMutation = Mutations.useDeleteFAQ();
+
+  const handleToggleBlockLesson = (lesson: any) => {
+    editLessonMutation.mutate(
+      { courseLessonId: lesson._id, isBlocked: !lesson.isBlocked },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: [KEYS.LESSON.BASE] });
+        },
+      }
+    );
+  };
+
+  const handleToggleBlockFAQ = (faq: any) => {
+    editFAQMutation.mutate(
+      { faqId: faq._id, isBlocked: !faq.isBlocked },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: [KEYS.FAQ.BASE] });
+        },
+      }
+    );
+  };
 
   const allCourses = useMemo(() => extractArray(courseRes), [courseRes]);
   const course = useMemo(() => allCourses.find((c: any) => c._id === courseId), [allCourses, courseId]);
@@ -177,7 +200,9 @@ const ManageContentPage: FC = () => {
       subtitle={lesson.subtitle}
       description={lesson.description}
       thumbnail={lesson.thumbnail}
+      className={lesson.isBlocked ? 'opacity-75 border-red-100 bg-red-50/5' : ''}
       badges={[
+        ...(lesson.isBlocked ? [blockedBadge()] : []),
         priorityBadge(lesson.priority),
         ...(lesson.duration ? [durationBadge(lesson.duration)] : []),
         ...(lesson.videoLink ? [videoBadge(lesson.videoLink, 'Video Lesson')] : []),
@@ -186,10 +211,11 @@ const ManageContentPage: FC = () => {
       ]}
       actions={[
         {
-          label: 'Assessment',
+          label: 'Exam',
           onClick: () => navigate(`/courses/${targetCourseId}/lesson/${lesson._id}/exam`),
         },
         editAction(() => navigate(`/courses/${targetCourseId}/lesson/${lesson._id}/edit?redirectBack=/courses/${courseId}/manage`)),
+        blockAction(lesson.isBlocked, () => handleToggleBlockLesson(lesson), editLessonMutation.isPending),
         deleteAction(
           () => handleDeleteLesson(lesson._id),
           'All exams and questions linked to this lesson will be affected.',
@@ -381,7 +407,7 @@ const ManageContentPage: FC = () => {
                       <div className="space-y-4 mt-4">
                         {faqs.length > 0 ? (
                           faqs.map((faq: any) => (
-                            <div key={faq._id} className="bg-surface border border-border shadow-sm rounded-2xl p-4 sm:p-6 hover:shadow-md transition-shadow group">
+                            <div key={faq._id} className={`bg-surface border border-border shadow-sm rounded-2xl p-4 sm:p-6 hover:shadow-md transition-shadow group ${faq.isBlocked ? 'opacity-75 border-red-200 bg-red-50/5' : ''}`}>
                               <div className="flex justify-between items-start gap-4">
                                 <div className="space-y-3 flex-1">
                                   {/* English */}
@@ -389,6 +415,7 @@ const ManageContentPage: FC = () => {
                                     <h4 className="font-semibold text-foreground text-base flex items-start gap-2 leading-snug">
                                       <span className="text-[10px] font-bold text-indigo-500 bg-indigo-500/10 border border-indigo-500/20 w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">EN</span>
                                       {faq.question?.en}
+                                      {faq.isBlocked && <Tag color="red" className="m-0 ml-2">Blocked</Tag>}
                                     </h4>
                                     <div className="text-sm text-text-muted pl-7 leading-relaxed flex items-start gap-2">
                                       <span className="flex-1 content-card-description">{faq.answer?.en}</span>
@@ -422,6 +449,16 @@ const ManageContentPage: FC = () => {
                                   )}
                                 </div>
                                 <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
+                                  <Button
+                                    type="text"
+                                    size="small"
+                                    icon={faq.isBlocked ? <UnlockOutlined /> : <LockOutlined />}
+                                    onClick={() => handleToggleBlockFAQ(faq)}
+                                    className="h-7 w-7 rounded-full flex items-center justify-center p-0"
+                                    title={faq.isBlocked ? "Unblock FAQ" : "Block FAQ"}
+                                    danger={!faq.isBlocked}
+                                    loading={editFAQMutation.isPending}
+                                  />
                                   <Button type="text" size="small" icon={<EditOutlined />} onClick={() => setActiveForm({ type: 'editFAQ', data: faq })} className="h-7 w-7 rounded-full flex items-center justify-center p-0" />
                                   <Popconfirm title="Delete this FAQ?" description="This will remove it from the course." onConfirm={() => handleDeleteFAQ(faq._id)} okText="Delete" cancelText="Cancel" okButtonProps={{ danger: true }}>
                                     <Button type="text" size="small" danger icon={<DeleteOutlined />} className="hover:bg-red-50 h-7 w-7 rounded-full flex items-center justify-center p-0" />

@@ -1,6 +1,6 @@
 import { useState, useMemo, type FC } from 'react';
-import { Button, Tag, Spin } from 'antd'; 
-import { DeleteOutlined, PlusOutlined, MobileOutlined, DesktopOutlined } from '@ant-design/icons';
+import { Button, Tag, Spin, Tooltip } from 'antd'; 
+import { DeleteOutlined, PlusOutlined, MobileOutlined, DesktopOutlined, LockOutlined, UnlockOutlined, EditOutlined } from '@ant-design/icons';
 import { KEYS } from '@/Constants';
 import { BREADCRUMBS } from '@/Data';
 import { CommonPageWrapper, CommonBreadcrumbs, HeroBannerForm, CommonDeleteModal } from '@/Components'; 
@@ -35,6 +35,17 @@ const HeroBanner: FC = () => {
         setIsFormOpen(false);
       },
     });
+  };
+
+  const handleToggleBlock = (banner: any) => {
+    editBannerMutation.mutate(
+      { heroBannerId: banner._id, isBlocked: !banner.isBlocked },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: [KEYS.HERO_BANNER.BASE] });
+        },
+      }
+    );
   };
 
   // Updated to open the modal instead of directly deleting
@@ -125,8 +136,32 @@ const HeroBanner: FC = () => {
                           <div className="absolute bottom-0 left-0 right-0 p-5 z-10 pointer-events-none">
                             <h4 className="text-white font-bold text-lg drop-shadow-lg leading-tight line-clamp-2">{banner.title || "Untitled"}</h4>
                           </div>
-                          <div className="absolute top-3 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 translate-x-4 group-hover:translate-x-0 transition-all duration-300 z-20">
-                            <Button shape="circle" danger icon={<DeleteOutlined />} className="backdrop-blur-md bg-red-500/80 border border-white/30 text-white shadow-lg hover:bg-red-600" onClick={(e) => { e.stopPropagation(); handleDeleteClick(banner); }} />
+                          <div className="absolute top-3 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 translate-x-4 group-hover:translate-x-0 transition-all duration-300 z-40">
+                            <Tooltip title="Edit Banner">
+                              <Button 
+                                shape="circle" 
+                                icon={<EditOutlined />} 
+                                className="backdrop-blur-md bg-white/80 border border-white/30 text-foreground shadow-lg hover:bg-white" 
+                                onClick={(e) => { e.stopPropagation(); setEditingBanner(banner); setIsFormOpen(true); }} 
+                              />
+                            </Tooltip>
+                            <Tooltip title={banner.isBlocked ? "Unblock Banner" : "Block Banner"}>
+                              <Button 
+                                shape="circle" 
+                                icon={banner.isBlocked ? <UnlockOutlined /> : <LockOutlined />} 
+                                className="backdrop-blur-md bg-white/80 border border-white/30 text-foreground shadow-lg hover:bg-white" 
+                                onClick={(e) => { e.stopPropagation(); handleToggleBlock(banner); }} 
+                              />
+                            </Tooltip>
+                            <Tooltip title="Delete Banner">
+                              <Button 
+                                shape="circle" 
+                                danger 
+                                icon={<DeleteOutlined />} 
+                                className="backdrop-blur-md bg-red-500/80 border border-white/30 text-white shadow-lg hover:bg-red-600" 
+                                onClick={(e) => { e.stopPropagation(); handleDeleteClick(banner); }} 
+                              />
+                            </Tooltip>
                           </div>
 
                           {/* Type Tag (Top Left) */}

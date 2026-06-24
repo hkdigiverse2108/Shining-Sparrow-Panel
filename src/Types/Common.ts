@@ -135,6 +135,7 @@ export interface CommonSelectProps {
   searchKeys?: string[];
   fullWidth?: boolean;
   maxTagCount?: number | 'responsive';
+  showSearch?: boolean;
 }
 
 export interface CommonTableToolbarProps {

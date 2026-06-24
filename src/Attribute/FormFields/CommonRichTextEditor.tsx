@@ -78,9 +78,13 @@ export const CommonRichTextEditor: React.FC<CommonRichTextEditorProps> = ({ valu
       wrapperCol={{ span: 24 }} 
       className={`modern-form-item ${className}`}
     >
-      <div className="w-full rounded-xl border border-border overflow-hidden bg-surface transition-colors focus-within:ring-2 focus-within:ring-primary focus-within:border-primary">
+      <div className={`w-full rounded-lg border overflow-hidden bg-surface-muted transition-all duration-300 flex flex-col ${
+        showError 
+          ? 'border-danger focus-within:border-danger focus-within:ring-2 focus-within:ring-red-500/20' 
+          : 'border-border hover:border-border-hover focus-within:border-primary focus-within:bg-surface focus-within:ring-2 focus-within:ring-primary-ring'
+      }`}>
         {/* Toolbar */}
-        <div className="flex items-center gap-0.5 p-2 border-b border-border bg-surface-muted flex-wrap">
+        <div className="flex items-center gap-0.5 p-1.5 border-b border-border bg-surface-muted flex-wrap">
           <ToolBtn onClick={() => editor.chain().focus().toggleBold().run()} isActive={editor.isActive('bold')}>
             <BoldOutlined />
           </ToolBtn>
@@ -114,7 +118,7 @@ export const CommonRichTextEditor: React.FC<CommonRichTextEditorProps> = ({ valu
         </div>
 
         {/* Writing Area */}
-        <div className="w-full" onBlur={() => { if (formikContext && name) helpers.setTouched(true); }}>
+        <div className="w-full bg-transparent" onBlur={() => { if (formikContext && name) helpers.setTouched(true); }}>
           <EditorContent editor={editor} />
         </div>
       </div>

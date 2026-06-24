@@ -16,6 +16,7 @@ const HeroBannerSchema = Yup.object({
   type: Yup.string().required("Banner type is required"),
   title: Yup.string().optional(),
   description: Yup.string().optional(),
+  isBlocked: Yup.boolean().optional(),
 });
 
 const bannerTypes = [
@@ -26,7 +27,7 @@ const bannerTypes = [
 export const HeroBannerForm: FC<HeroBannerFormProps> = ({ open, onClose, onSave, editing, loading = false }) => {
   const defaults = {
     type: "web", title: "", description: "", 
-    images: ["", ""], link: "", image: "",
+    images: ["", ""], link: "", image: "", isBlocked: false,
   };
 
   const initialValues = useMemo(() => {
@@ -50,6 +51,7 @@ export const HeroBannerForm: FC<HeroBannerFormProps> = ({ open, onClose, onSave,
       title: v.title || "",
       description: v.description || "",
       images: v.images || [],
+      isBlocked: v.isBlocked || false,
     };
 
     if (v.type === "app") {
@@ -86,6 +88,7 @@ export const HeroBannerForm: FC<HeroBannerFormProps> = ({ open, onClose, onSave,
                 // }}
               />
               <CommonValidationTextField name="title" label="Banner Title" />
+              
               
               <div className="col-span-full mb-4">
                 <CommonRichTextEditor

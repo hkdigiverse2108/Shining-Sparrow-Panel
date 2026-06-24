@@ -2,6 +2,7 @@ import type { CommonDataType, MessageStatus, PageStatus } from "./Common";
 
 export interface LessonFormValues {
     id?: string;
+    courseLessonId?: string;
     courseId: string;
     title: string;
     subtitle?: string;
@@ -12,11 +13,12 @@ export interface LessonFormValues {
     priority?: number;
     practiceMaterial?: string;
     lessonLock?: boolean;
+    isBlocked?: boolean;
 }
 
 export type AddLessonPayload = LessonFormValues;
 
-export type UpdateLessonPayload = AddLessonPayload;
+export type UpdateLessonPayload = Partial<LessonFormValues> & { courseLessonId: string };
 
 export type LessonBase = LessonFormValues & CommonDataType;
 

@@ -104,4 +104,15 @@ export const KEYS = {
     BASE: "settings",
     ADD_EDIT: "add-edit",
   },
+  GET_IN_TOUCH: {
+    BASE: "get-in-touch",
+    DELETE: "delete-get-in-touch",
+  },
+  COUPON_CODE: {
+    BASE: "coupon-code",
+    DELETE: "delete-coupon-code",
+  },
+  CONTACT_US: {
+    BASE: "contact-us",
+  },
 };

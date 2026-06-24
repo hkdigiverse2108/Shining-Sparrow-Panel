@@ -117,5 +117,24 @@ export const URL_KEYS = {
   SETTING: {
     ALL: "/settings/all",
     ADD_EDIT: "/settings/add-edit",
-  }
+  },
+  GET_IN_TOUCH: {
+    BASE: "/get-in-touch",
+    ADD: "/get-in-touch/add",
+    EDIT: "/get-in-touch/edit",
+    DELETE: "/get-in-touch/delete",
+    GET: "/get-in-touch/all",
+  },
+  COUPON_CODE: {
+    BASE: "/coupon-code",
+    ADD: "/coupon-code/add",
+    EDIT: "/coupon-code/edit",
+    DELETE: "/coupon-code/delete",
+    GET: "/coupon-code/all",
+  },
+  CONTACT_US: {
+    BASE: "/contact-us",
+    GET: "/contact-us/all",
+    ADD_EDIT: "/contact-us/add-edit",
+  },
 } as const;

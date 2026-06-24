@@ -58,6 +58,16 @@ export const Queries = {
   useGetRooms: (params?: Params) => useQueries<ChatRoomsApiResponse>([KEYS.CHAT.ROOMS, params], () => Get(URL_KEYS.CHAT.ROOMS, params)),
   useGetMessages: (roomId: string, params?: Params) => useQueries<ChatMessagesApiResponse>([KEYS.CHAT.MESSAGES, roomId, params], () => Get(`${URL_KEYS.CHAT.MESSAGES}/${roomId}`, params), { enabled: !!roomId }),
 
-  // ************ Chat ***********
+  // ************ Settings ***********
   useGetSetting: (params?: Params) => useQueries<SettingApiResponse>([KEYS.SETTING.BASE, params], () => Get(URL_KEYS.SETTING.ALL, params)),
+
+  // ************ Contact / Get In Touch ***********
+  useGetContactMessages: (params?: Params) => useQueries<any>([KEYS.GET_IN_TOUCH.BASE, params], () => Get(URL_KEYS.GET_IN_TOUCH.GET, params)),
+
+  // ************ Coupon Code ***********
+  useGetCouponCodes: (params?: Params) => useQueries<any>([KEYS.COUPON_CODE.BASE, params], () => Get(URL_KEYS.COUPON_CODE.GET, params)),
+
+  // ************ Contact Us details ***********
+  useGetContactUs: (options?: any) => useQueries<any>([KEYS.CONTACT_US.BASE], () => Get(URL_KEYS.CONTACT_US.GET), options),
 };
+

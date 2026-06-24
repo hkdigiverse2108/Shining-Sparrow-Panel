@@ -30,4 +30,5 @@ export const BREADCRUMBS = {
   },
   CHAT: [{ label: PAGE_TITLE.CHAT }],
   FAQ: { BASE: [{ label: PAGE_TITLE.FAQ }] },
+  COUPON_CODE: { BASE: [{ label: PAGE_TITLE.COUPON_CODE }] },
 }

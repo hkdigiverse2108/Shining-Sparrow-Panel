@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { Button, Popconfirm } from 'antd';
+import { Button, Popconfirm, Tooltip } from 'antd';
 import {
   EditOutlined,
   DeleteOutlined,
@@ -37,6 +37,7 @@ export interface ContentAction {
   onClick?: () => void;
   onConfirm?: () => void;   // used when confirm=true
   loading?: boolean;
+  tooltip?: string;
 }
 
 // ─── Main props ──────────────────────────────────────────────────────────────
@@ -62,7 +63,7 @@ const BADGE_CLASS: Record<BadgeColor, string> = {
   emerald: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600 hover:bg-emerald-500/20',
   amber:   'bg-amber-500/10 border-amber-500/20 text-amber-600 hover:bg-amber-500/20',
   green:   'bg-green-500/10 border-green-500/20 text-green-600',
-  red:     'bg-red-500/10 border-red-500/20 text-red-655',
+  red:     'bg-red-500/10 border-red-500/20 text-red-600',
 };
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -135,9 +136,8 @@ const ContentItemCard: React.FC<ContentItemCardProps> = ({
       {actions.length > 0 && (
         <div className="flex flex-row items-center gap-2 flex-shrink-0 self-end md:self-center">
           {actions.map((action, i) => {
-            const btn = action.label ? (
+            const btnInner = action.label ? (
               <Button
-                key={i}
                 size="small"
                 icon={action.icon}
                 danger={action.danger}
@@ -150,19 +150,17 @@ const ContentItemCard: React.FC<ContentItemCardProps> = ({
               </Button>
             ) : (
               <Button
-                key={i}
                 type="text"
                 icon={action.icon}
                 danger={action.danger}
                 loading={action.loading}
                 onClick={action.onClick}
-                className={`rounded-lg ${action.danger ? 'hover:bg-red-500/10' : 'hover:bg-surface-muted'}`}
+                className={`rounded-lg ${action.danger ? 'hover:bg-red-500/10 hover:!text-red-500' : 'hover:bg-surface-muted'}`}
               />
             );
 
-            return action.confirm ? (
+            const btnConfirm = action.confirm ? (
               <Popconfirm
-                key={i}
                 title={action.confirmTitle ?? 'Are you sure?'}
                 description={action.confirmDesc}
                 onConfirm={action.onConfirm}
@@ -170,9 +168,17 @@ const ContentItemCard: React.FC<ContentItemCardProps> = ({
                 cancelText="Cancel"
                 okButtonProps={{ danger: true }}
               >
-                {btn}
+                {btnInner}
               </Popconfirm>
-            ) : btn;
+            ) : btnInner;
+
+            return action.tooltip ? (
+              <Tooltip title={action.tooltip} key={i}>
+                <span>{btnConfirm}</span>
+              </Tooltip>
+            ) : (
+              <span key={i}>{btnConfirm}</span>
+            );
           })}
         </div>
       )}
@@ -247,4 +253,17 @@ export const deleteAction = (onConfirm: () => void, confirmDesc?: string): Conte
   confirmTitle: 'Delete this item?',
   confirmDesc,
   onConfirm,
+});
+
+export const blockAction = (blocked: boolean, onClick: () => void, loading?: boolean): ContentAction => ({
+  icon: blocked ? <UnlockOutlined /> : <LockOutlined />,
+  tooltip: blocked ? 'Unblock' : 'Block',
+  onClick,
+  danger: !blocked,
+  loading,
+});
+
+export const blockedBadge = (): ContentBadge => ({
+  label: 'Blocked',
+  color: 'red',
 });

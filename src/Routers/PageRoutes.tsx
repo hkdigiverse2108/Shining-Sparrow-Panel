@@ -28,6 +28,7 @@ import FaqPage from "@/Pages/Faq";
 import AboutUs from "@/Pages/AboutUs";
 import Chat from "@/Pages/Chat";
 import Setting from "@/Pages/Profile";
+import Coupon from "@/Pages/Coupon";
 
 export const PageRoutes = [
   { path: ROUTES.DASHBOARD, name: PAGE_TITLE.DASHBOARD, element: <Dashboard /> },
@@ -64,6 +65,7 @@ export const PageRoutes = [
   { path: ROUTES.CHAT, name: PAGE_TITLE.CHAT, element: <Chat /> },
   { path: ROUTES.FAQ, name: PAGE_TITLE.FAQ, element: <FaqPage /> },
   { path: ROUTES.SETTING.BASE, name: "Settings", element: <Setting /> },
+  { path: ROUTES.COUPON_CODE, name: PAGE_TITLE.COUPON_CODE, element: <Coupon /> },
 ];
 
 export const AuthRoutes = [

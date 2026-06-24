@@ -3,6 +3,7 @@ import type { CommonDataType, MessageStatus, PageStatus } from "./Common";
 export interface QuestionFormValues {
     _id?: string;
     examId?: string;
+    questionId?: string;
     courseId: string;
     questionText: string;
     questionImage?: string;
@@ -11,11 +12,12 @@ export interface QuestionFormValues {
     correctAnswer: string;
     score?: number;
     priority?: number;
+    isBlocked?: boolean;
 }
 
 export type AddQuestionPayload = QuestionFormValues;
 
-export type UpdateQuestionPayload = AddQuestionPayload;
+export type UpdateQuestionPayload = Partial<QuestionFormValues> & { questionId: string };
 
 export type QuestionBase = QuestionFormValues & CommonDataType;
 

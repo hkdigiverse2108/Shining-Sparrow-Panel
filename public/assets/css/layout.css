@@ -616,22 +616,30 @@
   @apply bg-danger/10 text-danger group-hover:bg-danger group-hover:text-white; 
 }
 .user-cell-profile {
-  @apply flex items-center gap-3;
+  @apply flex items-center gap-3 min-w-0;
 }
 .user-cell-info {
-  @apply min-w-0;
+  @apply min-w-0 flex flex-col gap-0.5;
 }
 .user-cell-name {
-  @apply text-sm font-semibold text-foreground truncate;
+  @apply text-sm font-semibold text-foreground truncate leading-tight;
 }
 .user-cell-date {
-  @apply text-[10px] text-muted;
+  @apply text-[11px] text-muted leading-none;
 }
 .user-cell-email {
-  @apply text-sm text-muted;
+  @apply text-sm text-muted truncate;
+}
+.user-cell-phone {
+  @apply text-sm text-muted font-mono;
 }
 .user-cell-actions {
-  @apply flex items-center gap-1;
+  @apply flex items-center gap-1.5;
+}
+/* Avatar ring effect on hover row */
+.ant-table-row:hover .user-cell-profile .ant-avatar {
+  box-shadow: 0 0 0 2px var(--primary) !important;
+  transition: box-shadow 0.2s ease;
 }
 .user-role-admin {
   @apply bg-warning/10 text-warning border-transparent;

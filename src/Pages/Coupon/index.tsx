@@ -1,0 +1,293 @@
+import { useState, useMemo, type FC } from 'react';
+import { Button, Tag, Tooltip } from 'antd';
+import {
+  DeleteOutlined,
+  EditOutlined, CalendarOutlined, CheckCircleOutlined,
+  CloseCircleOutlined, LockOutlined, UnlockOutlined
+} from '@ant-design/icons';
+import { motion } from 'motion/react';
+import { useQueryClient } from '@tanstack/react-query';
+import { CommonBreadcrumbs, CommonPageWrapper, CommonTable, CommonDeleteModal, CommonSummaryCards } from '@/Components';
+import { blurRevealUp, staggerContainer } from '@/Utils/animations';
+import { BREADCRUMBS } from '@/Data';
+import { Queries, Mutations } from '@/Api';
+import { KEYS } from '@/Constants';
+import { useDebounce } from '@/Utils';
+import type { ColumnType } from 'antd/es/table';
+import dayjs from 'dayjs';
+import { CouponForm } from './CouponForm';
+
+const getCouponColumns = ({ 
+  onEdit, 
+  onToggleStatus, 
+  onDelete, 
+  current = 1, 
+  pageSize = 10 
+}: any): ColumnType<any>[] => [
+  {
+    title: 'Sr. No.',
+    key: 'srNo',
+    width: 70,
+    render: (_: any, __: any, index: number) => (current - 1) * pageSize + index + 1
+  },
+  {
+    title: 'Code',
+    dataIndex: 'code',
+    width: 140,
+    render: (v: string) => (
+      <span className="px-2 py-0.5 rounded bg-primary/10 text-primary border border-primary/20 text-xs font-mono font-bold uppercase tracking-wider">
+        {v}
+      </span>
+    )
+  },
+  {
+    title: 'Title',
+    dataIndex: 'title',
+    render: (v: string) => <span className="font-semibold text-foreground">{v}</span>
+  },
+  {
+    title: 'Discount',
+    dataIndex: 'discountValue',
+    width: 130,
+    render: (_, r: any) => (
+      <span className="font-medium">
+        {r.discountType === 'percentage' ? `${r.discountValue}%` : `₹${r.discountValue}`}
+      </span>
+    )
+  },
+  {
+    title: 'Applies To',
+    dataIndex: 'appliesTo',
+    width: 130,
+    render: (v: string) => (
+      <Tag color={v === 'default' ? 'cyan' : v === 'course' ? 'blue' : 'purple'} className="capitalize border-none font-medium">
+        {v === 'default' ? 'All Products' : v}
+      </Tag>
+    )
+  },
+  {
+    title: 'Validity',
+    width: 220,
+    render: (_, r: any) => (
+      <div className="flex flex-col gap-0.5 text-xs text-muted">
+        <span className="flex items-center gap-1">
+          <CalendarOutlined className="text-[10px]" />
+          Start: {r.startDate ? dayjs(r.startDate).format('DD MMM YYYY') : '—'}
+        </span>
+        <span className="flex items-center gap-1">
+          <CalendarOutlined className="text-[10px]" />
+          End: {r.endDate ? dayjs(r.endDate).format('DD MMM YYYY') : '—'}
+        </span>
+      </div>
+    )
+  },
+  {
+    title: 'Usage',
+    width: 130,
+    render: (_, r: any) => (
+      <span className="text-xs text-muted">
+        {r.usedCount} / {r.usageLimit ? r.usageLimit : 'Unlimited'}
+      </span>
+    )
+  },
+  {
+    title: 'Status',
+    dataIndex: 'status',
+    width: 100,
+    render: (v: string) => {
+      const isAct = v === 'active';
+      return (
+        <Tag
+          icon={isAct ? <CheckCircleOutlined /> : <CloseCircleOutlined />}
+          color={isAct ? 'green' : v === 'expired' ? 'red' : 'orange'}
+          className="capitalize border-none"
+        >
+          {v}
+        </Tag>
+      );
+    }
+  },
+  {
+    title: 'Actions',
+    dataIndex: 'actions',
+    width: 120,
+    fixed: 'right' as const,
+    render: (_: any, r: any) => {
+      const isAct = r.status === 'active';
+      return (
+        <div className="flex gap-1 justify-center">
+          <Tooltip title={isAct ? "Deactivate Coupon" : "Activate Coupon"}>
+            <Button
+              type="text"
+              size="small"
+              icon={isAct ? <LockOutlined /> : <UnlockOutlined />}
+              onClick={() => onToggleStatus(r)}
+              className={isAct ? "hover:!bg-amber-500/10 hover:!text-amber-500 text-muted transition-all duration-200" : "hover:!bg-emerald-500/10 hover:!text-emerald-500 text-muted transition-all duration-200"}
+            />
+          </Tooltip>
+          <Button type="text" size="small" icon={<EditOutlined />} onClick={() => onEdit(r)} />
+          <Button type="text" size="small" danger icon={<DeleteOutlined />} onClick={() => onDelete(r)} />
+        </div>
+      );
+    }
+  }
+];
+
+const CouponPage: FC = () => {
+  const queryClient = useQueryClient();
+  const [searchQuery, setSearchQuery] = useState("");
+  const debouncedSearchQuery = useDebounce(searchQuery, 500);
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [editingCoupon, setEditingCoupon] = useState<any | null>(null);
+
+  const [current, setCurrent] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
+  // State for Delete Modal
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [couponToDelete, setCouponToDelete] = useState<any | null>(null);
+
+  // Fetch Coupons
+  const { data: responseData, isLoading } = Queries.useGetCouponCodes({
+    page: current,
+    limit: pageSize,
+    search: debouncedSearchQuery
+  });
+
+  const coupons = useMemo(() => responseData?.data?.coupon_code_data || [], [responseData]);
+  const totalCoupons = Number(responseData?.data?.totalData) || 0;
+
+  // Fetch Courses & Workshops for Form dropdown selection
+  const { data: coursesRes } = Queries.useGetCourses({ page: 1, limit: 1000 });
+  const coursesOptions = useMemo(() => 
+    (coursesRes?.data?.course_data || []).map((c: any) => ({ value: c._id, label: c.name })), 
+    [coursesRes]
+  );
+
+  const { data: workshopsRes } = Queries.useGetWorkshops({ page: 1, limit: 1000 });
+  const workshopsOptions = useMemo(() => 
+    (workshopsRes?.data?.workshop_data || []).map((w: any) => ({ value: w._id, label: w.title })), 
+    [workshopsRes]
+  );
+
+  // Mutations
+  const addCouponMutation = Mutations.useAddCouponCode();
+  const editCouponMutation = Mutations.useUpdateCouponCode();
+  const deleteCouponMutation = Mutations.useDeleteCouponCode();
+
+  const handleSearch = (q: string) => {
+    setSearchQuery(q);
+    setCurrent(1);
+  };
+
+  const handleSave = (values: any) => {
+    const mutation = editingCoupon ? editCouponMutation : addCouponMutation;
+    mutation.mutate(values, {
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: [KEYS.COUPON_CODE.BASE] });
+        setIsFormOpen(false);
+        setEditingCoupon(null);
+      },
+    });
+  };
+
+  const handleToggleStatus = (coupon: any) => {
+    const nextStatus = coupon.status === 'active' ? 'inactive' : 'active';
+    editCouponMutation.mutate(
+      { 
+        couponCodeId: coupon._id, 
+        status: nextStatus 
+      },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: [KEYS.COUPON_CODE.BASE] });
+        }
+      }
+    );
+  };
+
+  const handleDeleteClick = (coupon: any) => { 
+    setCouponToDelete(coupon);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (!couponToDelete) return;
+    deleteCouponMutation.mutate(couponToDelete._id, {
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: [KEYS.COUPON_CODE.BASE] });
+        setIsDeleteModalOpen(false);
+        setCouponToDelete(null);
+      }
+    });
+  };
+
+  const columns = useMemo(() => getCouponColumns({ 
+    onEdit: (c: any) => { setEditingCoupon(c); setIsFormOpen(true); }, 
+    onToggleStatus: handleToggleStatus,
+    onDelete: handleDeleteClick,
+    current,
+    pageSize
+  }), [current, pageSize]);  
+
+  const handleTableChange = (pagination: any) => {
+    setCurrent(pagination.current);
+    setPageSize(pagination.pageSize);
+  };
+
+  return (
+    <>
+      <CommonBreadcrumbs title="Coupon Codes" breadcrumbs={BREADCRUMBS.COUPON_CODE.BASE} />
+      <CommonPageWrapper>
+        {isFormOpen ? (
+          <div className="course-container course-container--narrow">
+            <CouponForm 
+              open={isFormOpen} 
+              onClose={() => { setIsFormOpen(false); setEditingCoupon(null); }} 
+              onSave={handleSave} 
+              editing={editingCoupon} 
+              loading={addCouponMutation.isPending || editCouponMutation.isPending}
+              courses={coursesOptions}
+              workshops={workshopsOptions}
+            />
+          </div>
+        ) : (
+          <motion.div variants={staggerContainer} initial="hidden" animate="visible">
+            <CommonSummaryCards 
+              total={totalCoupons} 
+              active={coupons.filter((c: any) => c.status === 'active').length} 
+              blocked={coupons.filter((c: any) => c.status === 'inactive').length} 
+              subject="Coupons" 
+            />
+            <motion.div variants={blurRevealUp}>
+              <CommonTable 
+                columns={columns} 
+                data={coupons} 
+                loading={isLoading} 
+                searchPlaceholder="Search coupon codes..." 
+                onSearch={handleSearch} 
+                onAdd={() => { setEditingCoupon(null); setIsFormOpen(true); }} 
+                fileName="CouponCodes" 
+                title="Coupon Code Management" 
+                current={current} 
+                pageSize={pageSize} 
+                total={totalCoupons} 
+                onTableChange={handleTableChange} 
+              />
+            </motion.div>
+          </motion.div>
+        )}
+      </CommonPageWrapper>
+      <CommonDeleteModal 
+        open={isDeleteModalOpen} 
+        title="Delete Coupon Code" 
+        itemName={couponToDelete?.code} 
+        loading={deleteCouponMutation.isPending} 
+        onClose={() => { setIsDeleteModalOpen(false); setCouponToDelete(null); }} 
+        onConfirm={handleConfirmDelete} 
+      />
+    </>
+  );
+};
+
+export default CouponPage;

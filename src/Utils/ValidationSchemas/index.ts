@@ -101,7 +101,7 @@ export const UserSchema = Yup.object({
     std: Yup.string().optional(),
     reachFrom: Yup.string().optional(),
     schoolName: Yup.string().optional(),
-    referralCode: Yup.string().optional(),
+    address: Yup.string().optional(),
     password: Yup.string()
         .required("Password is required")
         .min(6, "Minimum 6 characters required")
@@ -119,7 +119,7 @@ export const EditUserSchema = Yup.object({
     std: Yup.string().optional(),
     reachFrom: Yup.string().optional(),
     schoolName: Yup.string().optional(),
-    referralCode: Yup.string().optional(),
+    address: Yup.string().optional(),
     isBlocked: Yup.string().optional(),
     isEmailVerified: Yup.string().optional(),
     password: Yup.string().optional().min(6, "Minimum 6 characters required"),

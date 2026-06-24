@@ -1,6 +1,6 @@
 import { useState, useMemo, type FC } from 'react';
-import { Button, Tag, Spin, Select } from 'antd';
-import { DeleteOutlined, PlusOutlined, QuestionCircleOutlined, EditOutlined, StarFilled } from '@ant-design/icons';
+import { Button, Tag, Spin, Select, Tooltip } from 'antd';
+import { DeleteOutlined, PlusOutlined, QuestionCircleOutlined, EditOutlined, StarFilled, LockOutlined, UnlockOutlined } from '@ant-design/icons';
 import { KEYS } from '@/Constants';
 import { BREADCRUMBS } from '@/Data';
 import { CommonPageWrapper, CommonBreadcrumbs, CommonDeleteModal } from '@/Components';
@@ -64,6 +64,7 @@ const Faq: FC = () => {
       },
       type: values.type,
       isFeatured: values.isFeatured || false,
+      isBlocked: values.isBlocked || false,
     };
 
     if (values.type !== 'home' && values.learningCatalogId) {
@@ -102,6 +103,17 @@ const Faq: FC = () => {
   const handleEditClick = (faq: any) => {
     setEditingFaq(faq);
     setIsFormOpen(true);
+  };
+
+  const handleToggleBlock = (faq: any) => {
+    editFAQMutation.mutate(
+      { faqId: faq._id, isBlocked: !faq.isBlocked },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: [KEYS.FAQ.BASE] });
+        },
+      }
+    );
   };
 
   return (
@@ -200,7 +212,7 @@ const Faq: FC = () => {
               ) : (
                 <div className="space-y-4">
                   {faqs.map((faq: any) => (
-                    <div key={faq._id} className={`faq-list-item-card type-${faq.type}`}>
+                    <div key={faq._id} className={`faq-list-item-card type-${faq.type} group ${faq.isBlocked ? 'opacity-75' : ''}`}>
                       <div className="flex justify-between items-start gap-4">
                         <div className="space-y-3 flex-1">
                           {/* English */}
@@ -238,6 +250,14 @@ const Faq: FC = () => {
                         </div>
 
                         <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 scale-95 group-hover:scale-100 shrink-0">
+                          <Tooltip title={faq.isBlocked ? "Unblock FAQ" : "Block FAQ"}>
+                            <Button
+                              shape="circle"
+                              icon={faq.isBlocked ? <UnlockOutlined /> : <LockOutlined />}
+                              onClick={(e) => { e.stopPropagation(); handleToggleBlock(faq); }}
+                              className={faq.isBlocked ? "hover:!bg-emerald-500/10 hover:!text-emerald-500 text-muted transition-all duration-200" : "hover:!bg-amber-500/10 hover:!text-amber-500 text-muted transition-all duration-200"}
+                            />
+                          </Tooltip>
                           <Button
                             shape="circle"
                             icon={<EditOutlined />}
@@ -264,6 +284,11 @@ const Faq: FC = () => {
                         {faq.isFeatured && (
                           <Tag color="gold" className="font-semibold border-none uppercase text-[10px] tracking-wider px-2 py-0.5 flex items-center gap-1">
                             <StarFilled className="text-[10px] text-amber-500" /> Featured
+                          </Tag>
+                        )}
+                        {faq.isBlocked && (
+                          <Tag color="error" className="font-semibold border-none uppercase text-[10px] tracking-wider px-2 py-0.5">
+                            Blocked
                           </Tag>
                         )}
                       </div>

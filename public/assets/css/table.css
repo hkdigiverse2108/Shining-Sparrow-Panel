@@ -87,17 +87,30 @@
     @apply text-foreground;
   }
 
+  /* ─── MODERN TABLE WRAPPER ─── */
   .common-table {
-    @apply space-y-3 border-0!;
+    @apply space-y-4 border-0!;
   }
 
+  /* ─── TOOLBAR ─── */
   .common-table-toolbar {
-    @apply flex flex-col justify-between gap-3 sm:flex-row sm:items-center;
+    @apply flex flex-col justify-between gap-3 sm:flex-row sm:items-center
+           p-4 rounded-xl border border-border bg-surface shadow-sm;
   }
-  
 
   .common-table-search {
-    @apply w-full sm:max-w-sm;
+    @apply w-full sm:max-w-xs;
+  }
+
+  /* Search input inside toolbar */
+  .common-table-toolbar .ant-input-affix-wrapper {
+    @apply rounded-lg border-border bg-background h-10! shadow-none transition-all duration-200;
+  }
+  .common-table-toolbar .ant-input-affix-wrapper:hover {
+    @apply border-primary/60!;
+  }
+  .common-table-toolbar .ant-input-affix-wrapper-focused {
+    @apply border-primary! shadow-[0_0_0_3px_var(--color-primary-ring)]!;
   }
 
   .common-table-actions {
@@ -105,19 +118,22 @@
   }
 
   .common-table-button {
-    @apply border-border bg-surface text-foreground shadow-sm transition-colors hover:border-primary hover:text-primary;
+    @apply border-border bg-background text-foreground shadow-sm transition-all duration-200 rounded-lg
+           hover:border-primary/50 hover:text-primary hover:bg-primary/5;
   }
 
   .common-table-add-button {
-    @apply bg-primary text-white shadow-sm hover:bg-primary hover:opacity-90;
+    @apply bg-primary text-white shadow-sm hover:bg-primary hover:opacity-90 rounded-lg
+           transition-all duration-200 hover:-translate-y-px hover:shadow-md;
   }
 
   .common-table-column-menu {
-    @apply rounded-lg bg-surface p-2 text-foreground shadow-lg;
+    @apply rounded-xl bg-surface p-3 text-foreground shadow-xl border border-border;
   }
 
+  /* ─── TABLE SURFACE ─── */
   .common-table-surface {
-    @apply overflow-hidden rounded-xl border border-border bg-surface;
+    @apply overflow-hidden rounded-xl border border-border bg-surface shadow-sm;
   }
 
   .common-table-surface .ant-table {
@@ -128,24 +144,49 @@
     @apply bg-surface;
   }
 
+  /* ─── MODERN GRADIENT HEADER ─── */
   .common-table-surface .ant-table-thead > tr > th {
-    @apply border-border bg-surface-muted text-sm font-bold text-foreground;
+    @apply border-border text-xs font-bold uppercase tracking-wider text-foreground/70
+           border-b border-border text-center;
+    background: linear-gradient(
+      180deg,
+      var(--surface-muted) 0%,
+      color-mix(in srgb, var(--surface-muted) 80%, var(--surface)) 100%
+    ) !important;
+    padding: 14px 16px !important;
+    letter-spacing: 0.06em;
   }
 
   .common-table-surface .ant-table-thead > tr > th::before {
     @apply hidden;
   }
 
+  /* ─── TABLE ROWS ─── */
   .common-table-surface .ant-table-tbody > tr > td {
-    @apply border-border bg-surface text-foreground;
+    @apply border-border bg-surface text-foreground transition-colors duration-150;
+    border-bottom: 1px solid var(--border) !important;
+    padding: 13px 16px !important;
+    vertical-align: middle !important;
   }
 
+  /* Zebra striping */
+  .common-table-surface .ant-table-tbody > tr:nth-child(even) > td {
+    background: color-mix(in srgb, var(--surface-muted) 40%, var(--surface)) !important;
+  }
+
+  /* Premium row hover */
   .common-table-surface .ant-table-tbody > tr:hover > td {
-    @apply bg-primary/5;
+    background: color-mix(in srgb, var(--primary) 5%, var(--surface)) !important;
+    border-left-color: var(--primary) !important;
   }
 
   .common-table-surface .ant-table-cell-row-hover {
-    @apply bg-primary/5!;
+    background: color-mix(in srgb, var(--primary) 5%, var(--surface)) !important;
+  }
+
+  /* ─── PAGINATION ─── */
+  .common-table-surface .ant-table-pagination {
+    @apply px-4 py-3 border-t border-border mt-0!;
   }
 
   .common-table-surface .ant-empty-description,
@@ -157,17 +198,22 @@
   }
 
   .common-table-surface .ant-pagination-item {
-    @apply border-border bg-surface;
+    @apply border-border bg-surface rounded-lg transition-all duration-150;
+  }
+
+  .common-table-surface .ant-pagination-item:hover {
+    @apply border-primary/50 bg-primary/5;
   }
 
   .common-table-surface .ant-pagination-item-active {
-    @apply border-primary bg-primary/10;
+    @apply border-primary bg-primary;
   }
 
   .common-table-surface .ant-pagination-item-active a {
-    @apply text-primary;
+    @apply text-white!;
   }
 
+  /* ─── INPUTS IN TABLE ─── */
   .common-table .ant-input-affix-wrapper,
   .user-management-page .ant-select-selector,
   .user-management-form .ant-input,
@@ -203,6 +249,7 @@
     @apply bg-primary;
   }
 
+  /* ─── DROPDOWNS & MODALS ─── */
   .ant-select-dropdown,
   .ant-dropdown .ant-dropdown-menu,
   .ant-popover-inner,
@@ -227,13 +274,80 @@
   .ant-modal-close {
     @apply text-muted hover:text-foreground;
   }
-  .common-table-surface .ant-table-thead > tr > th {
-    @apply bg-primary/50! text-foreground! text-center!; 
-  }
-  .ant-table-tbody{
+
+  .ant-table-tbody {
     @apply text-center!;
   }
+
   .ant-tag {
     @apply bg-none!;
   }
-}
+
+  /* ─── SUMMARY CARDS ─── */
+  .user-metrics-grid {
+    @apply grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6;
+  }
+
+  .user-metric-card {
+    @apply relative overflow-hidden flex items-center gap-4 p-5 rounded-2xl border border-border 
+           bg-surface shadow-sm transition-all duration-300 
+           hover:shadow-lg hover:-translate-y-1 cursor-default;
+  }
+
+  /* Subtle shimmer accent line on top */
+  .user-metric-card::before {
+    content: '';
+    @apply absolute top-0 left-0 right-0 h-0.5 rounded-t-2xl opacity-0 transition-opacity duration-300;
+    background: linear-gradient(90deg, var(--primary), color-mix(in srgb, var(--primary) 60%, white));
+  }
+  .user-metric-card:hover::before {
+    @apply opacity-100;
+  }
+
+  /* Soft glow orb in corner */
+  .user-metric-card::after {
+    content: '';
+    @apply absolute -top-6 -right-6 w-20 h-20 rounded-full opacity-0 transition-opacity duration-300;
+    background: radial-gradient(circle, color-mix(in srgb, var(--primary) 12%, transparent), transparent 70%);
+  }
+  .user-metric-card:hover::after {
+    @apply opacity-100;
+  }
+
+  .user-metric-icon {
+    @apply relative z-10 w-12 h-12 text-xl rounded-xl flex items-center justify-center shrink-0 transition-all duration-300;
+  }
+
+  .user-metric-info {
+    @apply relative z-10 min-w-0;
+  }
+
+  .user-metric-title {
+    @apply text-xs font-semibold uppercase tracking-wider text-muted mb-0.5;
+  }
+
+  .user-metric-value {
+    @apply text-2xl font-black text-foreground leading-none;
+  }
+
+  .user-metric-icon--total {
+    @apply bg-primary/10 text-primary transition-all duration-300;
+  }
+  .user-metric-card:hover .user-metric-icon--total {
+    @apply bg-primary text-white;
+  }
+
+  .user-metric-icon--active {
+    @apply bg-success/10 text-success transition-all duration-300;
+  }
+  .user-metric-card:hover .user-metric-icon--active {
+    @apply bg-success text-white;
+  }
+
+  .user-metric-icon--blocked {
+    @apply bg-danger/10 text-danger transition-all duration-300;
+  }
+  .user-metric-card:hover .user-metric-icon--blocked {
+    @apply bg-danger text-white;
+  }
+}

@@ -23,6 +23,7 @@ const FAQSchema = Yup.object({
   type: Yup.string().oneOf(['home', 'course', 'workshop']),
   learningCatalogId: Yup.string().nullable(),
   isFeatured: Yup.boolean(),
+  isBlocked: Yup.boolean(),
 });
 
 const FAQ_TYPE_OPTIONS = [
@@ -44,6 +45,7 @@ export const FAQForm: FC<FAQFormProps> = ({ editing, onSave, loading, showTypeSe
         type: editing.type || 'home',
         learningCatalogId: editing.learningCatalogId || '',
         isFeatured: editing.isFeatured || false,
+        isBlocked: editing.isBlocked || false,
       };
     }
     return {
@@ -56,6 +58,7 @@ export const FAQForm: FC<FAQFormProps> = ({ editing, onSave, loading, showTypeSe
       type: 'home',
       learningCatalogId: '',
       isFeatured: false,
+      isBlocked: false,
     };
   }, [editing]);
 
@@ -94,24 +97,25 @@ export const FAQForm: FC<FAQFormProps> = ({ editing, onSave, loading, showTypeSe
                   fullWidth={false}
                 />
               )}
+            </CommonFormSection>
+          )}
 
-              <div className="col-span-full pt-2">
+          {!showTypeSelector && (editing?.isFeatured !== undefined || editing?.isBlocked !== undefined) && (
+            <div className="col-span-full pt-2 flex flex-col gap-2">
+              {editing?.isFeatured !== undefined && (
                 <CommonCheckbox
                   checked={values.isFeatured}
                   onChange={(e) => setFieldValue('isFeatured', e.target.checked)}
                   label="Mark as Featured (shown on homepage)"
                 />
-              </div>
-            </CommonFormSection>
-          )}
-
-          {!showTypeSelector && editing?.isFeatured !== undefined && (
-            <div className="col-span-full pt-2">
-              <CommonCheckbox
-                checked={values.isFeatured}
-                onChange={(e) => setFieldValue('isFeatured', e.target.checked)}
-                label="Mark as Featured (shown on homepage)"
-              />
+              )}
+              {editing?.isBlocked !== undefined && (
+                <CommonCheckbox
+                  checked={values.isBlocked}
+                  onChange={(e) => setFieldValue('isBlocked', e.target.checked)}
+                  label="Block FAQ"
+                />
+              )}
             </div>
           )}
 
@@ -129,7 +133,11 @@ export const FAQForm: FC<FAQFormProps> = ({ editing, onSave, loading, showTypeSe
             <CommonValidationTextField name="questionGu" label="Question (Gujarati)" className="col-span-full" />
             <CommonValidationTextField name="answerGu" label="Answer (Gujarati)" className="col-span-full" placeholder="Write the answer in Gujarati here..." />
           </CommonFormSection>
-
+              <CommonCheckbox
+                  checked={values.isFeatured}
+                  onChange={(e) => setFieldValue('isFeatured', e.target.checked)}
+                  label="Mark as Featured"
+                />
           <div className="mt-6">
             <CommonButton htmlType="submit" type="primary" title={editing ? 'Update FAQ' : 'Create FAQ'} loading={loading} block />
           </div>

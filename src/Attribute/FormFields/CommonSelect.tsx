@@ -4,7 +4,7 @@ import { type FC } from "react";
 import type { CommonSelectProps, CommonValidationSelectProps } from "../../Types";
 
 export const CommonValidationSelect: FC<CommonValidationSelectProps> = ({ 
-  name, label, options = [], multiple = false, placeholder, disabled, isLoading, required, fullWidth = false, maxTagCount // <-- ADD THIS
+  name, label, options = [], multiple = false, placeholder, disabled, isLoading, required, fullWidth = false, maxTagCount, showSearch
 }) => {
   const [field, meta, helpers] = useField(name);
   const { setFieldValue } = useFormikContext<any>();
@@ -28,6 +28,8 @@ export const CommonValidationSelect: FC<CommonValidationSelectProps> = ({
         placeholder={placeholder} 
         disabled={disabled} 
         loading={isLoading} 
+        showSearch={showSearch}
+        optionFilterProp="label"
         onChange={(val) => { helpers.setValue(val); setFieldValue(name, val); }}
         onBlur={() => helpers.setTouched(true)} 
         allowClear 
@@ -39,7 +41,7 @@ export const CommonValidationSelect: FC<CommonValidationSelectProps> = ({
 };
 
 // Also update the standard CommonSelect if you use it elsewhere
-export const CommonSelect: FC<CommonSelectProps> = ({ label, options = [], value, onChange, multiple = false, placeholder, disabled, isLoading, limitTags, fullWidth = false, maxTagCount }) => {
+export const CommonSelect: FC<CommonSelectProps> = ({ label, options = [], value, onChange, multiple = false, placeholder, disabled, isLoading, limitTags, fullWidth = false, maxTagCount, showSearch }) => {
   return (
     <Form.Item 
       label={label} 
@@ -54,6 +56,8 @@ export const CommonSelect: FC<CommonSelectProps> = ({ label, options = [], value
         placeholder={placeholder} 
         disabled={disabled} 
         loading={isLoading} 
+        showSearch={showSearch}
+        optionFilterProp="label"
         maxTagCount={maxTagCount || limitTags} // <-- ADD THIS
         onChange={(val) => { if (multiple) onChange?.(val as string[]); else onChange?.(val as string); }} 
         allowClear 

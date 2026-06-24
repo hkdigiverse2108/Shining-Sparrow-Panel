@@ -1,7 +1,7 @@
 import { useState, useMemo, type FC, useEffect } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { Spin, Button, Select } from 'antd'; 
-import { ArrowLeftOutlined, EditOutlined, PlusOutlined, DeleteOutlined, FileProtectOutlined, ClockCircleOutlined, StarOutlined, TrophyOutlined, QuestionCircleOutlined, RightOutlined, BarsOutlined, AppstoreOutlined, CalculatorOutlined, PictureOutlined, SoundOutlined, FileTextOutlined, } from '@ant-design/icons';
+import { ArrowLeftOutlined, EditOutlined, PlusOutlined, DeleteOutlined, FileProtectOutlined, ClockCircleOutlined, StarOutlined, TrophyOutlined, QuestionCircleOutlined, RightOutlined, BarsOutlined, AppstoreOutlined, CalculatorOutlined, PictureOutlined, SoundOutlined, FileTextOutlined, LockOutlined, UnlockOutlined } from '@ant-design/icons';
 import { Queries, Mutations } from '@/Api';
 import { KEYS } from '@/Constants';
 import { useQueryClient } from '@tanstack/react-query';
@@ -25,6 +25,32 @@ const ExamManagerPage: FC = () => {
 
   const deleteExamMutation = Mutations.useDeleteExam();
   const deleteQuestionMutation = Mutations.useDeleteQuestion();
+  const editExamMutation = Mutations.useUpdateExam();
+  const editQuestionMutation = Mutations.useUpdateQuestion();
+
+  const handleToggleBlockExam = () => {
+    if (!lessonExam?._id) return;
+    editExamMutation.mutate(
+      { examId: lessonExam._id, isBlocked: !lessonExam.isBlocked },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: [KEYS.EXAM.BASE] });
+        },
+      }
+    );
+  };
+
+  const handleToggleBlockQuestion = (question: any) => {
+    editQuestionMutation.mutate(
+      { questionId: question._id, isBlocked: !question.isBlocked },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: [KEYS.QUESTION.BASE] });
+          queryClient.invalidateQueries({ queryKey: [KEYS.EXAM.BASE] });
+        },
+      }
+    );
+  };
 
   // State for Delete Modal
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -180,10 +206,11 @@ const ExamManagerPage: FC = () => {
                   </p>
                 </div>
               </div>
-              <div className="course-hero-badges">
+               <div className="course-hero-badges">
                 <span className="course-chip course-chip--neutral">{examQuestions.length} Questions</span>
                 <span className="course-chip course-chip--primary">{lessonExam?.timeLimit ?? '--'} min</span>
                 <span className="course-chip course-chip--success">{lessonExam?.passingMarks ?? '--'} pass marks</span>
+                {lessonExam?.isBlocked && <span className="course-chip course-chip--danger">Blocked</span>}
                 <span className="course-chip course-chip--danger">{lessonExam ? 'Configured' : 'Not configured'}</span>
               </div>
             </div>
@@ -198,9 +225,21 @@ const ExamManagerPage: FC = () => {
                 Back to Builder
               </Button>
               {lessonExam && (
-                <Button danger type="dashed" icon={<DeleteOutlined />} onClick={openDeleteExamModal} className="course-button course-button--danger">
-                  Delete Assessment
-                </Button>
+                <>
+                  <Button
+                    type="dashed"
+                    danger={!lessonExam.isBlocked}
+                    icon={lessonExam.isBlocked ? <UnlockOutlined /> : <LockOutlined />}
+                    onClick={handleToggleBlockExam}
+                    className="course-button"
+                    loading={editExamMutation.isPending}
+                  >
+                    {lessonExam.isBlocked ? 'Unblock Assessment' : 'Block Assessment'}
+                  </Button>
+                  <Button danger type="dashed" icon={<DeleteOutlined />} onClick={openDeleteExamModal} className="course-button course-button--danger">
+                    Delete Assessment
+                  </Button>
+                </>
               )}
             </div>
           </section>
@@ -259,7 +298,7 @@ const ExamManagerPage: FC = () => {
                   examQuestions.length > 0 ? (
                     <div className="course-lesson-list">
                       {examQuestions.map((question: any, index: number) => (
-                        <div key={question._id} className="course-lesson-card">
+                        <div key={question._id} className={`course-lesson-card ${question.isBlocked ? 'opacity-75 border-red-200 bg-red-50/5' : ''}`}>
                           <div className="course-lesson-card__main">
                             <div className="course-lesson-index">{index + 1}</div>
                             <div className="course-lesson-content space-y-3">
@@ -312,11 +351,23 @@ const ExamManagerPage: FC = () => {
                                 </span>
                                 <span className="course-chip course-chip--primary font-medium">Correct: <span className="course-emphasis">{question.correctAnswer}</span></span>
                                 <span className="course-chip course-chip--success">{question.score} point{question.score !== 1 ? 's' : ''}</span>
+                                {question.isBlocked && (
+                                  <span className="course-chip course-chip--danger">Blocked</span>
+                                )}
                               </div>
                             </div>
                           </div>
 
                           <div className="course-card-actions">
+                            <Button
+                              type="text"
+                              icon={question.isBlocked ? <UnlockOutlined /> : <LockOutlined />}
+                              onClick={() => handleToggleBlockQuestion(question)}
+                              className="course-button course-button--text course-button--icon"
+                              title={question.isBlocked ? "Unblock Question" : "Block Question"}
+                              danger={!question.isBlocked}
+                              loading={editQuestionMutation.isPending}
+                            />
                             <Button
                               type="text"
                               icon={<EditOutlined />}

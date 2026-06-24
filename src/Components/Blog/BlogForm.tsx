@@ -4,7 +4,6 @@ import { Formik, Form } from "formik";
 import { CommonFormShell, CommonFormSection, CommonImageUpload } from "@/Components";
 import { CommonButton, CommonValidationTextField, CommonRichTextEditor, CommonValidationSelect } from "@/Attribute"; // Ensure you have a CommonSwitch or use Ant's Switch
 import * as Yup from "yup";
-import { Switch } from "antd";
 
 interface BlogFormProps {
   open: boolean;
@@ -32,7 +31,7 @@ const blogCategories = [
 export const BlogForm: FC<BlogFormProps> = ({ open, onClose, onSave, editing, loading = false }) => {
   const defaults = {
     title: "", subTitle: "", content: "", category: "", 
-    coverImage: "", mainImage: "", author: "", quote: "", isFeatured: false,
+    coverImage: "", mainImage: "", author: "", quote: "", isFeatured: false, isBlocked: false,
   };
 
   const initialValues = useMemo(() => (editing ? { ...defaults, ...editing } : defaults), [editing]);
@@ -50,6 +49,7 @@ export const BlogForm: FC<BlogFormProps> = ({ open, onClose, onSave, editing, lo
       author: v.author,
       quote: v.quote,
       isFeatured: v.isFeatured,
+      isBlocked: v.isBlocked,
     };
     if (editing) {
       payload.blogId = editing._id;
@@ -87,15 +87,6 @@ export const BlogForm: FC<BlogFormProps> = ({ open, onClose, onSave, editing, lo
               />
               <CommonImageUpload name="mainImage" label="Main Body Image" shape="square" size={120} className="col-span-full" />
               
-              {/* Assuming you have a Switch component. If not, you can use Ant Design's Switch directly with setFieldValue */}
-              <div className="col-span-2 flex items-center gap-3 mt-2">
-                <span className="text-sm font-medium text-gray-700">Featured Blog:</span>
-                <Switch
-                  // name="isFeatured" 
-                  checked={values.isFeatured} 
-                  onChange={(val: any) => setFieldValue('isFeatured', val)} 
-                />
-              </div>
             </CommonFormSection>
 
             {Object.keys(errors).length > 0 && (

@@ -44,4 +44,5 @@ export const ROUTES = {
   SEARCH: "/search",
   CHAT: "/chat",
   FAQ: "/faq",
+  COUPON_CODE: "/coupon-code",
 } as const;

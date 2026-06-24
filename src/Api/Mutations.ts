@@ -111,6 +111,19 @@ export const Mutations = {
   useAddSetting: () => useMutations<AddSettingPayload, MessageStatus>([KEYS.SETTING.ADD_EDIT, KEYS.SETTING.BASE ], (input) => Post(URL_KEYS.SETTING.ADD_EDIT, input)),
 
   useUpdateSetting: () => useMutations<UpdateSettingPayload, MessageStatus>([KEYS.SETTING.ADD_EDIT, KEYS.SETTING.BASE], (input) => Post(URL_KEYS.SETTING.ADD_EDIT, input)),
+
+  // ************ Contact / Get In Touch ***********
+  useDeleteContactMessage: () => useMutations<string, void>([KEYS.GET_IN_TOUCH.DELETE, KEYS.GET_IN_TOUCH.BASE], (id) => Delete(`${URL_KEYS.GET_IN_TOUCH.DELETE}/${id}`)),
+
+  useMarkContactRead: () => useMutations<{ getInTouchId: string; isRead: boolean }, any>([KEYS.GET_IN_TOUCH.BASE, "mark-read"], (input) => Post(URL_KEYS.GET_IN_TOUCH.EDIT, input)),
+
+  // ************ Coupon Code ***********
+  useAddCouponCode: () => useMutations<any, MessageStatus>([KEYS.COUPON_CODE.BASE, "ADD"], (input) => Post(URL_KEYS.COUPON_CODE.ADD, input)),
+  useUpdateCouponCode: () => useMutations<any, MessageStatus>([KEYS.COUPON_CODE.BASE, "UPDATE"], (input) => Post(URL_KEYS.COUPON_CODE.EDIT, input)),
+  useDeleteCouponCode: () => useMutations<string, void>([KEYS.COUPON_CODE.DELETE, KEYS.COUPON_CODE.BASE], (id) => Delete(`${URL_KEYS.COUPON_CODE.DELETE}/${id}`)),
+
+  // ************ Contact Us details ***********
+  useUpdateContactUs: () => useMutations<any, MessageStatus>([KEYS.CONTACT_US.BASE], (input) => Post(URL_KEYS.CONTACT_US.ADD_EDIT, input)),
 };
 
 

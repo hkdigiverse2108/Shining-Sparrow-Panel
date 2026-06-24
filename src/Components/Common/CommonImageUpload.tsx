@@ -137,24 +137,21 @@ export const CommonImageUpload: FC<CommonImageUploadProps> = ({
                   <Button 
                     shape="circle" 
                     icon={<EyeOutlined />} 
-                    size="medium" 
                     onClick={() => setPreviewOpen(true)}
-                    className="bg-white/20 border-white/40 text-white hover:bg-white/40 hover:scale-105 transition-all"
+                    className="!bg-white/20 !border-white/80 !text-white hover:!bg-white hover:!text-black hover:scale-110 transition-all duration-200"
                   />
                   <Button 
                     shape="circle" 
                     icon={<CameraOutlined />} 
-                    size="medium" 
                     onClick={() => fileInputRef.current?.click()}
-                    className="bg-white/20 border-white/40 text-white hover:bg-white/40 hover:scale-105 transition-all"
+                    className="!bg-white/20 !border-white/80 !text-white hover:!bg-white hover:!text-black hover:scale-110 transition-all duration-200"
                   />
                   <Button 
                     shape="circle" 
                     danger 
                     icon={<DeleteOutlined />} 
-                    size="medium" 
                     onClick={handleRemove}
-                    className="bg-red-500/30 border-red-400/40 text-white hover:bg-red-500/80 hover:scale-105 transition-all"
+                    className="!bg-red-500/20 !border-red-500/80 !text-red-200 hover:!bg-red-500 hover:!text-white hover:scale-110 transition-all duration-200"
                   />
                 </div>
               </div>
@@ -226,21 +223,19 @@ export const CommonImageUpload: FC<CommonImageUploadProps> = ({
                     <Button 
                       shape="circle" 
                       icon={<EyeOutlined />} 
-                      size="medium" 
                       onClick={() => setPreviewOpen(true)}
-                      className="bg-white/20 border-white/40 text-white hover:bg-white/40 hover:scale-105 transition-all"
+                      className="!bg-white/20 !border-white/80 !text-white hover:!bg-white hover:!text-black hover:scale-110 transition-all duration-200"
                     />
                     <Button 
                       shape="circle" 
                       danger 
                       icon={<DeleteOutlined />} 
-                      size="medium" 
                       onClick={handleRemove}
-                      className="bg-red-500/30 border-red-400/40 text-white hover:bg-red-500/80 hover:scale-105 transition-all"
+                      className="!bg-red-500/20 !border-red-500/80 !text-red-200 hover:!bg-red-500 hover:!text-white hover:scale-110 transition-all duration-200"
                     />
                   </div>
                 </div>
-                <div className="flex items-center gap-1.5 p-2 bg-blue-50/50 border border-blue-100 rounded-lg text-[10px] text-blue-600">
+                <div className="flex items-center gap-1.5 p-2 bg-blue-500/10 border border-blue-500/20 rounded-lg text-[10px] text-blue-400">
                   <InfoCircleOutlined className="text-xs" />
                   <span>Preview loads dynamically. Invalid links default to a placeholder.</span>
                 </div>

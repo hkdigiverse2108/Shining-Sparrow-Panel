@@ -1,125 +1,498 @@
 import { useState, useMemo, type FC } from 'react';
-import { Avatar } from 'antd';
-import { UserOutlined, MailOutlined, PhoneOutlined, ClockCircleOutlined, EnvironmentOutlined, EditOutlined, EyeOutlined, SearchOutlined } from '@ant-design/icons';
+import { Avatar, Button, Tag, Tooltip, Tabs, Spin } from 'antd';
+import {
+  UserOutlined, MailOutlined, PhoneOutlined,
+  DeleteOutlined, EyeOutlined, ClockCircleOutlined,
+  CheckCircleOutlined, InboxOutlined, SaveOutlined,
+  SettingOutlined,
+} from '@ant-design/icons';
 import { motion } from 'motion/react';
-import { CommonBreadcrumbs, CommonPageWrapper, CommonCard, CommonTag, CommonDrawer } from '@/Components';
+import { useQueryClient } from '@tanstack/react-query';
+import { CommonBreadcrumbs, CommonPageWrapper, CommonTable, CommonDeleteModal, CommonDrawer, CommonFormSection } from '@/Components';
 import { CommonButton, CommonValidationTextField } from '@/Attribute';
 import { blurRevealUp, staggerContainer } from '@/Utils/animations';
-import { catColor, initialInbox, BREADCRUMBS } from '@/Data';
-import { ContactForm } from './ContactForm'; 
+import { BREADCRUMBS } from '@/Data';
+import { Queries, Mutations } from '@/Api';
+import { KEYS } from '@/Constants';
+import { useDebounce } from '@/Utils';
+import type { ColumnType } from 'antd/es/table';
+import dayjs from 'dayjs';
+import { Formik, Form } from 'formik';
+import * as Yup from 'yup';
 
-const ContactPage: FC = () => {
-  const [contactInfo, setContactInfo] = useState({ email: 'support@lmsplatform.com', phone: '+1 (555) 123-4567', hours: 'Mon - Fri: 9:00 AM - 5:00 PM EST', location: '123 Education Lane, LC 45678' });
-  const [messages] = useState(initialInbox);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [isEditDrawerOpen, setIsEditDrawerOpen] = useState(false);
-  const [isViewDrawerOpen, setIsViewDrawerOpen] = useState(false);
-  const [selectedMessage, setSelectedMessage] = useState<any>(null);
+// ─── Columns ────────────────────────────────────────────────────────────────
+const getColumns = ({
+  onView,
+  onDelete,
+  current = 1,
+  pageSize = 10,
+}: {
+  onView: (r: any) => void;
+  onDelete: (r: any) => void;
+  current?: number;
+  pageSize?: number;
+}): ColumnType<any>[] => [
+  {
+    title: 'Sr.',
+    key: 'srNo',
+    width: 60,
+    render: (_: any, __: any, i: number) => (
+      <span className="font-mono text-xs text-muted font-semibold">
+        {(current - 1) * pageSize + i + 1}
+      </span>
+    ),
+  },
+  {
+    title: 'Sender',
+    dataIndex: 'name',
+    render: (v: string, r: any) => (
+      <div className="flex items-center gap-3">
+        <Avatar size={38} icon={<UserOutlined />} className="shrink-0 border border-border shadow-sm" />
+        <div className="min-w-0">
+          <div className="text-sm font-semibold text-foreground truncate flex items-center gap-1.5">
+            {v}
+            {!r.isRead && (
+              <span className="inline-block w-2 h-2 rounded-full bg-primary shrink-0" title="Unread" />
+            )}
+          </div>
+          <div className="text-xs text-muted flex items-center gap-1 mt-0.5">
+            <MailOutlined className="text-[10px]" />
+            {r.email}
+          </div>
+        </div>
+      </div>
+    ),
+  },
+  {
+    title: 'Phone',
+    dataIndex: 'phoneNumber',
+    width: 140,
+    render: (v: string) => (
+      <div className="flex items-center gap-1.5 text-sm text-muted">
+        <PhoneOutlined className="text-xs" />
+        <span className="font-mono">{v || '—'}</span>
+      </div>
+    ),
+  },
+  {
+    title: 'Subject',
+    dataIndex: 'subject',
+    width: 180,
+    render: (v: string) => (
+      <span className="text-sm text-foreground truncate max-w-[160px] block">
+        {v || <span className="text-muted italic">No subject</span>}
+      </span>
+    ),
+  },
+  {
+    title: 'Message',
+    dataIndex: 'message',
+    render: (v: string) => (
+      <p className="text-sm text-muted truncate max-w-[220px] m-0">{v}</p>
+    ),
+  },
+  {
+    title: 'Status',
+    dataIndex: 'isRead',
+    width: 100,
+    render: (v: boolean) => (
+      <Tag
+        icon={v ? <CheckCircleOutlined /> : <InboxOutlined />}
+        color={v ? 'green' : 'orange'}
+        className="capitalize m-0"
+      >
+        {v ? 'Read' : 'Unread'}
+      </Tag>
+    ),
+  },
+  {
+    title: 'Date',
+    dataIndex: 'createdAt',
+    width: 120,
+    render: (v: string) => (
+      <span className="text-xs text-muted">{v ? dayjs(v).format('DD MMM YYYY') : '—'}</span>
+    ),
+  },
+  {
+    title: 'Actions',
+    dataIndex: 'actions',
+    width: 100,
+    fixed: 'right' as const,
+    render: (_: any, r: any) => (
+      <div className="flex items-center gap-1.5 justify-center">
+        <Tooltip title="View Message">
+          <Button
+            type="text"
+            shape="circle"
+            icon={<EyeOutlined />}
+            onClick={() => onView(r)}
+            className="hover:!bg-primary/10 hover:!text-primary text-muted transition-all duration-200"
+          />
+        </Tooltip>
+        <Tooltip title="Delete">
+          <Button
+            type="text"
+            shape="circle"
+            danger
+            icon={<DeleteOutlined />}
+            onClick={() => onDelete(r)}
+            className="hover:!bg-rose-500/10 transition-all duration-200"
+          />
+        </Tooltip>
+      </div>
+    ),
+  },
+];
 
-  const filteredMessages = useMemo(() => {
-    if (!searchQuery.trim()) return messages;
-    const q = searchQuery.toLowerCase();
-    return messages.filter(m => m.name.toLowerCase().includes(q) || m.email.toLowerCase().includes(q) || m.message.toLowerCase().includes(q) || m.category.toLowerCase().includes(q));
-  }, [searchQuery, messages]);
+// ─── Contact Details Schema ──────────────────────────────────────────────────
+const ContactDetailsSchema = Yup.object().shape({
+  address: Yup.string().optional(),
+  phoneNumber: Yup.string().optional(),
+  email: Yup.string().email("Invalid email").optional().nullable().transform((value, originalValue) => originalValue === "" ? null : value),
+  workingHours: Yup.string().optional(),
+  facebook: Yup.string().url("Must be a valid URL").optional().nullable().transform((value, originalValue) => originalValue === "" ? null : value),
+  instagram: Yup.string().url("Must be a valid URL").optional().nullable().transform((value, originalValue) => originalValue === "" ? null : value),
+  linkedin: Yup.string().url("Must be a valid URL").optional().nullable().transform((value, originalValue) => originalValue === "" ? null : value),
+  twitter: Yup.string().url("Must be a valid URL").optional().nullable().transform((value, originalValue) => originalValue === "" ? null : value),
+});
 
-  const contactItems = [
-    { icon: <MailOutlined />, title: 'Email', text: contactInfo.email },
-    { icon: <PhoneOutlined />, title: 'Phone', text: contactInfo.phone },
-    { icon: <ClockCircleOutlined />, title: 'Hours', text: contactInfo.hours },
-    { icon: <EnvironmentOutlined />, title: 'Location', text: contactInfo.location },
-  ];
+// ─── Contact Details Form Tab ────────────────────────────────────────────────
+const ContactDetailsTab: FC = () => {
+  const queryClient = useQueryClient();
+  const { data: contactUsData, isLoading } = Queries.useGetContactUs({
+    retry: false,
+  });
+  const updateContactUsMutation = Mutations.useUpdateContactUs();
 
-  const handleSaveInfo = (values: any) => {
-    setContactInfo(values);
-    setIsEditDrawerOpen(false);
+  const contactUs = contactUsData?.data;
+
+  const initialValues = useMemo(() => {
+    const phones = contactUs?.phoneNumbers || [];
+    const firstPhone = phones[0]?.number || "";
+
+    return {
+      address: contactUs?.address || "",
+      phoneNumber: firstPhone,
+      workingHours: contactUs?.workingHours || "",
+      email: contactUs?.email || "",
+      facebook: contactUs?.socialMediaLinks?.facebook || "",
+      instagram: contactUs?.socialMediaLinks?.instagram || "",
+      linkedin: contactUs?.socialMediaLinks?.linkedin || "",
+      twitter: contactUs?.socialMediaLinks?.twitter || "",
+    };
+  }, [contactUs]);
+
+  const handleSubmit = async (values: any) => {
+    const payload = {
+      phoneNumbers: values.phoneNumber ? [{ number: values.phoneNumber, label: "General" }] : [],
+      email: values.email || "",
+      address: values.address || "",
+      workingHours: values.workingHours || "",
+      socialMediaLinks: {
+        facebook: values.facebook || "",
+        instagram: values.instagram || "",
+        linkedin: values.linkedin || "",
+        twitter: values.twitter || "",
+      },
+    };
+
+    try {
+      await updateContactUsMutation.mutateAsync(payload);
+      queryClient.invalidateQueries({ queryKey: [KEYS.CONTACT_US.BASE] });
+    } catch {
+      // handled globally
+    }
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center p-12">
+        <Spin size="large" />
+      </div>
+    );
+  }
+
+  return (
+    <Formik
+      enableReinitialize
+      initialValues={initialValues}
+      validationSchema={ContactDetailsSchema}
+      onSubmit={handleSubmit}
+    >
+      {() => (
+        <Form className="profile-tab-form space-y-6 max-w-4xl mx-auto mt-4">
+          <div className="profile-form-section-card">
+            <CommonFormSection title="Company Contact Information">
+              <CommonValidationTextField name="address" label="Office Address" />
+              <CommonValidationTextField name="phoneNumber" label="Phone Number" />
+              <CommonValidationTextField name="email" label="Contact Email" />
+              <CommonValidationTextField name="workingHours" label="Working Hours" />
+            </CommonFormSection>
+          </div>
+
+          <div className="profile-form-section-card">
+            <CommonFormSection title="Social Media Handles">
+              <CommonValidationTextField name="facebook" label="Facebook URL" />
+              <CommonValidationTextField name="instagram" label="Instagram URL" />
+              <CommonValidationTextField name="linkedin" label="LinkedIn URL" />
+              <CommonValidationTextField name="twitter" label="Twitter / X URL" />
+            </CommonFormSection>
+          </div>
+
+          <div className="profile-form-actions">
+            <CommonButton
+              htmlType="submit"
+              type="primary"
+              icon={<SaveOutlined />}
+              title="Save Contact Details"
+              loading={updateContactUsMutation.isPending}
+              className="course-button course-button--primary"
+            />
+          </div>
+        </Form>
+      )}
+    </Formik>
+  );
+};
+
+// ─── Contact Page Main Component ─────────────────────────────────────────────
+const ContactPage: FC = () => {
+  const queryClient = useQueryClient();
+  const [activeTab, setActiveTab] = useState('messages');
+  const [searchQuery, setSearchQuery] = useState('');
+  const debouncedSearch = useDebounce(searchQuery, 500);
+  const [current, setCurrent] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [selectedMessage, setSelectedMessage] = useState<any>(null);
+  const [isViewDrawerOpen, setIsViewDrawerOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [msgToDelete, setMsgToDelete] = useState<any>(null);
+
+  const { data: responseData, isLoading } = Queries.useGetContactMessages({
+    page: current,
+    limit: pageSize,
+    search: debouncedSearch,
+  });
+
+  const messages = useMemo(() => responseData?.data?.contact_messages_data || [], [responseData]);
+  const totalMessages = Number(responseData?.data?.totalData) || 0;
+
+  const deleteMutation = Mutations.useDeleteContactMessage();
+  const markReadMutation = Mutations.useMarkContactRead();
+
+  const unreadCount = useMemo(() => messages.filter((m: any) => !m.isRead).length, [messages]);
+  const readCount = useMemo(() => messages.filter((m: any) => m.isRead).length, [messages]);
+
+  const handleView = (msg: any) => {
+    setSelectedMessage(msg);
+    setIsViewDrawerOpen(true);
+    // Mark as read if unread
+    if (!msg.isRead) {
+      markReadMutation.mutate(
+        { getInTouchId: msg._id, isRead: true },
+        { onSuccess: () => queryClient.invalidateQueries({ queryKey: [KEYS.GET_IN_TOUCH.BASE] }) }
+      );
+    }
+  };
+
+  const handleDeleteClick = (msg: any) => {
+    setMsgToDelete(msg);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (!msgToDelete) return;
+    deleteMutation.mutate(msgToDelete._id, {
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: [KEYS.GET_IN_TOUCH.BASE] });
+        setIsDeleteModalOpen(false);
+        setMsgToDelete(null);
+      },
+    });
+  };
+
+  const handleTableChange = (pagination: any) => {
+    setCurrent(pagination.current);
+    setPageSize(pagination.pageSize);
+  };
+
+  const columns = useMemo(
+    () => getColumns({ onView: handleView, onDelete: handleDeleteClick, current, pageSize }),
+    [current, pageSize]
+  );
+
+  const tabItems = [
+    {
+      key: "messages",
+      label: (
+        <span className="profile-tab-label">
+          <InboxOutlined /> Messages Inbox
+        </span>
+      ),
+      children: (
+        <motion.div variants={staggerContainer} initial="hidden" animate="visible" className="mt-4">
+          {/* Summary Cards */}
+          <motion.div variants={blurRevealUp} className="user-metrics-grid">
+            <div className="user-metric-card">
+              <div className="user-metric-icon user-metric-icon--total">
+                <InboxOutlined />
+              </div>
+              <div className="user-metric-info">
+                <p className="user-metric-title">Total Messages</p>
+                <p className="user-metric-value">{totalMessages}</p>
+              </div>
+            </div>
+            <div className="user-metric-card">
+              <div className="user-metric-icon user-metric-icon--blocked">
+                <MailOutlined />
+              </div>
+              <div className="user-metric-info">
+                <p className="user-metric-title">Unread</p>
+                <p className="user-metric-value">{unreadCount}</p>
+              </div>
+            </div>
+            <div className="user-metric-card">
+              <div className="user-metric-icon user-metric-icon--active">
+                <CheckCircleOutlined />
+              </div>
+              <div className="user-metric-info">
+                <p className="user-metric-title">Read</p>
+                <p className="user-metric-value">{readCount}</p>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Table */}
+          <motion.div variants={blurRevealUp}>
+            <CommonTable
+              columns={columns}
+              data={messages}
+              loading={isLoading || deleteMutation.isPending}
+              searchPlaceholder="Search by name, email, subject..."
+              onSearch={(q) => { setSearchQuery(q); setCurrent(1); }}
+              current={current}
+              pageSize={pageSize}
+              total={totalMessages}
+              onTableChange={handleTableChange}
+              fileName="contact-messages"
+              title="Contact Messages"
+            />
+          </motion.div>
+        </motion.div>
+      ),
+    },
+    {
+      key: "details",
+      label: (
+        <span className="profile-tab-label">
+          <SettingOutlined /> Contact Details Form
+        </span>
+      ),
+      children: activeTab === "details" ? <ContactDetailsTab /> : null,
+    },
+  ];
 
   return (
     <>
-      <CommonBreadcrumbs title="Contact" breadcrumbs={BREADCRUMBS.CONTACT || []} />
-      <CommonPageWrapper>
-        <motion.div variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true }}>
-          <motion.div variants={blurRevealUp} className="contact-header-wrapper">
-            <div>
-              <h2 className="contact-header-title">Contact Management</h2>
-              <p className="contact-header-subtitle">Update details and manage inbox inquiries.</p>
-            </div>
-            <CommonButton type="primary" icon={<EditOutlined />} onClick={() => setIsEditDrawerOpen(true)} className="contact-btn-responsive">
-              Edit Details
-            </CommonButton>
-          </motion.div>
-          
-          <motion.div variants={blurRevealUp} className="contact-bento-grid">
-            {contactItems.map((item, idx) => (
-              <div key={idx} className="contact-bento-card group">
-                <div className="contact-bento-icon">{item.icon}</div>
-                <div className="contact-bento-info">
-                  <div className="contact-bento-label">{item.title}</div>
-                  <div className="contact-bento-value">{item.text}</div>
-                </div>
-              </div>
-            ))}
-          </motion.div>          
-          
-          <motion.div variants={blurRevealUp}>
-            <CommonCard title="Recent Inquiries">
-              <CommonValidationTextField placeholder="Search inbox..." startIcon={<SearchOutlined className="contact-search-icon" />} className="contact-inbox-search" value={searchQuery} onChange={(e: any) => setSearchQuery(e.target.value)} clearable />
-              {filteredMessages.length > 0 ? filteredMessages.map(item => (
-                <div key={item.id} className="contact-message-row group" onClick={() => { setSelectedMessage(item); setIsViewDrawerOpen(true); }}>
-                  <Avatar className="contact-message-avatar" size={40} icon={<UserOutlined />} />
-                  <div className="contact-message-content">
-                    <div className="contact-message-top">
-                      <span className="contact-message-name">{item.name}</span>
-                      <CommonTag color={catColor(item.category)}>{item.category}</CommonTag>
-                    </div>
-                    <div className="contact-message-preview">{item.message}</div>
-                  </div>
-                  <div className="contact-message-actions">
-                    <span className="contact-message-date">{item.date}</span>
-                    <EyeOutlined className="contact-eye-icon" />
-                  </div>
-                </div>
-              )) : (
-                <div className="contact-empty-state">No inquiries found.</div>
-              )}
-            </CommonCard>
-          </motion.div>
-        </motion.div>
+      <CommonBreadcrumbs title="Contact Us" breadcrumbs={BREADCRUMBS.CONTACT || []} />
+      <CommonPageWrapper className="h-full bg-transparent">
+        <Tabs
+          activeKey={activeTab}
+          onChange={setActiveTab}
+          items={tabItems}
+          className="profile-tabs"
+          size="large"
+        />
       </CommonPageWrapper>
 
-      <CommonDrawer title="Update Contact Information" open={isEditDrawerOpen} onClose={() => setIsEditDrawerOpen(false)}>
-        <ContactForm initialValues={contactInfo} onSubmit={handleSaveInfo} />
-      </CommonDrawer>
-
-      <CommonDrawer title="Message Details" open={isViewDrawerOpen} onClose={() => setIsViewDrawerOpen(false)} size={480}>
+      {/* Message Detail Drawer */}
+      <CommonDrawer
+        title="Message Details"
+        open={isViewDrawerOpen}
+        onClose={() => setIsViewDrawerOpen(false)}
+        size={500}
+      >
         {selectedMessage && (
-          <div className="chat-drawer-body">
-            <div className="chat-drawer-header">
-              <Avatar size={48} icon={<UserOutlined />} className="chat-drawer-avatar" />
-              <div className="chat-drawer-user-info">
-                <h3 className="chat-drawer-user-name">{selectedMessage.name}</h3>
-                <span className="chat-drawer-user-email">{selectedMessage.email}</span>
+          <div className="flex flex-col gap-5">
+            {/* Sender Card */}
+            <div className="flex items-start gap-4 p-4 rounded-xl border border-border bg-surface-muted">
+              <Avatar size={52} icon={<UserOutlined />} className="border border-border shadow-sm shrink-0" />
+              <div className="min-w-0 flex-1">
+                <div className="font-bold text-foreground text-base truncate">{selectedMessage.name}</div>
+                <div className="text-xs text-muted flex items-center gap-1 mt-0.5">
+                  <MailOutlined /> {selectedMessage.email}
+                </div>
+                {selectedMessage.phoneNumber && (
+                  <div className="text-xs text-muted flex items-center gap-1 mt-0.5">
+                    <PhoneOutlined /> {selectedMessage.phoneNumber}
+                  </div>
+                )}
               </div>
-              <CommonTag color={catColor(selectedMessage.category)}>{selectedMessage.category}</CommonTag>
+              <Tag
+                icon={selectedMessage.isRead ? <CheckCircleOutlined /> : <InboxOutlined />}
+                color={selectedMessage.isRead ? 'green' : 'orange'}
+                className="shrink-0 m-0"
+              >
+                {selectedMessage.isRead ? 'Read' : 'Unread'}
+              </Tag>
             </div>
 
-            <div className="chat-drawer-content">
-              <div className="chat-drawer-received">
-                <ClockCircleOutlined /> Received {selectedMessage.date}
+            {/* Subject & Date */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="p-3 rounded-lg border border-border bg-surface">
+                <div className="text-[10px] font-semibold uppercase tracking-wider text-muted mb-1">Subject</div>
+                <div className="text-sm font-medium text-foreground">{selectedMessage.subject || <span className="text-muted italic">No subject</span>}</div>
               </div>
-              <div className="chat-bubble-container">
-                <p className="chat-bubble-text">{selectedMessage.message}</p>
+              <div className="p-3 rounded-lg border border-border bg-surface">
+                <div className="text-[10px] font-semibold uppercase tracking-wider text-muted mb-1">Received</div>
+                <div className="text-sm font-medium text-foreground flex items-center gap-1">
+                  <ClockCircleOutlined className="text-muted" />
+                  {selectedMessage.createdAt ? dayjs(selectedMessage.createdAt).format('DD MMM YYYY, hh:mm A') : '—'}
+                </div>
               </div>
             </div>
 
-            <div className="chat-bubble-footer">
-              <CommonButton type="primary" icon={<MailOutlined />} size="large" href={`mailto:${selectedMessage.email}?subject=Re: ${selectedMessage.category}`} target="_blank" className="contact-btn-responsive" >
+            {/* Message */}
+            <div className="p-4 rounded-xl border border-border bg-surface">
+              <div className="text-[10px] font-semibold uppercase tracking-wider text-muted mb-2">Message</div>
+              <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap m-0">{selectedMessage.message}</p>
+            </div>
+
+            {/* Actions */}
+            <div className="flex gap-3 pt-2 border-t border-border">
+              <CommonButton
+                type="primary"
+                icon={<MailOutlined />}
+                href={`mailto:${selectedMessage.email}?subject=Re: ${selectedMessage.subject || 'Your message'}`}
+                target="_blank"
+                className="flex-1"
+              >
                 Reply via Email
               </CommonButton>
+              <Button
+                danger
+                icon={<DeleteOutlined />}
+                onClick={() => {
+                  setIsViewDrawerOpen(false);
+                  handleDeleteClick(selectedMessage);
+                }}
+              >
+                Delete
+              </Button>
             </div>
           </div>
         )}
       </CommonDrawer>
+
+      {/* Delete Confirmation Modal */}
+      <CommonDeleteModal
+        open={isDeleteModalOpen}
+        title="Delete Message"
+        itemName={msgToDelete?.name}
+        loading={deleteMutation.isPending}
+        onClose={() => { setIsDeleteModalOpen(false); setMsgToDelete(null); }}
+        onConfirm={handleConfirmDelete}
+      />
     </>
   );
 };

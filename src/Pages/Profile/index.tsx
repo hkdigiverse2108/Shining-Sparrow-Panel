@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect, type FC } from "react";
-import { EditOutlined, UserOutlined, SettingOutlined, LockOutlined, MailOutlined, PhoneOutlined, CalendarOutlined, SaveOutlined, FacebookOutlined, InstagramOutlined, LinkedinOutlined, TwitterOutlined, CloseOutlined, CopyOutlined, CheckOutlined } from "@ant-design/icons";
+import { EditOutlined, UserOutlined, SettingOutlined, LockOutlined, MailOutlined, PhoneOutlined, CalendarOutlined, SaveOutlined, CloseOutlined } from "@ant-design/icons";
 import { Formik, Form } from "formik";
 import { motion } from "motion/react";
 import { Avatar, Spin, Tabs } from "antd";
@@ -11,7 +11,6 @@ import * as Yup from "yup";
 import { useAppSelector, useAppDispatch } from "@/Store/hooks";
 import { setUser } from "@/Store";
 import { Mutations, Queries } from "@/Api";
-import { showNotification } from "@/Attribute";
 import { useQueryClient } from "@tanstack/react-query";
 import { KEYS } from "@/Constants";
 
@@ -37,19 +36,11 @@ const PasswordSchema = Yup.object().shape({
 
 const SettingsSchema = Yup.object().shape({
   logo: Yup.string().nullable().optional(),
-  address: Yup.string().optional(),
-  phoneNumber: Yup.string().optional(),
-  email: Yup.string().email("Invalid email").optional(),
-  link: Yup.string().optional(),
   enrolledLearners: Yup.number().optional(),
   classCompleted: Yup.number().optional(),
   satisfactionRate: Yup.number().min(0).max(100).optional(),
   razorpayKey: Yup.string().optional(),
   razorpaySecret: Yup.string().optional(),
-  facebook: Yup.string().optional(),
-  instagram: Yup.string().optional(),
-  linkedin: Yup.string().optional(),
-  twitter: Yup.string().optional(),
 });
 
 // ─── Profile detail row component ────────────────────────────────────────────
@@ -206,91 +197,47 @@ const ChangePasswordTab: FC<{ email: string }> = ({ email }) => {
 
 // ─── Copy Button Helper ───────────────────────────────────────────────────────
 
-const CopyButton: FC<{ value: string }> = ({ value }) => {
-  const [copied, setCopied] = useState(false);
-  const handleCopy = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    e.preventDefault();
-    if (!value) return;
-    navigator.clipboard.writeText(value);
-    setCopied(true);
-    showNotification("success", "Copied to clipboard!");
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  return (
-    <span
-      onClick={handleCopy}
-      style={{
-        cursor: value ? "pointer" : "not-allowed",
-        color: copied ? "var(--success)" : "var(--text-muted)",
-        opacity: value ? 1 : 0.5,
-        display: "inline-flex",
-        alignItems: "center",
-        justifyContent: "center",
-        transition: "color 0.2s",
-      }}
-      title={copied ? "Copied!" : "Copy to clipboard"}
-    >
-      {copied ? <CheckOutlined /> : <CopyOutlined />}
-    </span>
-  );
-};
 
 // ─── Settings Tab ─────────────────────────────────────────────────────────────
 
 const SiteSettingsTab: FC = () => {
   const queryClient = useQueryClient();
   const { data: settingData, isLoading } = Queries.useGetSetting();
+
   const addSettingMutation = Mutations.useAddSetting();
   const updateSettingMutation = Mutations.useUpdateSetting();
 
   const setting = settingData?.data;
-  const isExisting = !!setting?._id;
+  const isExistingSetting = !!setting?._id;
 
-  const initialValues = useMemo(() => ({
-    logo: setting?.logo || "",
-    address: setting?.address || "",
-    phoneNumber: setting?.phoneNumber || "",
-    email: setting?.email || "",
-    link: setting?.link || "",
-    enrolledLearners: setting?.enrolledLearners ?? "",
-    classCompleted: setting?.classCompleted ?? "",
-    satisfactionRate: setting?.satisfactionRate ?? "",
-    razorpayKey: setting?.razorpayKey || "",
-    razorpaySecret: setting?.razorpayKey ? "••••••••••••••••" : "",
-    facebook: setting?.socialMediaLinks?.facebook || "",
-    instagram: setting?.socialMediaLinks?.instagram || "",
-    linkedin: setting?.socialMediaLinks?.linkedin || "",
-    twitter: setting?.socialMediaLinks?.twitter || "",
-  }), [setting]);
+  const initialValues = useMemo(() => {
+    return {
+      logo: setting?.logo || "",
+      enrolledLearners: setting?.enrolledLearners ?? "",
+      classCompleted: setting?.classCompleted ?? "",
+      satisfactionRate: setting?.satisfactionRate ?? "",
+      razorpayKey: setting?.razorpayKey || "",
+      razorpaySecret: setting?.razorpayKey ? "••••••••••••••••" : "",
+    };
+  }, [setting]);
 
   const handleSubmit = async (values: any) => {
-    const payload = {
+    const settingsPayload = {
       logo: values.logo,
-      address: values.address,
-      phoneNumber: values.phoneNumber,
-      email: values.email,
-      link: values.link,
       enrolledLearners: Number(values.enrolledLearners) || 0,
       classCompleted: Number(values.classCompleted) || 0,
       satisfactionRate: Number(values.satisfactionRate) || 0,
       razorpayKey: values.razorpayKey,
       ...(values.razorpaySecret && values.razorpaySecret !== "••••••••••••••••" ? { razorpaySecret: values.razorpaySecret } : {}),
-      socialMediaLinks: {
-        facebook: values.facebook,
-        instagram: values.instagram,
-        linkedin: values.linkedin,
-        twitter: values.twitter,
-      },
     };
 
     try {
-      if (isExisting) {
-        await updateSettingMutation.mutateAsync(payload);
+      if (isExistingSetting) {
+        await updateSettingMutation.mutateAsync(settingsPayload);
       } else {
-        await addSettingMutation.mutateAsync(payload);
+        await addSettingMutation.mutateAsync(settingsPayload);
       }
+
       queryClient.invalidateQueries({ queryKey: [KEYS.SETTING.BASE] });
     } catch {
       // handled globally
@@ -310,20 +257,11 @@ const SiteSettingsTab: FC = () => {
       validationSchema={SettingsSchema}
       onSubmit={handleSubmit}
     >
-      {({ values }) => (
+      {() => (
         <Form className="profile-tab-form">
           <div className="profile-form-section-card">
             <CommonFormSection title="Branding">
               <CommonImageUpload name="logo" label="Site Logo" shape="square" size={80} className="col-span-full" />
-            </CommonFormSection>
-          </div>
-
-          <div className="profile-form-section-card">
-            <CommonFormSection title="Contact Information">
-              <CommonValidationTextField name="address" label="Address" />
-              <CommonValidationTextField name="phoneNumber" label="Phone Number" />
-              <CommonValidationTextField name="email" label="Contact Email" />
-              <CommonValidationTextField name="link" label="Website / App Link" />
             </CommonFormSection>
           </div>
 
@@ -341,7 +279,6 @@ const SiteSettingsTab: FC = () => {
                 name="razorpayKey" 
                 label="Razorpay Key ID" 
                 type="password" 
-                endIcon={<CopyButton value={values.razorpayKey} />}
               />
               <CommonValidationTextField 
                 name="razorpaySecret" 
@@ -351,17 +288,8 @@ const SiteSettingsTab: FC = () => {
             </CommonFormSection>
           </div>
 
-          <div className="profile-form-section-card">
-            <CommonFormSection title="Social Media Links">
-              <CommonValidationTextField name="facebook" label="Facebook URL" />
-              <CommonValidationTextField name="instagram" label="Instagram URL" />
-              <CommonValidationTextField name="linkedin" label="LinkedIn URL" />
-              <CommonValidationTextField name="twitter" label="Twitter / X URL" />
-            </CommonFormSection>
-          </div>
-
           <div className="profile-form-actions">
-            <CommonButton htmlType="submit" type="primary" icon={<SaveOutlined />} title={isExisting ? "Update Settings" : "Save Settings"} loading={isPending} className="course-button course-button--primary" />
+            <CommonButton htmlType="submit" type="primary" icon={<SaveOutlined />} title={isExistingSetting ? "Update Settings" : "Save Settings"} loading={isPending} className="course-button course-button--primary" />
           </div>
         </Form>
       )}
@@ -373,8 +301,6 @@ const SiteSettingsTab: FC = () => {
 
 const Profile: FC = () => {
   const user = useAppSelector((state) => state.auth.user);
-  const { data: settingData } = Queries.useGetSetting();
-  const setting = settingData?.data;
 
   // Manage layout container height and scrolling for profile page
   useEffect(() => {
@@ -436,11 +362,6 @@ const Profile: FC = () => {
     },
   ];
 
-  const facebook = setting?.socialMediaLinks?.facebook;
-  const instagram = setting?.socialMediaLinks?.instagram;
-  const linkedin = setting?.socialMediaLinks?.linkedin;
-  const twitter = setting?.socialMediaLinks?.twitter;
-
   return (
     <>
       <CommonBreadcrumbs title="My Profile & Settings" breadcrumbs={BREADCRUMBS.PROFILE?.BASE || []} />
@@ -478,38 +399,6 @@ const Profile: FC = () => {
                   label="Member Since"
                   value={new Date(createdAt).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
                 />
-              )}
-            </div>
-
-            {/* Social links from settings — shown if available */}
-            <div className="profile-sidebar-socials">
-              {facebook ? (
-                <a href={facebook} target="_blank" rel="noopener noreferrer" className="social-icon-link">
-                  <FacebookOutlined className="social-icon" title="Facebook" />
-                </a>
-              ) : (
-                <FacebookOutlined className="social-icon opacity-30 cursor-not-allowed" title="Facebook (Not Configured)" />
-              )}
-              {instagram ? (
-                <a href={instagram} target="_blank" rel="noopener noreferrer" className="social-icon-link">
-                  <InstagramOutlined className="social-icon" title="Instagram" />
-                </a>
-              ) : (
-                <InstagramOutlined className="social-icon opacity-30 cursor-not-allowed" title="Instagram (Not Configured)" />
-              )}
-              {linkedin ? (
-                <a href={linkedin} target="_blank" rel="noopener noreferrer" className="social-icon-link">
-                  <LinkedinOutlined className="social-icon" title="LinkedIn" />
-                </a>
-              ) : (
-                <LinkedinOutlined className="social-icon opacity-30 cursor-not-allowed" title="LinkedIn (Not Configured)" />
-              )}
-              {twitter ? (
-                <a href={twitter} target="_blank" rel="noopener noreferrer" className="social-icon-link">
-                  <TwitterOutlined className="social-icon" title="Twitter / X" />
-                </a>
-              ) : (
-                <TwitterOutlined className="social-icon opacity-30 cursor-not-allowed" title="Twitter / X (Not Configured)" />
               )}
             </div>
           </motion.div>

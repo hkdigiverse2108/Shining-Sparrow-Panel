@@ -11,11 +11,12 @@ export interface ExamFormValues {
     passingMarks: number;
     totalMarks: number;
     timeLimit: number;
+    isBlocked?: boolean;
 }
 
 export type AddExamPayload = ExamFormValues;
 
-export type UpdateExamPayload = AddExamPayload;
+export type UpdateExamPayload = Partial<ExamFormValues> & { examId: string };
 
 export type ExamBase = ExamFormValues & CommonDataType;
 

@@ -49,13 +49,6 @@ export const WorkshopCurriculumForm: FC<WorkshopCurriculumFormProps> = ({ editin
         >
           <Form className="space-y-6">
             <CommonFormSection title="Session Details">
-              <CommonImageUpload
-                name="thumbnail"
-                label="Session Thumbnail"
-                shape="square"
-                size={100}
-                className="col-span-full"
-              />
               <CommonValidationTextField name="title" label="Session Title" required />
               <CommonValidationTextField name="priority" label="Priority / Order" type="number" required />
               
@@ -71,6 +64,13 @@ export const WorkshopCurriculumForm: FC<WorkshopCurriculumFormProps> = ({ editin
 
               <CommonValidationTextField name="duration" label="Duration (Minutes)" type="number" />
               <CommonDatePicker name="date" label="Session Date" />
+              <CommonImageUpload
+                name="thumbnail"
+                label="Session Thumbnail"
+                shape="square"
+                size={100}
+                className="col-span-full"
+              />
             </CommonFormSection>
 
             <CommonFormSection title="Media & Resources">
