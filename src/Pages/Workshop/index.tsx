@@ -1,11 +1,10 @@
-// pages/Workshop/Workshops.tsx
 import { useState, useMemo, type FC } from 'react';
 import { Button, Tag, Image } from 'antd';
-import { DeleteOutlined, EditOutlined, FolderOpenOutlined } from '@ant-design/icons';
+import { DeleteOutlined, EditOutlined, FolderOpenOutlined, LockOutlined, UnlockOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { KEYS } from '@/Constants';
 import { BREADCRUMBS } from '@/Data';
-import { CommonPageWrapper, CommonBreadcrumbs, CommonTable, CommonSummaryCards, CommonDeleteModal } from '@/Components'; // Added CommonDeleteModal
+import { CommonPageWrapper, CommonBreadcrumbs, CommonTable, CommonSummaryCards, CommonDeleteModal } from '@/Components'; 
 import { motion } from 'motion/react';
 import { blurRevealUp, staggerContainer } from '@/Utils/animations';
 import { useQueryClient } from '@tanstack/react-query';
@@ -14,7 +13,7 @@ import { Mutations, Queries } from '@/Api';
 import type { ColumnType } from 'antd/es/table';
 import { WorkshopForm } from '../../Components/Workshop/WorkshopForm';
 
-const getWorkshopColumns = ({ onEdit, onManage, onDelete, current, pageSize }: any): ColumnType<any>[] => [
+const getWorkshopColumns = ({ onEdit, onManage, onToggleStatus, onDelete, current, pageSize }: any): ColumnType<any>[] => [
   {
     title: "#",
     width: 50,
@@ -85,12 +84,19 @@ const getWorkshopColumns = ({ onEdit, onManage, onDelete, current, pageSize }: a
   {
     title: "Actions", 
     dataIndex: "actions",
-    width: 130,
+    width: 160,
     fixed: 'right' as 'right',
     render: (_: any, r: any) => (
-      <div className="flex gap-1.5 justify-center">
+      <div className="flex gap-1 justify-center">
         <Button type="text" size="small" icon={<FolderOpenOutlined />} onClick={() => onManage(r)} title="Manage Curriculum" />
         <Button type="text" size="small" icon={<EditOutlined />} onClick={() => onEdit(r)} />
+        <Button 
+          type="text" 
+          size="small" 
+          icon={r.isBlocked ? <UnlockOutlined /> : <LockOutlined />} 
+          onClick={() => onToggleStatus(r)} 
+          title={r.isBlocked ? "Unblock Workshop" : "Block Workshop"}
+        />
         <Button type="text" size="small" danger icon={<DeleteOutlined />} onClick={() => onDelete(r)} />
       </div>
     ),

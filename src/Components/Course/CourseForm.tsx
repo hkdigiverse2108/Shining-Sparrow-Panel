@@ -1,6 +1,6 @@
 import { type FC, useMemo } from "react";
 import { Formik, Form } from "formik";
-import { CommonFormShell, CommonFormSection, CommonAttachmentUpload, CommonVideoUpload } from "@/Components";
+import { CommonFormShell, CommonFormSection, CommonAttachmentUpload, CommonVideoUpload, CommonImageUpload } from "@/Components";
 import { CommonButton, CommonValidationTextField, CommonValidationSelect, CommonRichTextEditor } from "@/Attribute";
 import { Queries } from "@/Api";
 import * as Yup from "yup";
@@ -94,11 +94,14 @@ export const CourseForm: FC<CourseHandlerProps> = ({ open, onClose, onSave, edit
               <CommonValidationTextField name="language" label="Course Language" placeholder="e.g. English, Hindi" />
               <CommonValidationTextField name="duration" label="Course Duration (in Hours)" type="number" placeholder="e.g. 40" />
               <CommonValidationTextField name="accessDurationDays" label="Access Duration (in Days)" type="number" placeholder="e.g. 365" />
+              
+              <CommonImageUpload name="image" label="Course Thumbnail Image" shape="circle" size={160} className="col-span-full" />
+              
+              <CommonRichTextEditor name="description" label="Description" className="col-span-full" />
               <CommonVideoUpload name="trailerUrl" label="Trailer Video" className="col-span-full" />
               
               <CommonAttachmentUpload name="pdf" label="Course Attachment (PDF)" className="col-span-full" />
               
-              <CommonRichTextEditor name="description" label="Description" className="col-span-full" />
               
               <CommonValidationSelect
                 name="courseCurriculumIds"

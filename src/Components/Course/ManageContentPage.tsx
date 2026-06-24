@@ -10,7 +10,7 @@ import {
 import { Queries, Mutations } from '@/Api';
 import { KEYS } from '@/Constants';
 import { useQueryClient } from '@tanstack/react-query';
-import { CommonBreadcrumbs, CommonPageWrapper, ContentItemCard, EmptyContentPanel } from '@/Components';
+import { CommonBreadcrumbs, CommonPageWrapper, ContentItemCard, EmptyContentPanel, CommonReadMore } from '@/Components';
 import { FAQForm } from '@/Components/Workshop/FAQForm';
 import {
   priorityBadge, durationBadge, videoBadge, attachmentBadge,
@@ -227,7 +227,7 @@ const ManageContentPage: FC = () => {
                     <div className="course-hero-icon"><BookOutlined className="course-icon--glyph-xl" /></div>
                     <div>
                       <h1 className="course-hero-title">{course?.name || 'Course'}</h1>
-                      <div className="course-hero-text text-sm text-text-muted mt-1 leading-relaxed" dangerouslySetInnerHTML={{ __html: course?.description || 'Organize lessons, media resources, and assessments for this course.' }} />
+                      <CommonReadMore htmlContent={course?.description || 'Organize lessons, media resources, and assessments for this course.'} maxHeight={80} className="mt-1.5" />
                     </div>
                   </div>
                   <div className="course-hero-badges">

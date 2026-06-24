@@ -1,8 +1,7 @@
-import { type FC, useMemo, useState, useRef, useEffect } from "react";
-import { Form, Button, Input, Segmented, message } from "antd";
+import { type FC, useMemo } from "react";
+import { Form, Button, Input } from "antd";
 import { 
-  LinkOutlined, DeleteOutlined, PlayCircleOutlined,
-  CloudUploadOutlined
+  LinkOutlined, DeleteOutlined, PlayCircleOutlined
 } from "@ant-design/icons";
 import { useField } from "formik";
 import type { CommonVideoUploadProps } from "@/Types";
@@ -14,43 +13,7 @@ export const CommonVideoUpload: FC<CommonVideoUploadProps> = ({
   className = "" 
 }) => {
   const [field, meta, helpers] = useField(name);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
   const showError = meta.touched && meta.error;
-
-  const initialMode = useMemo(() => {
-    if (field.value && typeof field.value === "string" && field.value.startsWith("http")) {
-      return "url";
-    }
-    return "upload";
-  }, [field.value]);
-
-  const [mode, setMode] = useState<"upload" | "url">(initialMode);
-
-  // Sync mode state when form is re-initialized / item changes
-  useEffect(() => {
-    if (meta.initialValue && typeof meta.initialValue === "string" && meta.initialValue.startsWith("http")) {
-      setMode("url");
-    } else {
-      setMode("upload");
-    }
-  }, [meta.initialValue]);
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      if (file.type.startsWith("video/")) {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          helpers.setValue(reader.result as string);
-          message.success(`Video "${file.name}" uploaded successfully!`);
-        };
-        reader.readAsDataURL(file);
-      } else {
-        message.error("Please select a valid video file.");
-      }
-    }
-  };
 
   const handleRemove = () => {
     helpers.setValue("");
@@ -126,84 +89,34 @@ export const CommonVideoUpload: FC<CommonVideoUploadProps> = ({
       className={`modern-form-item ${className}`}
     >
       <div className="flex flex-col gap-3.5 w-full">
-        {/* Segmented Mode Selector */}
-        <Segmented 
-          options={[
-            { label: <span className="flex items-center gap-1.5 px-2 py-0.5"><CloudUploadOutlined /> Upload Video</span>, value: "upload" },
-            { label: <span className="flex items-center gap-1.5 px-2 py-0.5"><LinkOutlined /> Video URL</span>, value: "url" }
-          ]}
-          value={mode}
-          onChange={(val) => setMode(val as "upload" | "url")}
-          className="w-fit bg-gray-150/70 dark:bg-gray-800/50 p-1 rounded-xl border border-border"
-        />
-
-        <input 
-          type="file" 
-          ref={fileInputRef} 
-          onChange={handleFileChange} 
-          className="hidden" 
-          accept="video/*" 
-        />
-
         <div className="w-full space-y-3">
-          {mode === "upload" ? (
-            <div>
-              {field.value ? (
-                <div className="flex flex-col gap-3">
-                  <div className="relative group overflow-hidden rounded-2xl border border-border bg-surface aspect-video shadow-md">
-                    {renderVideoPreview()}
-                    <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
-                      <Button 
-                        type="primary" 
-                        danger 
-                        shape="circle" 
-                        icon={<DeleteOutlined />} 
-                        onClick={handleRemove} 
-                        className="shadow-md hover:scale-105 transition-transform"
-                      />
-                    </div>
+          <div>
+            <Input
+              placeholder="Paste video source link (e.g. YouTube, Vimeo, direct link)..."
+              value={field.value && typeof field.value === "string" ? field.value : ""}
+              onChange={(e) => helpers.setValue(e.target.value)}
+              prefix={<LinkOutlined className="text-muted" />}
+              allowClear
+              className="w-full h-11 rounded-xl border border-border shadow-sm focus:border-primary focus:shadow-md transition-all duration-200"
+            />
+            {field.value ? (
+              <div className="flex flex-col gap-3 mt-3">
+                <div className="relative group overflow-hidden rounded-2xl border border-border bg-surface aspect-video shadow-md">
+                  {renderVideoPreview()}
+                  <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                    <Button 
+                      type="primary" 
+                      danger 
+                      shape="circle" 
+                      icon={<DeleteOutlined />} 
+                      onClick={handleRemove} 
+                      className="shadow-md hover:scale-105 transition-transform"
+                    />
                   </div>
                 </div>
-              ) : (
-                <div 
-                  onClick={() => fileInputRef.current?.click()}
-                  className="border-2 border-dashed border-border rounded-2xl p-8 flex flex-col items-center justify-center gap-3 cursor-pointer hover:border-primary hover:bg-primary/5 transition-all"
-                >
-                  <CloudUploadOutlined className="text-3xl text-muted" />
-                  <span className="text-sm font-semibold text-foreground">Click to upload video file</span>
-                  <span className="text-xs text-text-muted">Supports MP4, WebM, OGG</span>
-                </div>
-              )}
-            </div>
-          ) : (
-            <div>
-              <Input
-                placeholder="Paste video source link (e.g. YouTube, Vimeo, direct link)..."
-                value={field.value && typeof field.value === "string" && !field.value.startsWith("data:") ? field.value : ""}
-                onChange={(e) => helpers.setValue(e.target.value)}
-                prefix={<LinkOutlined className="text-muted" />}
-                allowClear
-                className="w-full h-11 rounded-xl border border-border shadow-sm focus:border-primary focus:shadow-md transition-all duration-200"
-              />
-              {field.value ? (
-                <div className="flex flex-col gap-3 mt-3">
-                  <div className="relative group overflow-hidden rounded-2xl border border-border bg-surface aspect-video shadow-md">
-                    {renderVideoPreview()}
-                    <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
-                      <Button 
-                        type="primary" 
-                        danger 
-                        shape="circle" 
-                        icon={<DeleteOutlined />} 
-                        onClick={handleRemove} 
-                        className="shadow-md hover:scale-105 transition-transform"
-                      />
-                    </div>
-                  </div>
-                </div>
-              ) : null}
-            </div>
-          )}
+              </div>
+            ) : null}
+          </div>
         </div>
       </div>
     </Form.Item>

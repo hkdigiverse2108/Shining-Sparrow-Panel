@@ -42,8 +42,6 @@
 .content-card-description * {
   white-space: normal !important;
   word-break: break-word !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis;
 }
 
 /* Global scrollbar styling that adapts to theme */
