@@ -14,6 +14,7 @@ const CourseSchema = Yup.object({
   mrpPrice: Yup.number().required("MRP Price is required").min(0),
   duration: Yup.number().optional(),
   courseCurriculumIds: Yup.array(Yup.string()).optional(),
+  trailerUrl: Yup.string().url("Must be a valid URL").nullable().optional(),
 });
 
 export const CourseForm: FC<CourseHandlerProps> = ({ open, onClose, onSave, editing }) => {
@@ -27,6 +28,7 @@ export const CourseForm: FC<CourseHandlerProps> = ({ open, onClose, onSave, edit
     duration: 0,
     courseCurriculumIds: [] as string[],
     isBlocked: false,
+    trailerUrl: "",
   };
 
   const initialValues = useMemo(() => (editing ? {
@@ -55,6 +57,7 @@ export const CourseForm: FC<CourseHandlerProps> = ({ open, onClose, onSave, edit
       duration: Number(v.duration),
       courseCurriculumIds: v.courseCurriculumIds,
       isBlocked: !!v.isBlocked,
+      trailerUrl: v.trailerUrl || "",
     };
 
     if (editing) {
@@ -92,6 +95,7 @@ export const CourseForm: FC<CourseHandlerProps> = ({ open, onClose, onSave, edit
                 maxTagCount={3}
                 placeholder="Select courses to include in this bundle"
               />
+              <CommonValidationTextField name="trailerUrl" label="Trailer Video URL (YouTube)" className="col-span-full" />
               <div className="col-span-full mt-2">
                 <Checkbox
                   checked={values.isBlocked}
