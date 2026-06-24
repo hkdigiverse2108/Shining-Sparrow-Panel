@@ -88,7 +88,9 @@ const ChatPage: FC = () => {
       
       const existingRoom = roomsList.find((room) => {
         if (room.type === 'global') return false;
-        return room.participants.some((p) => p._id === targetUserId);
+        const hasCurrentUser = room.participants.some((p) => p._id === currentUser?._id);
+        const hasTargetUser = room.participants.some((p) => p._id === targetUserId);
+        return hasCurrentUser && hasTargetUser;
       });
 
       if (existingRoom) {

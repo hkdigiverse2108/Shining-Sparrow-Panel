@@ -3,6 +3,7 @@ import { Formik, Form } from "formik";
 import { CommonFormShell, CommonFormSection, CommonImageUpload } from "@/Components";
 import { CommonButton, CommonValidationTextField, CommonValidationSelect, CommonRichTextEditor } from "@/Attribute";
 import { Queries } from "@/Api";
+import { Checkbox } from "antd";
 import * as Yup from "yup";
 import type { CourseHandlerProps } from "@/Types";
 
@@ -25,6 +26,7 @@ export const CourseForm: FC<CourseHandlerProps> = ({ open, onClose, onSave, edit
     image: "",
     duration: 0,
     courseCurriculumIds: [] as string[],
+    isBlocked: false,
   };
 
   const initialValues = useMemo(() => (editing ? {
@@ -52,6 +54,7 @@ export const CourseForm: FC<CourseHandlerProps> = ({ open, onClose, onSave, edit
       image: v.image,
       duration: Number(v.duration),
       courseCurriculumIds: v.courseCurriculumIds,
+      isBlocked: !!v.isBlocked,
     };
 
     if (editing) {
@@ -65,7 +68,7 @@ export const CourseForm: FC<CourseHandlerProps> = ({ open, onClose, onSave, edit
 
   return (
     <Formik enableReinitialize initialValues={initialValues} validationSchema={CourseSchema} onSubmit={handleSubmit}>
-      {({ errors }) => (
+      {({ errors, values, setFieldValue }) => (
         <CommonFormShell
           title={editing ? "Edit Course" : "Add Course"}
           description="Use a single, plain form to create or update course details."
@@ -89,6 +92,14 @@ export const CourseForm: FC<CourseHandlerProps> = ({ open, onClose, onSave, edit
                 maxTagCount={3}
                 placeholder="Select courses to include in this bundle"
               />
+              <div className="col-span-full mt-2">
+                <Checkbox
+                  checked={values.isBlocked}
+                  onChange={(e) => setFieldValue("isBlocked", e.target.checked)}
+                >
+                  <span className="text-foreground font-medium">Block this course (hide from student view)</span>
+                </Checkbox>
+              </div>
             </CommonFormSection>
 
             {Object.keys(errors).length > 0 && (

@@ -80,6 +80,7 @@ export interface WorkshopFormValues {
     couponCode?: string;
     language?: string;
     duration?: string;
+    isBlocked?: boolean;
 }
 
 export type AddWorkshopPayload = WorkshopFormValues;

@@ -154,7 +154,14 @@ const Courses: FC = () => {
   };
   
   const handleToggleStatus = (course: any) => {
-    console.log(`Toggle status clicked for ${course.name}`);
+    editCourseMutation.mutate({
+      courseId: course._id,
+      isBlocked: !course.isBlocked
+    } as any, {
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: [KEYS.COURSE.BASE] });
+      }
+    });
   };
 
   const handleDeleteClick = (course: any) => { 

@@ -141,7 +141,16 @@ const Workshops: FC = () => {
     });
   };
 
-  const handleToggleStatus = (workshop: any) => { console.log(`Toggle status clicked for ${workshop.title}`); };
+  const handleToggleStatus = (workshop: any) => {
+    editMutation.mutate({
+      workshopId: workshop._id,
+      isBlocked: !workshop.isBlocked
+    }, {
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: [KEYS.WORKSHOP.BASE] });
+      }
+    });
+  };
 
   const handleDeleteClick = (workshop: any) => { 
     setWorkshopToDelete(workshop);
