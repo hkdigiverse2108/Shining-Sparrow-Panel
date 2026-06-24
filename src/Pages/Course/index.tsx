@@ -1,6 +1,6 @@
 import { useState, useMemo, type FC } from 'react';
 import { Button, Tag, Avatar } from 'antd';
-import { DeleteOutlined, EditOutlined, LockOutlined, UnlockOutlined, FolderOpenOutlined } from '@ant-design/icons';
+import { DeleteOutlined, EditOutlined, FolderOpenOutlined, LockOutlined, UnlockOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { KEYS } from '@/Constants';
 import { BREADCRUMBS } from '@/Data';
@@ -42,9 +42,9 @@ const getCourseColumns = ({ onEdit, onManage, onToggleStatus, onDelete, current 
     sorter: (a: any, b: any) => a.price - b.price,
     render: (v: any, r: any) => (
       <div>
-        <span className="font-semibold">₹{v}</span>
-        {r.mrpPrice > v && (
-          <span className="text-muted line-through text-xs ml-1">₹{r.mrpPrice}</span>
+        <span className="font-semibold">₹{r.mrpPrice || v}</span>
+        {v > r.mrpPrice && r.mrpPrice > 0 && (
+          <span className="text-muted line-through text-xs ml-1">₹{v}</span>
         )}
       </div>
     ) 
@@ -62,11 +62,10 @@ const getCourseColumns = ({ onEdit, onManage, onToggleStatus, onDelete, current 
     render: (v: any) => <span className="text-text-muted">{v ? `${v} hrs` : "N/A"}</span> 
   },
   {
-    title: "Enrolled", 
-    dataIndex: "enrolledLearners", 
-    width: 110,
-    sorter: (a: any, b: any) => a.enrolledLearners - b.enrolledLearners,
-    render: (v: any) => <span className="font-medium">{v || 0}</span> 
+    title: "Access (Days)", 
+    dataIndex: "accessDurationDays", 
+    width: 120,
+    render: (v: any) => <span className="text-text-muted">{v ? `${v} days` : "N/A"}</span> 
   },
   {
     title: "Status", 
@@ -77,10 +76,10 @@ const getCourseColumns = ({ onEdit, onManage, onToggleStatus, onDelete, current 
   {
     title: "Actions", 
     dataIndex: "actions",
-    width: 180,
+    width: 160,
     fixed: 'right' as const, 
     render: (_: any, r: any) => (
-      <div className="flex gap-1">
+      <div className="flex gap-1 justify-center">
         <Button 
           type="text" 
           size="small" 
@@ -94,6 +93,7 @@ const getCourseColumns = ({ onEdit, onManage, onToggleStatus, onDelete, current 
           size="small" 
           icon={r.isBlocked ? <UnlockOutlined /> : <LockOutlined />} 
           onClick={() => onToggleStatus(r)} 
+          title={r.isBlocked ? "Unblock Course" : "Block Course"}
         />
         <Button type="text" size="small" danger icon={<DeleteOutlined />} onClick={() => onDelete(r)} />
       </div>

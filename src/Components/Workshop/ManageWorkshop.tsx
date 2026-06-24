@@ -233,9 +233,7 @@ const ManageWorkshop: FC = () => {
                     <div className="p-2 bg-amber-500/10 text-amber-600 rounded-lg"><BookOutlined className="text-xl" /></div>
                     <h2 className="text-2xl font-bold tracking-tight text-foreground">{workshop?.title}</h2>
                   </div>
-                  <p className="text-text-muted text-sm leading-relaxed max-w-2xl">
-                    {workshop?.about || 'No description provided. Add sessions and configure dates below.'}
-                  </p>
+                  <div className="text-text-muted text-sm leading-relaxed max-w-2xl" dangerouslySetInnerHTML={{ __html: workshop?.about || 'No description provided. Add sessions and configure dates below.' }} />
                   <div className="flex flex-wrap gap-2 pt-2">
                     <span className="text-xs font-semibold text-text-muted bg-surface-muted px-2.5 py-1 rounded-full">{curriculums.length} Session{curriculums.length !== 1 ? 's' : ''}</span>
                     {(workshop?.workshopTestimonials || []).length > 0 && (

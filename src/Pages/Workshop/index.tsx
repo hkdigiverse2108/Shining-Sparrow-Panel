@@ -1,7 +1,7 @@
 // pages/Workshop/Workshops.tsx
 import { useState, useMemo, type FC } from 'react';
 import { Button, Tag, Image } from 'antd';
-import { DeleteOutlined, EditOutlined, LockOutlined, UnlockOutlined, FolderOpenOutlined } from '@ant-design/icons';
+import { DeleteOutlined, EditOutlined, FolderOpenOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { KEYS } from '@/Constants';
 import { BREADCRUMBS } from '@/Data';
@@ -14,7 +14,7 @@ import { Mutations, Queries } from '@/Api';
 import type { ColumnType } from 'antd/es/table';
 import { WorkshopForm } from '../../Components/Workshop/WorkshopForm';
 
-const getWorkshopColumns = ({ onEdit, onManage, onToggleStatus, onDelete, current, pageSize }: any): ColumnType<any>[] => [
+const getWorkshopColumns = ({ onEdit, onManage, onDelete, current, pageSize }: any): ColumnType<any>[] => [
   {
     title: "#",
     width: 50,
@@ -85,18 +85,12 @@ const getWorkshopColumns = ({ onEdit, onManage, onToggleStatus, onDelete, curren
   {
     title: "Actions", 
     dataIndex: "actions",
-    width: 160,
+    width: 130,
     fixed: 'right' as 'right',
     render: (_: any, r: any) => (
-      <div className="flex gap-1.5 justify-start">
+      <div className="flex gap-1.5 justify-center">
         <Button type="text" size="small" icon={<FolderOpenOutlined />} onClick={() => onManage(r)} title="Manage Curriculum" />
         <Button type="text" size="small" icon={<EditOutlined />} onClick={() => onEdit(r)} />
-        <Button 
-          type="text" 
-          size="small" 
-          icon={r.isBlocked ? <UnlockOutlined /> : <LockOutlined />} 
-          onClick={() => onToggleStatus(r)} 
-        />
         <Button type="text" size="small" danger icon={<DeleteOutlined />} onClick={() => onDelete(r)} />
       </div>
     ),

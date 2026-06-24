@@ -5,6 +5,7 @@ import {
   BookOutlined, BarsOutlined, LockOutlined, UnlockOutlined,
   AppstoreOutlined, FolderOutlined, FileTextOutlined, PlusOutlined,
   QuestionCircleOutlined, ArrowLeftOutlined, EditOutlined, DeleteOutlined,
+  TeamOutlined, CheckCircleOutlined, StarOutlined, FilePdfOutlined
 } from '@ant-design/icons';
 import { Queries, Mutations } from '@/Api';
 import { KEYS } from '@/Constants';
@@ -16,6 +17,48 @@ import {
   lockBadge, editAction, deleteAction,
 } from '@/Components/Common/ContentItemCard';
 import { extractArray } from '@/Utils';
+
+const CourseVideoPlayer: FC<{ url: string }> = ({ url }) => {
+  if (!url) return null;
+
+  const youtubeRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
+  const ytMatch = url.match(youtubeRegex);
+  if (ytMatch && ytMatch[1]) {
+    return (
+      <iframe
+        src={`https://www.youtube.com/embed/${ytMatch[1]}`}
+        title="Course Trailer"
+        frameBorder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowFullScreen
+        className="w-full h-full object-cover"
+      />
+    );
+  }
+
+  const vimeoRegex = /(?:vimeo\.com\/|player\.vimeo\.com\/video\/)(\d+)/;
+  const vimeoMatch = url.match(vimeoRegex);
+  if (vimeoMatch && vimeoMatch[1]) {
+    return (
+      <iframe
+        src={`https://player.vimeo.com/video/${vimeoMatch[1]}`}
+        title="Course Trailer"
+        frameBorder="0"
+        allow="autoplay; fullscreen; picture-in-picture"
+        allowFullScreen
+        className="w-full h-full object-cover"
+      />
+    );
+  }
+
+  return (
+    <video
+      src={url}
+      controls
+      className="w-full h-full object-cover"
+    />
+  );
+};
 
 const ManageContentPage: FC = () => {
   const { courseId } = useParams<{ courseId: string }>();
@@ -184,7 +227,7 @@ const ManageContentPage: FC = () => {
                     <div className="course-hero-icon"><BookOutlined className="course-icon--glyph-xl" /></div>
                     <div>
                       <h1 className="course-hero-title">{course?.name || 'Course'}</h1>
-                      <p className="course-hero-text">{course?.description || 'Organize lessons, media resources, and assessments for this course.'}</p>
+                      <div className="course-hero-text text-sm text-text-muted mt-1 leading-relaxed" dangerouslySetInnerHTML={{ __html: course?.description || 'Organize lessons, media resources, and assessments for this course.' }} />
                     </div>
                   </div>
                   <div className="course-hero-badges">
@@ -229,6 +272,18 @@ const ManageContentPage: FC = () => {
                 <article className="course-stat-card animate-fade-in">
                   <div className="course-stat-icon course-stat-icon--warning"><LockOutlined /></div>
                   <div><span className="course-stat-label">Locked Lessons</span><strong className="course-stat-value">{lockedCount}</strong></div>
+                </article>
+                <article className="course-stat-card animate-fade-in">
+                  <div className="course-stat-icon course-stat-icon--primary"><TeamOutlined /></div>
+                  <div><span className="course-stat-label">Enrolled Learners</span><strong className="course-stat-value">{course?.enrolledLearners || 0}</strong></div>
+                </article>
+                <article className="course-stat-card animate-fade-in">
+                  <div className="course-stat-icon course-stat-icon--success"><CheckCircleOutlined /></div>
+                  <div><span className="course-stat-label">Classes Completed</span><strong className="course-stat-value">{course?.classCompleted || 0}</strong></div>
+                </article>
+                <article className="course-stat-card animate-fade-in">
+                  <div className="course-stat-icon course-stat-icon--warning"><StarOutlined /></div>
+                  <div><span className="course-stat-label">Satisfaction Rate</span><strong className="course-stat-value">{course?.satisfactionRate ? `${course.satisfactionRate}%` : "0%"}</strong></div>
                 </article>
               </section>
 
@@ -414,6 +469,36 @@ const ManageContentPage: FC = () => {
                           )}
                         </div>
                       </div>
+
+                      {/* Course Trailer */}
+                      {course?.trailerUrl && (
+                        <div className="course-sidebar-card">
+                          <span className="course-sidebar-label">Preview</span>
+                          <h3 className="course-sidebar-title">Course Trailer</h3>
+                          <div className="mt-2 rounded-xl overflow-hidden aspect-video border border-border bg-black">
+                            <CourseVideoPlayer url={course.trailerUrl} />
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Course Material (PDF Attachment) */}
+                      {course?.pdf && (
+                        <div className="course-sidebar-card">
+                          <span className="course-sidebar-label">Resources</span>
+                          <h3 className="course-sidebar-title">Course Material</h3>
+                          <p className="course-sidebar-text mb-3">Download or view the course syllabus and additional attachment resources.</p>
+                          <Button
+                            type="primary"
+                            icon={<FilePdfOutlined />}
+                            href={course.pdf}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="w-full"
+                          >
+                            View Attachment
+                          </Button>
+                        </div>
+                      )}
 
                       <div className="course-sidebar-card">
                         <span className="course-sidebar-label">Workflow tip</span>

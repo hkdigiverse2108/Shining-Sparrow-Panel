@@ -1,5 +1,5 @@
 import { useMemo, type FC } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { Spin, Button } from 'antd';
 import { ArrowLeftOutlined, FileProtectOutlined } from '@ant-design/icons';
 import { Queries, Mutations } from '@/Api';
@@ -11,6 +11,8 @@ import { extractArray } from '@/Utils';
 
 const ExamEditorPage: FC = () => {
   const { courseId, lessonId } = useParams<{ courseId: string; lessonId: string }>();
+  const [searchParams] = useSearchParams();
+  const examId = searchParams.get('examId');
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
@@ -24,8 +26,11 @@ const ExamEditorPage: FC = () => {
 
   const course = useMemo(() => extractArray(courseRes).find((c: any) => c._id === courseId), [courseRes, courseId]);
   const lessonExam = useMemo(() => {
-    return extractArray(examRes).find((e: any) => String(e.courseLessonId?._id ?? e.courseLessonId) === String(lessonId));
-  }, [examRes, lessonId]);
+    if (examId) {
+      return extractArray(examRes).find((e: any) => String(e._id) === String(examId));
+    }
+    return null;
+  }, [examRes, examId]);
 
   const handleSaveExam = (values: any) => {
     const payload = { ...values, courseId };
@@ -34,7 +39,7 @@ const ExamEditorPage: FC = () => {
     mutation.mutate(payload, {
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: [KEYS.EXAM.BASE] });
-        navigate(`/courses/${courseId}/lesson/${lessonId}/exam`);
+        navigate(`/courses/${courseId}/lesson/${lessonId}/exam${values.examId ? `?selectedExamId=${values.examId}` : ''}`);
       },
     });
   };
@@ -65,7 +70,7 @@ const ExamEditorPage: FC = () => {
             <Button
               type="text"
               icon={<ArrowLeftOutlined />}
-              onClick={() => navigate(`/courses/${courseId}/lesson/${lessonId}/exam`)}
+              onClick={() => navigate(`/courses/${courseId}/lesson/${lessonId}/exam${examId ? `?selectedExamId=${examId}` : ''}`)}
               className="course-button course-button--text"
             >
               Back to Assessment

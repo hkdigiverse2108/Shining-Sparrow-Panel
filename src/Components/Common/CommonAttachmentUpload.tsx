@@ -73,18 +73,24 @@ export const CommonAttachmentUpload: FC<CommonAttachmentUploadProps> = ({
     setFileProgress(0);
     setUploadedFileName(file.name);
 
-    let progress = 0;
-    const interval = setInterval(() => {
-      progress += 25;
-      setFileProgress(progress);
-      if (progress >= 100) {
-        clearInterval(interval);
-        setFileUploading(false);
-        const simulatedUrl = `https://dummy-assets.com/docs/${Date.now()}_${file.name.replace(/\s+/g, "_")}`;
-        helpers.setValue(simulatedUrl);
-        message.success(`Attachment "${file.name}" uploaded successfully!`);
+    const reader = new FileReader();
+    reader.onprogress = (e) => {
+      if (e.lengthComputable) {
+        const percent = Math.round((e.loaded / e.total) * 100);
+        setFileProgress(percent);
       }
-    }, 150);
+    };
+    reader.onloadend = () => {
+      setFileUploading(false);
+      setFileProgress(100);
+      helpers.setValue(reader.result as string);
+      message.success(`Attachment "${file.name}" uploaded successfully!`);
+    };
+    reader.onerror = () => {
+      setFileUploading(false);
+      message.error("Failed to read attachment file.");
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {

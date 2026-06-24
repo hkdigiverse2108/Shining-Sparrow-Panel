@@ -2,7 +2,7 @@ import { useMemo, useState, type FC } from "react";
 import { motion } from "motion/react";
 import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
-import { CommonBreadcrumbs, CommonPageWrapper, CommonTable, AdvancedSearch, CommonSummaryCards } from "@/Components";
+import { CommonBreadcrumbs, CommonPageWrapper, CommonTable, AdvancedSearch, CommonSummaryCards, CommonDeleteModal } from "@/Components";
 import { staggerContainer, blurRevealUp } from "@/Utils/animations";
 import { getUserColumns } from "./columns";
 import { statusOptions, BREADCRUMBS } from "@/Data";
@@ -22,6 +22,8 @@ const UserManagement: FC = () => {
   const [editingUser, setEditingUser] = useState<any | null>(null);
   const [current, setCurrent] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [userToDelete, setUserToDelete] = useState<any | null>(null);
   const { data: responseData, isLoading } = Queries.useGetUser({
     page: current,
     limit: pageSize,
@@ -79,12 +81,20 @@ const UserManagement: FC = () => {
     );
   };
   
-  const handleDelete = (id: string) => { 
+  const handleDeleteClick = (user: any) => { 
+    setUserToDelete(user);
+    setIsDeleteModalOpen(true);
+  };
+  
+  const handleConfirmDelete = () => { 
+    if (!userToDelete) return;
     deleteUserMutation.mutate(
-      id,
+      userToDelete._id,
       {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: [KEYS.USER.BASE] });
+          setIsDeleteModalOpen(false);
+          setUserToDelete(null);
         }
       }
     );
@@ -98,9 +108,11 @@ const UserManagement: FC = () => {
   const columns = useMemo(() => getUserColumns({ 
     onEdit: (u: any) => { setEditingUser(u); setDrawerOpen(true); }, 
     onToggleStatus: handleToggleStatus, 
-    onDelete: handleDelete,
-    onStartChat: (u: any) => navigate(ROUTES.CHAT, { state: { userId: u._id } })
-  }), [navigate]);
+    onDelete: handleDeleteClick,
+    onStartChat: (u: any) => navigate(ROUTES.CHAT, { state: { userId: u._id } }),
+    current,
+    pageSize
+  }), [navigate, current, pageSize]);
 
   return (
     <>
@@ -127,6 +139,14 @@ const UserManagement: FC = () => {
           </motion.div>
         )}
       </CommonPageWrapper>
+      <CommonDeleteModal 
+        open={isDeleteModalOpen} 
+        title="Delete User" 
+        itemName={userToDelete?.fullName} 
+        loading={deleteUserMutation.isPending} 
+        onClose={() => { setIsDeleteModalOpen(false); setUserToDelete(null); }} 
+        onConfirm={handleConfirmDelete} 
+      />
     </>
   );
 };
