@@ -1,6 +1,6 @@
 import { useState, useMemo, type FC } from 'react';
 import { Button, Tag, Avatar } from 'antd';
-import { DeleteOutlined, EditOutlined, FolderOpenOutlined } from '@ant-design/icons';
+import { DeleteOutlined, EditOutlined, FolderOpenOutlined, LockOutlined, UnlockOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { KEYS } from '@/Constants';
 import { BREADCRUMBS } from '@/Data';
@@ -13,7 +13,7 @@ import { Mutations, Queries } from '@/Api';
 import type { ColumnType } from 'antd/es/table';
 import type { CourseBase, CourseColumnProps } from '@/Types';
 
-const getCourseColumns = ({ onEdit, onManage, onDelete, current = 1, pageSize = 10 }: CourseColumnProps & { current?: number; pageSize?: number }): ColumnType<CourseBase>[] => [
+const getCourseColumns = ({ onEdit, onManage, onToggleStatus, onDelete, current = 1, pageSize = 10 }: CourseColumnProps & { current?: number; pageSize?: number }): ColumnType<CourseBase>[] => [
   {
     title: "Sr. No.",
     key: "srNo",
@@ -59,14 +59,13 @@ const getCourseColumns = ({ onEdit, onManage, onDelete, current = 1, pageSize = 
     title: "Duration", 
     dataIndex: "duration", 
     width: 110,
-    render: (v: any) => <span className="text-text-muted">{v ? `${v} days` : "N/A"}</span> 
+    render: (v: any) => <span className="text-text-muted">{v ? `${v} hrs` : "N/A"}</span> 
   },
   {
-    title: "Enrolled", 
-    dataIndex: "enrolledLearners", 
-    width: 110,
-    sorter: (a: any, b: any) => a.enrolledLearners - b.enrolledLearners,
-    render: (v: any) => <span className="font-medium">{v || 0}</span> 
+    title: "Access (Days)", 
+    dataIndex: "accessDurationDays", 
+    width: 120,
+    render: (v: any) => <span className="text-text-muted">{v ? `${v} days` : "N/A"}</span> 
   },
   {
     title: "Status", 
@@ -77,7 +76,7 @@ const getCourseColumns = ({ onEdit, onManage, onDelete, current = 1, pageSize = 
   {
     title: "Actions", 
     dataIndex: "actions",
-    width: 130,
+    width: 160,
     fixed: 'right' as const, 
     render: (_: any, r: any) => (
       <div className="flex gap-1 justify-center">
@@ -89,6 +88,13 @@ const getCourseColumns = ({ onEdit, onManage, onDelete, current = 1, pageSize = 
           title="Manage Content"
         />
         <Button type="text" size="small" icon={<EditOutlined />} onClick={() => onEdit(r)} />
+        <Button 
+          type="text" 
+          size="small" 
+          icon={r.isBlocked ? <UnlockOutlined /> : <LockOutlined />} 
+          onClick={() => onToggleStatus(r)} 
+          title={r.isBlocked ? "Unblock Course" : "Block Course"}
+        />
         <Button type="text" size="small" danger icon={<DeleteOutlined />} onClick={() => onDelete(r)} />
       </div>
     ),

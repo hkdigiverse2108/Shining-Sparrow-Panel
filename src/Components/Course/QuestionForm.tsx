@@ -25,6 +25,7 @@ const QuestionSchema = Yup.object({
 const QuestionFormObserver: FC = () => {
   const { values, setFieldValue } = useFormikContext<any>();
   const lastStepsRef = useRef<string[]>([]);
+  const lastLayoutRef = useRef(values.calculationLayout || 'horizontal');
   const lastTypeRef = useRef(values.questionType);
 
   // Sync calculationSteps when questionType changes to calculation
@@ -32,8 +33,10 @@ const QuestionFormObserver: FC = () => {
     if (values.questionType !== lastTypeRef.current) {
       lastTypeRef.current = values.questionType;
       if (values.questionType === 'calculation') {
-        const steps = values.questionText ? values.questionText.split(' ').filter(Boolean) : [''];
+        const separator = values.questionText.includes('\n') ? '\n' : ' ';
+        const steps = values.questionText ? values.questionText.split(separator).filter(Boolean) : [''];
         setFieldValue('calculationSteps', steps.length ? steps : ['']);
+        setFieldValue('calculationLayout', values.questionText.includes('\n') ? 'vertical' : 'horizontal');
       }
     }
   }, [values.questionType, values.questionText, setFieldValue]);
@@ -42,17 +45,21 @@ const QuestionFormObserver: FC = () => {
   useEffect(() => {
     if (values.questionType === 'calculation' && values.calculationSteps) {
       const stepsStr = JSON.stringify(values.calculationSteps);
-      if (stepsStr !== JSON.stringify(lastStepsRef.current)) {
+      const layoutChanged = values.calculationLayout !== lastLayoutRef.current;
+      
+      if (stepsStr !== JSON.stringify(lastStepsRef.current) || layoutChanged) {
         lastStepsRef.current = values.calculationSteps;
+        lastLayoutRef.current = values.calculationLayout || 'horizontal';
         
-        // Join steps with space for questionText
-        const joined = values.calculationSteps.join(' ');
+        // Join steps based on calculationLayout setting (vertical is new line, horizontal is space)
+        const separator = values.calculationLayout === 'vertical' ? '\n' : ' ';
+        const joined = values.calculationSteps.join(separator);
         if (values.questionText !== joined) {
           setFieldValue('questionText', joined);
         }
       }
     }
-  }, [values.calculationSteps, values.questionType, values.questionText, setFieldValue]);
+  }, [values.calculationSteps, values.calculationLayout, values.questionType, values.questionText, setFieldValue]);
 
   return null;
 };
@@ -65,18 +72,22 @@ export const QuestionForm: FC<QuestionFormProps> = ({ editing, onSave, loading }
     score: 1,
     priority: 0,
     calculationSteps: [''],
+    calculationLayout: 'horizontal',
     questionImage: '',
     questionAudio: ''
   };
 
   const initialValues = useMemo(() => {
     if (editing) {
+      const isVertical = editing.questionText && editing.questionText.includes('\n');
+      const separator = isVertical ? '\n' : ' ';
       const steps = editing.questionType === 'calculation' && editing.questionText 
-        ? editing.questionText.split(' ').filter(Boolean) 
+        ? editing.questionText.split(separator).filter(Boolean) 
         : [''];
       return { 
         ...defaults, 
         ...editing,
+        calculationLayout: isVertical ? 'vertical' : 'horizontal',
         calculationSteps: steps.length ? steps : ['']
       };
     }
@@ -198,9 +209,20 @@ export const QuestionForm: FC<QuestionFormProps> = ({ editing, onSave, loading }
               {/* Dynamic Calculation Steps builder */}
               {values.questionType === 'calculation' && (
                 <div className="col-span-2 mb-4 animate-fade-in">
-                  <label className="block text-xs font-bold uppercase tracking-widest text-muted mb-2">
-                    Calculation Steps
-                  </label>
+                  <div className="flex justify-between items-center mb-2">
+                    <label className="block text-xs font-bold uppercase tracking-widest text-muted">
+                      Calculation Steps
+                    </label>
+                    <Segmented
+                      options={[
+                        { label: 'Horizontal Layout', value: 'horizontal' },
+                        { label: 'Vertical Layout', value: 'vertical' }
+                      ]}
+                      value={values.calculationLayout || 'horizontal'}
+                      onChange={(val) => setFieldValue('calculationLayout', val)}
+                      className="w-fit"
+                    />
+                  </div>
                   <div className="p-5 bg-gray-50/50 border border-gray-150 rounded-xl space-y-4 shadow-sm">
                     <div className="flex flex-wrap items-center gap-3">
                       {values.calculationSteps.map((step: string, index: number) => (
@@ -247,11 +269,13 @@ export const QuestionForm: FC<QuestionFormProps> = ({ editing, onSave, loading }
                     <div className="text-xs text-gray-500 bg-white border border-gray-100 p-4 rounded-xl flex items-center justify-between shadow-xs">
                       <div>
                         <span className="font-semibold text-gray-700 block text-xs uppercase tracking-wider text-muted mb-1">Generated Calculation String</span>
-                        <span className="font-mono text-indigo-600 text-base font-bold bg-indigo-50/50 border border-indigo-100 px-3 py-1 rounded-lg inline-block mt-0.5">
+                        <span className="font-mono text-indigo-600 text-base font-bold bg-indigo-50/50 border border-indigo-100 px-3 py-1 rounded-lg inline-block mt-0.5 whitespace-pre-wrap">
                           {values.questionText || "(Empty)"}
                         </span>
                       </div>
-                      <span className="text-muted text-[10px] uppercase font-bold tracking-wider">Auto-spaced</span>
+                      <span className="text-muted text-[10px] uppercase font-bold tracking-wider">
+                        {values.calculationLayout === 'vertical' ? 'Vertical (Newline-separated)' : 'Horizontal (Space-separated)'}
+                      </span>
                     </div>
                   </div>
                 </div>

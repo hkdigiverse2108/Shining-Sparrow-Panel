@@ -1,17 +1,22 @@
-import { useState, useMemo, type FC } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { Spin, Button } from 'antd'; 
+import { useState, useMemo, type FC, useEffect } from 'react';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
+import { Spin, Button, Select } from 'antd'; 
 import { ArrowLeftOutlined, EditOutlined, PlusOutlined, DeleteOutlined, FileProtectOutlined, ClockCircleOutlined, StarOutlined, TrophyOutlined, QuestionCircleOutlined, RightOutlined, BarsOutlined, AppstoreOutlined, CalculatorOutlined, PictureOutlined, SoundOutlined, FileTextOutlined, } from '@ant-design/icons';
 import { Queries, Mutations } from '@/Api';
 import { KEYS } from '@/Constants';
 import { useQueryClient } from '@tanstack/react-query';
-import { CommonBreadcrumbs, CommonPageWrapper, CommonDeleteModal } from '@/Components'; // Added CommonDeleteModal
+import { CommonBreadcrumbs, CommonPageWrapper, CommonDeleteModal } from '@/Components'; 
 import { extractArray } from '@/Utils';
 
 const ExamManagerPage: FC = () => {
   const { courseId, lessonId } = useParams<{ courseId: string; lessonId: string }>();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const [searchParams, setSearchParams] = useSearchParams();
+  
+  // Track selected exam ID
+  const urlSelectedExamId = searchParams.get('selectedExamId');
+  const [selectedExamId, setSelectedExamId] = useState<string | null>(urlSelectedExamId);
 
   const { data: courseRes, isLoading: courseLoading } = Queries.useGetCourses({ page: 1, limit: 1000 });
   const { data: lessRes, isLoading: lessLoading } = Queries.useGetLessons();
@@ -27,9 +32,32 @@ const ExamManagerPage: FC = () => {
 
   const course = useMemo(() => extractArray(courseRes).find((c: any) => c._id === courseId), [courseRes, courseId]);
   const lesson = useMemo(() => extractArray(lessRes).find((l: any) => l._id === lessonId), [lessRes, lessonId]);
-  const lessonExam = useMemo(() => {
-    return extractArray(examRes).find((e: any) => String(e.courseLessonId?._id ?? e.courseLessonId) === String(lessonId));
+  
+  // Get all exams belonging to this lesson
+  const lessonExams = useMemo(() => {
+    return extractArray(examRes).filter((e: any) => String(e.courseLessonId?._id ?? e.courseLessonId) === String(lessonId));
   }, [examRes, lessonId]);
+
+  // Sync selected exam ID with url and actual exams list
+  useEffect(() => {
+    if (lessonExams.length > 0) {
+      const match = lessonExams.find(e => String(e._id) === String(urlSelectedExamId));
+      if (match) {
+        setSelectedExamId(String(match._id));
+      } else if (!urlSelectedExamId || !lessonExams.some(e => String(e._id) === String(selectedExamId))) {
+        setSelectedExamId(String(lessonExams[0]._id));
+        setSearchParams({ selectedExamId: String(lessonExams[0]._id) }, { replace: true });
+      }
+    } else {
+      setSelectedExamId(null);
+    }
+  }, [lessonExams, urlSelectedExamId, setSearchParams]);
+
+  // The active exam document
+  const lessonExam = useMemo(() => {
+    if (!selectedExamId) return null;
+    return lessonExams.find((e: any) => String(e._id) === String(selectedExamId)) || null;
+  }, [lessonExams, selectedExamId]);
 
   const examQuestions = useMemo(() => {
     if (!lessonExam) return [];
@@ -60,6 +88,8 @@ const ExamManagerPage: FC = () => {
           queryClient.invalidateQueries({ queryKey: [KEYS.EXAM.BASE] });
           setIsDeleteModalOpen(false);
           setDeleteTarget(null);
+          // Reset URL selection
+          setSearchParams({}, { replace: true });
         },
       });
     } else if (deleteTarget.type === 'question') {
@@ -82,23 +112,60 @@ const ExamManagerPage: FC = () => {
     );
   }
 
-  const openExamEditor = () => {
+  const openExamEditorForEdit = () => {
+    if (lessonExam?._id) {
+      navigate(`/courses/${courseId}/lesson/${lessonId}/exam/edit?examId=${lessonExam._id}`);
+    }
+  };
+
+  const openExamEditorForNew = () => {
     navigate(`/courses/${courseId}/lesson/${lessonId}/exam/edit`);
+  };
+
+  const handleExamChange = (value: string) => {
+    setSelectedExamId(value);
+    setSearchParams({ selectedExamId: value });
   };
 
   return (
     <>
       <CommonBreadcrumbs
-        title={`Assessment: ${lesson?.title || 'Lesson'}`}
+        title={`Assessments: ${lesson?.title || 'Lesson'}`}
         breadcrumbs={[
           { label: 'Courses', href: '/courses' },
           { label: `Manage: ${course?.name || 'Course'}`, href: `/courses/${courseId}/manage` },
-          { label: 'Assessment' },
+          { label: 'Assessments' },
         ]}
       />
 
       <CommonPageWrapper className="course-shell">
         <div className="course-container course-container--wide">
+          
+          {/* Multi-Exam Switcher Bar */}
+          <div className="bg-surface border border-border shadow-sm rounded-2xl p-4 mb-6 flex flex-wrap items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <span className="font-semibold text-text-muted text-sm">Select Assessment:</span>
+              <Select
+                value={selectedExamId || undefined}
+                onChange={handleExamChange}
+                placeholder="No assessment configured"
+                className="w-64"
+                options={lessonExams.map((e: any) => ({
+                  value: String(e._id),
+                  label: e.title || 'Untitled Assessment',
+                }))}
+              />
+            </div>
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={openExamEditorForNew}
+              className="course-button course-button--primary"
+            >
+              Add New Assessment
+            </Button>
+          </div>
+
           <section className="course-hero-card">
             <div className="course-hero-copy">
               <span className="course-hero-eyebrow">Assessment Builder</span>
@@ -107,7 +174,7 @@ const ExamManagerPage: FC = () => {
                   <FileProtectOutlined className="course-icon--glyph-xl" />
                 </div>
                 <div>
-                  <h1 className="course-hero-title">{lesson?.title || 'Lesson Assessment'}</h1>
+                  <h1 className="course-hero-title">{lessonExam?.title || lesson?.title || 'Lesson Assessment'}</h1>
                   <p className="course-hero-text">
                     {lessonExam?.description || 'Set the exam rules, manage questions, and keep the assessment status easy to read at a glance.'}
                   </p>
@@ -130,18 +197,9 @@ const ExamManagerPage: FC = () => {
               >
                 Back to Builder
               </Button>
-              {lessonExam ? (
+              {lessonExam && (
                 <Button danger type="dashed" icon={<DeleteOutlined />} onClick={openDeleteExamModal} className="course-button course-button--danger">
                   Delete Assessment
-                </Button>
-              ) : (
-                <Button
-                  type="primary"
-                  icon={<PlusOutlined />}
-                  onClick={openExamEditor}
-                  className="course-button course-button--primary"
-                >
-                  {lessonExam ? 'Edit Assessment' : 'Configure Assessment'}
                 </Button>
               )}
             </div>
@@ -207,11 +265,14 @@ const ExamManagerPage: FC = () => {
                             <div className="course-lesson-content space-y-3">
                               {question.questionType === 'calculation' ? (
                                 <div className="flex flex-wrap items-center gap-1.5 mt-1">
-                                  {question.questionText ? question.questionText.split(' ').map((step: string, idx: number) => (
+                                  {question.questionText ? question.questionText.split(question.questionText.includes('\n') ? '\n' : ' ').map((step: string, idx: number) => (
                                     <span key={idx} className="inline-flex items-center justify-center px-2 py-0.5 font-mono text-sm font-bold bg-indigo-50 border border-indigo-100 text-indigo-700 rounded-md">
                                       {step}
                                     </span>
                                   )) : <span className="text-gray-400 italic">Empty calculation</span>}
+                                  {question.questionText && question.questionText.includes('\n') && (
+                                    <span className="text-xs text-text-muted italic ml-1">(Vertical format)</span>
+                                  )}
                                 </div>
                               ) : (
                                 <h4 className="course-lesson-name">{question.questionText}</h4>
@@ -306,7 +367,7 @@ const ExamManagerPage: FC = () => {
                     <Button
                       type="primary"
                       icon={<PlusOutlined />}
-                      onClick={openExamEditor}
+                      onClick={openExamEditorForNew}
                       className="course-button course-button--primary"
                     >
                       Configure Assessment
@@ -347,10 +408,11 @@ const ExamManagerPage: FC = () => {
                   <Button
                     type="primary"
                     icon={<EditOutlined />}
-                    onClick={openExamEditor}
+                    onClick={openExamEditorForEdit}
+                    disabled={!lessonExam}
                     className="course-button course-button--primary course-button--compact course-button--wide"
                   >
-                    {lessonExam ? 'Edit Assessment' : 'Create Assessment'}
+                    Edit Selected Assessment
                   </Button>
                   <Button
                     icon={<AppstoreOutlined />}
@@ -381,7 +443,7 @@ const ExamManagerPage: FC = () => {
         </div>
       </CommonPageWrapper>
 
-      <CommonDeleteModal open={isDeleteModalOpen} title={deleteTarget?.type === 'exam' ? 'Delete Assessment' : 'Delete Question'} itemName={deleteTarget?.type === 'exam' ? lesson?.title : 'this question'} loading={deleteExamMutation.isPending || deleteQuestionMutation.isPending} onClose={() => { setIsDeleteModalOpen(false); setDeleteTarget(null); }} onConfirm={handleConfirmDelete} />
+      <CommonDeleteModal open={isDeleteModalOpen} title={deleteTarget?.type === 'exam' ? 'Delete Assessment' : 'Delete Question'} itemName={deleteTarget?.type === 'exam' ? lessonExam?.title || lesson?.title : 'this question'} loading={deleteExamMutation.isPending || deleteQuestionMutation.isPending} onClose={() => { setIsDeleteModalOpen(false); setDeleteTarget(null); }} onConfirm={handleConfirmDelete} />
     </>
   );
 };

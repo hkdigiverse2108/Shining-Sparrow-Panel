@@ -1,9 +1,8 @@
 import { type FC, useMemo } from "react";
 import { Formik, Form } from "formik";
-import { CommonFormShell, CommonFormSection, CommonImageUpload } from "@/Components";
+import { CommonFormShell, CommonFormSection, CommonAttachmentUpload, CommonVideoUpload } from "@/Components";
 import { CommonButton, CommonValidationTextField, CommonValidationSelect, CommonRichTextEditor } from "@/Attribute";
 import { Queries } from "@/Api";
-import { Checkbox } from "antd";
 import * as Yup from "yup";
 import type { CourseHandlerProps } from "@/Types";
 
@@ -13,6 +12,10 @@ const CourseSchema = Yup.object({
   price: Yup.number().required("Main Price is required").min(0),
   mrpPrice: Yup.number().required("Price after Discount is required").min(0),
   duration: Yup.number().optional().min(0, "Duration must be positive"),
+  accessDurationDays: Yup.number().optional().nullable().min(0, "Access duration must be positive"),
+  language: Yup.string().optional().nullable(),
+  trailerUrl: Yup.string().optional().nullable(),
+  pdf: Yup.string().optional().nullable(),
   courseCurriculumIds: Yup.array(Yup.string()).optional(),
 });
 
@@ -26,13 +29,18 @@ export const CourseForm: FC<CourseHandlerProps> = ({ open, onClose, onSave, edit
     image: "",
     duration: 0,
     courseCurriculumIds: [] as string[],
-    isBlocked: false,
+    accessDurationDays: "",
+    trailerUrl: "",
+    pdf: "",
   };
 
   const initialValues = useMemo(() => (editing ? {
     ...defaults,
     ...editing,
     courseCurriculumIds: (editing.courseCurriculumIds || []).map((sub: any) => typeof sub === 'object' ? sub._id : sub),
+    accessDurationDays: editing.accessDurationDays ?? "",
+    trailerUrl: editing.trailerUrl ?? "",
+    pdf: editing.pdf ?? "",
   } : defaults), [editing]);
 
   const { data: courseResponse } = Queries.useGetCourses({ page: 1, limit: 1000 });
@@ -50,11 +58,13 @@ export const CourseForm: FC<CourseHandlerProps> = ({ open, onClose, onSave, edit
       description: v.description,
       price: Number(v.price),
       mrpPrice: Number(v.mrpPrice),
-      language: v.language,
+      language: v.language || null,
       image: v.image,
       duration: Number(v.duration),
       courseCurriculumIds: v.courseCurriculumIds,
-      isBlocked: !!v.isBlocked,
+      accessDurationDays: v.accessDurationDays ? Number(v.accessDurationDays) : null,
+      trailerUrl: v.trailerUrl || null,
+      pdf: v.pdf || null,
     };
 
     if (editing) {
@@ -68,7 +78,7 @@ export const CourseForm: FC<CourseHandlerProps> = ({ open, onClose, onSave, edit
 
   return (
     <Formik enableReinitialize initialValues={initialValues} validationSchema={CourseSchema} onSubmit={handleSubmit}>
-      {({ errors, values, setFieldValue }) => (
+      {({ errors }) => (
         <CommonFormShell
           title={editing ? "Edit Course" : "Add Course"}
           description="Use a single, plain form to create or update course details."
@@ -77,15 +87,19 @@ export const CourseForm: FC<CourseHandlerProps> = ({ open, onClose, onSave, edit
         >
           <Form className="course-form-shell">
             <CommonFormSection title="Course Details">
-              <CommonImageUpload name="image" label="Course Thumbnail" shape="square" size={140} className="col-span-full" />
               <CommonValidationTextField name="name" label="Course Name" required />
               <CommonValidationTextField name="price" label="Main Price (₹)" type="number" required placeholder="Enter main price" />
               <CommonValidationTextField name="mrpPrice" label="Price after Discount (₹)" type="number" required placeholder="Enter price after discount" />
-              <CommonValidationTextField name="duration" label="Validity (in Days)" type="number" placeholder="e.g. 45" />
+              
+              <CommonValidationTextField name="language" label="Course Language" placeholder="e.g. English, Hindi" />
+              <CommonValidationTextField name="duration" label="Course Duration (in Hours)" type="number" placeholder="e.g. 40" />
+              <CommonValidationTextField name="accessDurationDays" label="Access Duration (in Days)" type="number" placeholder="e.g. 365" />
+              <CommonVideoUpload name="trailerUrl" label="Trailer Video" className="col-span-full" />
+              
+              <CommonAttachmentUpload name="pdf" label="Course Attachment (PDF)" className="col-span-full" />
               
               <CommonRichTextEditor name="description" label="Description" className="col-span-full" />
-              <CommonValidationTextField name="mrpPrice" label="MRP Price (₹)" type="number" required />
-              <CommonValidationTextField name="duration" label="Duration (Hours)" type="number" />
+              
               <CommonValidationSelect
                 name="courseCurriculumIds"
                 label="Bundle Courses (Included free)"
@@ -95,14 +109,6 @@ export const CourseForm: FC<CourseHandlerProps> = ({ open, onClose, onSave, edit
                 maxTagCount={3}
                 placeholder="Select courses to include in this bundle"
               />
-              <div className="col-span-full mt-2">
-                <Checkbox
-                  checked={values.isBlocked}
-                  onChange={(e) => setFieldValue("isBlocked", e.target.checked)}
-                >
-                  <span className="text-foreground font-medium">Block this course (hide from student view)</span>
-                </Checkbox>
-              </div>
             </CommonFormSection>
 
             {Object.keys(errors).length > 0 && (

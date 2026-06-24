@@ -54,6 +54,16 @@ export const CommonRichTextEditor: React.FC<CommonRichTextEditorProps> = ({ valu
     },
   });
 
+  // Sync editor content when value from formik / props changes
+  React.useEffect(() => {
+    if (editor) {
+      const currentValue = name ? field.value : value;
+      if (currentValue !== undefined && currentValue !== editor.getHTML()) {
+        editor.commands.setContent(currentValue || '');
+      }
+    }
+  }, [editor, name ? field.value : value]);
+
   if (!editor) return null;
 
   const showError = meta.touched && meta.error;
