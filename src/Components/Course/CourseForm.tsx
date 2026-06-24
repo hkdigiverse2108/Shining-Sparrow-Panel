@@ -14,9 +14,10 @@ const CourseSchema = Yup.object({
   duration: Yup.number().optional().min(0, "Duration must be positive"),
   accessDurationDays: Yup.number().optional().nullable().min(0, "Access duration must be positive"),
   language: Yup.string().optional().nullable(),
-  trailerUrl: Yup.string().optional().nullable(),
   pdf: Yup.string().optional().nullable(),
   courseCurriculumIds: Yup.array(Yup.string()).optional(),
+  trailerUrl: Yup.string().url("Must be a valid URL").nullable().optional(),
+  isBlocked: Yup.boolean().optional(),
 });
 
 export const CourseForm: FC<CourseHandlerProps> = ({ open, onClose, onSave, editing }) => {
@@ -29,6 +30,7 @@ export const CourseForm: FC<CourseHandlerProps> = ({ open, onClose, onSave, edit
     image: "",
     duration: 0,
     courseCurriculumIds: [] as string[],
+    isBlocked: false,
     accessDurationDays: "",
     trailerUrl: "",
     pdf: "",
@@ -62,6 +64,7 @@ export const CourseForm: FC<CourseHandlerProps> = ({ open, onClose, onSave, edit
       image: v.image,
       duration: Number(v.duration),
       courseCurriculumIds: v.courseCurriculumIds,
+      isBlocked: !!v.isBlocked,
       accessDurationDays: v.accessDurationDays ? Number(v.accessDurationDays) : null,
       trailerUrl: v.trailerUrl || null,
       pdf: v.pdf || null,

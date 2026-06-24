@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useMemo, useCallback, type FC, type ChangeEvent } from 'react';
 import { Avatar, Input, Button, Spin, Empty, Badge, Tag } from 'antd';
-import { SendOutlined, MessageOutlined, UserOutlined, SearchOutlined, ArrowLeftOutlined, PaperClipOutlined, FileOutlined, FilePdfOutlined, CloseOutlined, DownloadOutlined } from '@ant-design/icons';
+import { SendOutlined, MessageOutlined, UserOutlined, SearchOutlined, ArrowLeftOutlined, PaperClipOutlined, FileOutlined, FilePdfOutlined, CloseOutlined, DownloadOutlined, RollbackOutlined } from '@ant-design/icons';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { io, Socket } from 'socket.io-client';
 import { Queries } from '@/Api/Queries';
@@ -25,6 +25,7 @@ const ChatPage: FC = () => {
   const [isConnected, setIsConnected] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [replyToMessage, setReplyToMessage] = useState<ChatMessage | null>(null);
   
   // Search State
   const [chatSearchQuery, setChatSearchQuery] = useState('');
@@ -40,6 +41,7 @@ const ChatPage: FC = () => {
 
   useEffect(() => {
     selectedRoomRef.current = selectedRoom;
+    setReplyToMessage(null);
   }, [selectedRoom]);
 
   // Mutations
@@ -282,10 +284,12 @@ const ChatPage: FC = () => {
         roomId: selectedRoom?.type === 'global' ? undefined : selectedRoom?._id,
       };
       if (attachmentPayload) payload.attachment = attachmentPayload;
+      if (replyToMessage) payload.replyTo = replyToMessage._id;
 
       sendMessageMutation.mutate(payload, {
         onSuccess: () => {
           setInputText('');
+          setReplyToMessage(null);
           queryClient.invalidateQueries({ queryKey: ['chat-rooms'] });
           if (selectedRoom?._id) {
             queryClient.invalidateQueries({ queryKey: ['chat-messages', selectedRoom._id] });
@@ -541,9 +545,25 @@ const ChatPage: FC = () => {
                         lastDate = msgDate;
 
                         const isSentByMe = msg.senderId?._id === currentUser?._id;
-                        
+
+                        const prevMsg = index > 0 ? messagesList[index - 1] : null;
+                        const nextMsg = index < messagesList.length - 1 ? messagesList[index + 1] : null;
+
+                        const getMsgSenderId = (m: ChatMessage | null) => {
+                          if (!m) return null;
+                          return typeof m.senderId === 'object' ? m.senderId._id : m.senderId;
+                        };
+
+                        const isSameSenderAsPrev = prevMsg && getMsgSenderId(prevMsg) === getMsgSenderId(msg);
+                        const isSameMinuteAsPrev = prevMsg && new Date(prevMsg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) === new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                        const isConsecutive = isSameSenderAsPrev && isSameMinuteAsPrev && !showDateSeparator;
+
+                        const isSameSenderAsNext = nextMsg && getMsgSenderId(nextMsg) === getMsgSenderId(msg);
+                        const isSameMinuteAsNext = nextMsg && new Date(nextMsg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) === new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                        const isLastInGroup = !(isSameSenderAsNext && isSameMinuteAsNext);
+
                         return (
-                          <div key={msg._id || index} style={{ display: 'flex', flexDirection: 'column' }}>
+                          <div key={msg._id || index} style={{ display: 'flex', flexDirection: 'column', marginTop: isConsecutive ? '-13px' : '0px' }}>
                             {showDateSeparator && (
                               <div className="chat-message-date-separator">
                                 <span className="chat-message-date-text">
@@ -551,57 +571,107 @@ const ChatPage: FC = () => {
                                 </span>
                               </div>
                             )}
-                            <div className={`chat-message ${isSentByMe ? 'sent' : 'received'}`}>
-                              <Avatar
-                                size={32}
-                                icon={<UserOutlined />}
-                                src={getProfilePhotoUrl(msg.senderId?.profilePhoto)}
-                                style={{ flexShrink: 0 }}
-                              />
-                              <div className="chat-message-content">
-                                {!isSentByMe && (
-                                  <span className="chat-message-sender">
-                                    {msg.senderId?.fullName || 'User'}
-                                  </span>
+                            <div 
+                              className="chat-message-wrapper animate-fade-in"
+                              style={{
+                                display: 'flex',
+                                width: '100%',
+                                justifyContent: isSentByMe ? 'flex-end' : 'flex-start',
+                                alignItems: 'center',
+                                gap: 8,
+                                marginBottom: isConsecutive ? 3 : 12,
+                              }}
+                            >
+                              <div className={`chat-message ${isSentByMe ? 'sent' : 'received'}`} style={{ maxWidth: '75%', order: isSentByMe ? 2 : 1 }}>
+                                {isConsecutive ? (
+                                  <div style={{ width: 32, flexShrink: 0 }} />
+                                ) : (
+                                  <Avatar
+                                    size={32}
+                                    icon={<UserOutlined />}
+                                    src={getProfilePhotoUrl(msg.senderId?.profilePhoto)}
+                                    style={{ flexShrink: 0 }}
+                                  />
                                 )}
-                                <div className="chat-message-bubble">
-                                  {msg.message && <div className={msg.attachment ? 'mb-2' : ''}>{msg.message}</div>}
-                                  {msg.attachment && (
-                                    <div className={msg.message ? 'mt-2' : ''}>
-                                      {msg.attachment.type === 'image' ? (
-                                        <a href={msg.attachment.url} target="_blank" rel="noopener noreferrer">
-                                          <img
-                                            src={msg.attachment.url}
-                                            alt={msg.attachment.name}
-                                            style={{ maxWidth: '100%', maxHeight: 200, borderRadius: 8, objectFit: 'cover', cursor: 'pointer' }}
-                                          />
-                                        </a>
-                                      ) : (
-                                        <a
-                                          href={msg.attachment.url}
-                                          target="_blank"
-                                          rel="noopener noreferrer"
-                                          style={{
-                                            display: 'flex', alignItems: 'center', gap: 8,
-                                            padding: '6px 10px', borderRadius: 8,
-                                            background: isSentByMe ? 'rgba(255,255,255,0.15)' : 'var(--bg-tertiary, #f5f5f5)',
-                                            color: 'inherit', fontSize: 12, textDecoration: 'none',
-                                          }}
-                                        >
-                                          {msg.attachment.type === 'pdf' ? <FilePdfOutlined /> : <FileOutlined />}
-                                          <span style={{ flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                            {msg.attachment.name}
-                                          </span>
-                                          <DownloadOutlined />
-                                        </a>
-                                      )}
+                                <div className="chat-message-content">
+                                  {!isSentByMe && !isConsecutive && (
+                                    <span className="chat-message-sender">
+                                      {msg.senderId?.fullName || 'User'}
+                                    </span>
+                                  )}
+                                  <div className="chat-message-bubble">
+                                    {msg.replyTo && (
+                                      <div style={{
+                                        marginBottom: 6,
+                                        padding: 6,
+                                        borderRadius: 6,
+                                        borderLeft: isSentByMe ? '2px solid rgba(255,255,255,0.4)' : '2px solid var(--primary, #e86424)',
+                                        background: isSentByMe ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)',
+                                        fontSize: 10,
+                                        color: isSentByMe ? 'rgba(255,255,255,0.85)' : 'var(--text-secondary, #555)',
+                                      }}>
+                                        <div style={{ fontWeight: 'bold', fontSize: 9, marginBottom: 2 }}>
+                                          {msg.replyTo.senderId?._id === currentUser?._id ? 'You' : msg.replyTo.senderId?.fullName || 'User'}
+                                        </div>
+                                        <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                          {msg.replyTo.message || (msg.replyTo.attachment ? `📎 ${msg.replyTo.attachment.name}` : '')}
+                                        </div>
+                                      </div>
+                                    )}
+                                    {msg.attachment && (
+                                      <div className="mb-2">
+                                        {msg.attachment.type === 'image' ? (
+                                          <a href={msg.attachment.url} target="_blank" rel="noopener noreferrer">
+                                            <img
+                                              src={msg.attachment.url}
+                                              alt={msg.attachment.name}
+                                              style={{ maxWidth: '100%', maxHeight: 200, borderRadius: 8, objectFit: 'cover', cursor: 'pointer' }}
+                                            />
+                                          </a>
+                                        ) : (
+                                          <a
+                                            href={msg.attachment.url}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            style={{
+                                              display: 'flex', alignItems: 'center', gap: 8,
+                                              padding: '6px 10px', borderRadius: 8,
+                                              background: isSentByMe ? 'rgba(255,255,255,0.15)' : 'var(--bg-tertiary, #f5f5f5)',
+                                              color: 'inherit', fontSize: 12, textDecoration: 'none',
+                                            }}
+                                          >
+                                            {msg.attachment.type === 'pdf' ? <FilePdfOutlined /> : <FileOutlined />}
+                                            <span style={{ flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                              {msg.attachment.name}
+                                            </span>
+                                            <DownloadOutlined />
+                                          </a>
+                                        )}
+                                      </div>
+                                    )}
+                                    {msg.message && <div>{msg.message}</div>}
+                                  </div>
+                                  {isLastInGroup && (
+                                    <div className="chat-message-time" style={{ textAlign: isSentByMe ? 'right' : 'left', marginTop: 4, paddingLeft: isSentByMe ? 0 : 4, paddingRight: isSentByMe ? 4 : 0 }}>
+                                      {formatTime(msg.createdAt)}
                                     </div>
                                   )}
-                                  <div className="chat-message-time" style={{ textAlign: isSentByMe ? 'right' : 'left' }}>
-                                    {formatTime(msg.createdAt)}
-                                  </div>
                                 </div>
                               </div>
+                              <Button
+                                className="chat-reply-btn"
+                                type="text"
+                                size="small"
+                                icon={<RollbackOutlined />}
+                                onClick={() => setReplyToMessage(msg)}
+                                style={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  color: 'var(--text-muted, #999)',
+                                  order: isSentByMe ? 1 : 2,
+                                }}
+                              />
                             </div>
                           </div>
                         );
@@ -615,8 +685,34 @@ const ChatPage: FC = () => {
                   <div ref={messagesEndRef} />
                 </div>
 
-                {/* Footer Composer */}
-                <div className="chat-footer">
+                 {/* Footer Composer */}
+                 <div className="chat-footer">
+                  {replyToMessage && (
+                    <div style={{
+                      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                      padding: '8px 12px', margin: '0 12px 8px',
+                      background: 'var(--bg-secondary, #fafafa)',
+                      borderLeft: '4px solid var(--primary, #e86424)',
+                      borderRadius: 8,
+                    }}>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontWeight: 'bold', fontSize: 10, color: 'var(--primary, #e86424)' }}>
+                          Replying to {replyToMessage.senderId?.fullName || 'User'}
+                        </div>
+                        <div style={{ fontSize: 11, color: 'var(--text-muted, #999)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          {replyToMessage.message || (replyToMessage.attachment ? `📎 ${replyToMessage.attachment.name}` : '')}
+                        </div>
+                      </div>
+                      <Button
+                        type="text"
+                        size="small"
+                        icon={<CloseOutlined />}
+                        onClick={() => setReplyToMessage(null)}
+                        style={{ color: 'var(--text-muted, #999)', border: 'none', background: 'transparent' }}
+                      />
+                    </div>
+                  )}
+
                   {/* File Preview */}
                   {selectedFile && (
                     <div style={{

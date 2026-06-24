@@ -6,9 +6,7 @@ export const LoginSchema = Yup.object({
     email: Validation("string", "Email", {
         extraRules: (s) => s.email("Invalid email address"),
     }),
-    password: Validation("string", "Password", {
-        extraRules: (s) => s.matches(/[!@#$%^&*()_+={}:;"'<>,.?/-]/, "Password must include at least one special character"),
-    }),
+    password: Validation("string", "Password"),
 });
 // Register
 export const RegisterSchema = Yup.object({
@@ -96,7 +94,7 @@ export const UserSchema = Yup.object({
     email: Yup.string().email("Invalid email address").required("Email is required"),
     phoneNumber: Yup.string().optional(),
     profilePhoto: Yup.string().nullable().optional(),
-    isBlocked: Yup.string().optional(), 
+    isBlocked: Yup.string().optional(),
     isEmailVerified: Yup.string().optional(),
     designation: Yup.string().optional(),
     district: Yup.string().optional(),
@@ -122,8 +120,8 @@ export const EditUserSchema = Yup.object({
     reachFrom: Yup.string().optional(),
     schoolName: Yup.string().optional(),
     referralCode: Yup.string().optional(),
-    isBlocked: Yup.string().optional(), 
-    isEmailVerified: Yup.string().optional(), 
+    isBlocked: Yup.string().optional(),
+    isEmailVerified: Yup.string().optional(),
     password: Yup.string().optional().min(6, "Minimum 6 characters required"),
 });
 

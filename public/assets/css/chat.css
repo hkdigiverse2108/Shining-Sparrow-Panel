@@ -337,9 +337,8 @@
 }
 
 .chat-message.sent .chat-message-time {
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--text-muted);
   margin-top: 2px;
-  align-self: flex-end;
 }
 
 /* Chat Footer / Composer */
@@ -505,3 +504,15 @@
     display: none !important;
   }
 }
+
+.chat-message-wrapper {
+  position: relative;
+}
+.chat-message-wrapper .chat-reply-btn {
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+}
+.chat-message-wrapper:hover .chat-reply-btn {
+  opacity: 1;
+}
+
