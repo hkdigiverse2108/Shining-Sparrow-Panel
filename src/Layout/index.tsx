@@ -33,7 +33,7 @@ const DashboardLayout: FC = () => {
   const setIsDark = (val: boolean) => {
     dispatch(setToggleTheme(val ? 'dark' : 'light'));
   };
-  const brandColor = isDark ? '#FFC32C' : '#FF8A1F';
+  const brandColor = '#e86424';
   return (
     <ConfigProvider
       theme={{ algorithm: isDark ? theme.darkAlgorithm : theme.defaultAlgorithm,

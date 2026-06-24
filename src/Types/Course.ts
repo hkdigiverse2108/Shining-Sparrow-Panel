@@ -59,6 +59,7 @@ export interface CourseFormValues {
     satisfactionRate: number;
     isDeleted: boolean;
     isBlocked: boolean;
+    courseId?: string;
 }
 
 export type AddCoursePayload = CourseFormValues;

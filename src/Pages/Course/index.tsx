@@ -148,14 +148,14 @@ const Courses: FC = () => {
   };
   
   const handleToggleStatus = (course: any) => {
-    editCourseMutation.mutate(
-      { courseId: course._id, isBlocked: !course.isBlocked } as any,
-      {
-        onSuccess: () => {
-          queryClient.invalidateQueries({ queryKey: [KEYS.COURSE.BASE] });
-        }
+    editCourseMutation.mutate({
+      courseId: course._id,
+      isBlocked: !course.isBlocked
+    } as any, {
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: [KEYS.COURSE.BASE] });
       }
-    );
+    });
   };
 
   const handleDeleteClick = (course: any) => { 

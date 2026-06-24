@@ -136,14 +136,14 @@ const Workshops: FC = () => {
   };
 
   const handleToggleStatus = (workshop: any) => {
-    editMutation.mutate(
-      { workshopId: workshop._id, isBlocked: !workshop.isBlocked } as any,
-      {
-        onSuccess: () => {
-          queryClient.invalidateQueries({ queryKey: [KEYS.WORKSHOP.BASE] });
-        }
+    editMutation.mutate({
+      workshopId: workshop._id,
+      isBlocked: !workshop.isBlocked
+    }, {
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: [KEYS.WORKSHOP.BASE] });
       }
-    );
+    });
   };
 
   const handleDeleteClick = (workshop: any) => { 

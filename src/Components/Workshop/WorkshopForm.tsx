@@ -3,6 +3,7 @@ import { type FC, useMemo } from "react";
 import { Formik, Form } from "formik";
 import { CommonFormShell, CommonFormSection, CommonImageUpload } from "@/Components";
 import { CommonButton, CommonValidationTextField } from "@/Attribute";
+import { Checkbox } from "antd";
 import * as Yup from "yup";
 
 const WorkshopSchema = Yup.object({
@@ -12,7 +13,7 @@ const WorkshopSchema = Yup.object({
 });
 
 export const WorkshopForm: FC<any> = ({ open, onClose, onSave, editing }) => {
-  const defaults = { title: '', subTitle: '', about: '', image: '', pdfAttach: '', price: 0, mrpPrice: 0, validFor: '', couponCode: '', language: '', duration: '' };
+  const defaults = { title: '', subTitle: '', about: '', image: '', pdfAttach: '', price: 0, mrpPrice: 0, validFor: '', couponCode: '', language: '', duration: '', isBlocked: false };
   const initialValues = useMemo(() => (editing ? { ...defaults, ...editing } : defaults), [editing]);
 
   if (!open) return null;
@@ -30,6 +31,7 @@ export const WorkshopForm: FC<any> = ({ open, onClose, onSave, editing }) => {
       couponCode: v.couponCode,
       language: v.language,
       duration: v.duration,
+      isBlocked: !!v.isBlocked,
     };
     if (editing) payload.workshopId = editing._id;
     onSave(payload);
@@ -37,7 +39,7 @@ export const WorkshopForm: FC<any> = ({ open, onClose, onSave, editing }) => {
 
   return (
     <Formik enableReinitialize initialValues={initialValues} validationSchema={WorkshopSchema} onSubmit={handleSubmit}>
-      {({ errors }) => (
+      {({ errors, values, setFieldValue }) => (
         <CommonFormShell title={editing ? "Edit Workshop" : "Add Workshop"} description="Use a single, plain form to create or update workshop details." onClose={onClose} closeLabel="Cancel">
           <Form className="course-form-shell">
             <CommonFormSection title="Workshop Details">
@@ -53,6 +55,14 @@ export const WorkshopForm: FC<any> = ({ open, onClose, onSave, editing }) => {
               <CommonValidationTextField name="mrpPrice" label="MRP Price (₹)" type="number" required />
               <CommonValidationTextField name="validFor" label="Access Validity (e.g. 30 Days)" />
               <CommonValidationTextField name="couponCode" label="Coupon Code" />
+              <div className="col-span-full mt-2">
+                <Checkbox
+                  checked={values.isBlocked}
+                  onChange={(e) => setFieldValue("isBlocked", e.target.checked)}
+                >
+                  <span className="text-foreground font-medium">Block this workshop (hide from student view)</span>
+                </Checkbox>
+              </div>
             </CommonFormSection>
             {Object.keys(errors).length > 0 && ( <div className="course-form-error"><strong>Validation errors:</strong><ul className="course-form-error-list">{Object.entries(errors).map(([k, v]) => <li key={k}>{k}: {String(v)}</li>)}</ul></div> )}
             <div className="course-form-actions">
