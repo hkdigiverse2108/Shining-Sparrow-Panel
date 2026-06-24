@@ -26,6 +26,7 @@ export interface ChatMessage {
     type: 'image' | 'pdf' | 'doc';
     name: string;
   };
+  replyTo?: ChatMessage | null;
   isDeleted: boolean;
   createdAt: string;
   updatedAt: string;
@@ -56,6 +57,7 @@ export interface SendMessagePayload {
     type: 'image' | 'pdf' | 'doc';
     name: string;
   };
+  replyTo?: string;
 }
 
 export interface CreateRoomPayload {
