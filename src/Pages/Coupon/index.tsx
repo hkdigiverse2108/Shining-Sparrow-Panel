@@ -2,8 +2,8 @@ import { useState, useMemo, type FC } from 'react';
 import { Button, Tag, Tooltip } from 'antd';
 import {
   DeleteOutlined,
-  EditOutlined, CalendarOutlined, CheckCircleOutlined,
-  CloseCircleOutlined, LockOutlined, UnlockOutlined
+  EditOutlined, CalendarOutlined,
+  LockOutlined, UnlockOutlined
 } from '@ant-design/icons';
 import { motion } from 'motion/react';
 import { useQueryClient } from '@tanstack/react-query';
@@ -98,24 +98,6 @@ const getCouponColumns = ({
     )
   },
   {
-    title: 'Status',
-    dataIndex: 'status',
-    width: 100,
-    align:"center",
-    render: (v: string) => {
-      const isAct = v === 'active';
-      return (
-        <Tag
-          icon={isAct ? <CheckCircleOutlined /> : <CloseCircleOutlined />}
-          color={isAct ? 'green' : v === 'expired' ? 'red' : 'orange'}
-          className="capitalize border-none"
-        >
-          {v}
-        </Tag>
-      );
-    }
-  },
-  {
     title: 'Actions',
     dataIndex: 'actions',
     width: 120,
@@ -156,7 +138,7 @@ const CouponPage: FC = () => {
   const [couponToDelete, setCouponToDelete] = useState<any | null>(null);
 
   // Fetch Coupons
-  const { data: responseData, isLoading } = Queries.useGetCouponCodes({
+  const { data: responseData, isLoading, isFetching } = Queries.useGetCouponCodes({
     page: current,
     limit: pageSize,
     search: debouncedSearchQuery
@@ -271,7 +253,7 @@ const CouponPage: FC = () => {
               <CommonTable 
                 columns={columns} 
                 data={coupons} 
-                loading={isLoading} 
+                loading={isLoading || isFetching} 
                 searchPlaceholder="Search coupon codes..." 
                 onSearch={handleSearch} 
                 onAdd={() => { setEditingCoupon(null); setIsFormOpen(true); }} 

@@ -1,6 +1,6 @@
 import { useMemo, type FC } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
-import { Avatar, Tag, Button, Space, Divider, Spin, Card, Row, Col } from 'antd';
+import { Avatar, Tag, Button, Divider, Spin, Card, Row, Col } from 'antd';
 import { 
   BookOutlined, 
   CalendarOutlined, 

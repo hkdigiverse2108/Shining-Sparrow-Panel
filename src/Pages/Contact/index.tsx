@@ -395,7 +395,7 @@ const ContactPage: FC = () => {
   return (
     <>
       <CommonBreadcrumbs title="Contact Us" breadcrumbs={BREADCRUMBS.CONTACT || []} />
-      <CommonPageWrapper className="!bg-transparent !h-auto !min-h-0">
+      <CommonPageWrapper className=" !h-auto !min-h-0">
         <Tabs
           activeKey={activeTab}
           onChange={setActiveTab}

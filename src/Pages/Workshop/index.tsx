@@ -115,7 +115,7 @@ const Workshops: FC = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [workshopToDelete, setWorkshopToDelete] = useState<any | null>(null);
 
-  const { data: responseData, isLoading } = Queries.useGetWorkshops({
+  const { data: responseData, isLoading, isFetching } = Queries.useGetWorkshops({
     page: current, limit: pageSize, search: debouncedSearchQuery
   });
 
@@ -193,7 +193,7 @@ const Workshops: FC = () => {
             <CommonSummaryCards total={totalWorkshops} active={workshops.filter((w: any) => !w.isBlocked).length} blocked={workshops.filter((w: any) => w.isBlocked).length} subject="Workshops" />
             <motion.div variants={blurRevealUp}>
               <div className="">
-                <CommonTable columns={columns} data={workshops} loading={isLoading || addMutation.isPending || editMutation.isPending} searchPlaceholder="Search workshops..." onSearch={handleSearch} onAdd={() => { setEditingWorkshop(null); setIsFormOpen(true); }} fileName="Workshops" title="Workshop Management" current={current} pageSize={pageSize} total={totalWorkshops} onTableChange={(p: any) => { setCurrent(p.current); setPageSize(p.pageSize); }} scroll={{ x: 1000 }} />
+                <CommonTable columns={columns} data={workshops} loading={isLoading || isFetching || addMutation.isPending || editMutation.isPending} searchPlaceholder="Search workshops..." onSearch={handleSearch} onAdd={() => { setEditingWorkshop(null); setIsFormOpen(true); }} fileName="Workshops" title="Workshop Management" current={current} pageSize={pageSize} total={totalWorkshops} onTableChange={(p: any) => { setCurrent(p.current); setPageSize(p.pageSize); }} scroll={{ x: 1000 }} />
               </div>
             </motion.div>
           </motion.div>

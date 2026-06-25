@@ -480,4 +480,20 @@
   .user-metric-card:hover .user-metric-icon--blocked {
     @apply bg-danger text-white;
   }
+
+  /* ─── PREMIUM ROW ENTRANCE ANIMATION ─── */
+  @keyframes tableRowFadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .common-table-surface .ant-table-tbody > tr {
+    animation: tableRowFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
 }

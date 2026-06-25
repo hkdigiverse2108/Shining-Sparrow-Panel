@@ -1,5 +1,5 @@
 import { useState, useMemo, type FC } from 'react';
-import { Avatar, Tag, Segmented, Button, Tooltip } from 'antd';
+import { Avatar, Tag, Segmented, Button, Tooltip, Input, Row, Col } from 'antd';
 import { 
   BookOutlined, 
   CalendarOutlined, 
@@ -12,7 +12,7 @@ import {
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
-import { CommonBreadcrumbs, CommonPageWrapper } from '@/Components';
+import { CommonBreadcrumbs, CommonPageWrapper, AdvancedSearch } from '@/Components';
 import CommonTable from '@/Components/Common/CommonTable';
 import { blurRevealUp, staggerContainer } from '@/Utils/animations';
 import { BREADCRUMBS } from '@/Data';
@@ -35,18 +35,48 @@ const PaymentsPage: FC = () => {
   const [workshopPageSize, setWorkshopPageSize] = useState(10);
   const [workshopSearch, setWorkshopSearch] = useState("");
 
+  // Advanced Filter states
+  const [courseFilter, setCourseFilter] = useState<string | undefined>(undefined);
+  const [workshopFilter, setWorkshopFilter] = useState<string | undefined>(undefined);
+  const [minAmount, setMinAmount] = useState<string>("");
+  const [maxAmount, setMaxAmount] = useState<string>("");
+
+  // Fetch courses list and workshops list for filters
+  const { data: allCoursesRes, isLoading: coursesListLoading } = Queries.useGetCourses({ page: 1, limit: 1000 });
+  const { data: allWorkshopsRes, isLoading: workshopsListLoading } = Queries.useGetWorkshops({ page: 1, limit: 1000 });
+
+  const courseOptions = useMemo(() => {
+    return (allCoursesRes?.data?.course_data || []).map((c: any) => ({
+      label: c.name,
+      value: c._id,
+    }));
+  }, [allCoursesRes]);
+
+  const workshopOptions = useMemo(() => {
+    return (allWorkshopsRes?.data?.workshop_data || []).map((w: any) => ({
+      label: w.title,
+      value: w._id,
+    }));
+  }, [allWorkshopsRes]);
+
   // Fetch course purchases
-  const { data: coursesRes, isLoading: coursesLoading } = Queries.useGetMyCourses({
+  const { data: coursesRes, isLoading: coursesLoading, isFetching: coursesFetching } = Queries.useGetMyCourses({
     page: coursePage,
     limit: coursePageSize,
-    search: courseSearch || undefined
+    search: courseSearch || undefined,
+    courseId: courseFilter || undefined,
+    minAmount: minAmount || undefined,
+    maxAmount: maxAmount || undefined,
   });
 
   // Fetch workshop purchases
-  const { data: workshopsRes, isLoading: workshopsLoading } = Queries.useGetMyWorkshops({
+  const { data: workshopsRes, isLoading: workshopsLoading, isFetching: workshopsFetching } = Queries.useGetMyWorkshops({
     page: workshopPage,
     limit: workshopPageSize,
-    search: workshopSearch || undefined
+    search: workshopSearch || undefined,
+    workshopId: workshopFilter || undefined,
+    minAmount: minAmount || undefined,
+    maxAmount: maxAmount || undefined,
   });
 
   const coursesData = coursesRes?.data?.purchased_course_data || [];
@@ -298,7 +328,13 @@ const PaymentsPage: FC = () => {
     <Segmented
       value={activeTab}
       onChange={(v) => {
-        setActiveTab(v as 'courses' | 'workshops');
+        const targetTab = v as 'courses' | 'workshops';
+        setActiveTab(targetTab);
+        if (targetTab === 'courses') {
+          setWorkshopFilter(undefined);
+        } else {
+          setCourseFilter(undefined);
+        }
       }}
       options={[
         { label: 'Courses Purchases', value: 'courses', icon: <BookOutlined /> },
@@ -311,7 +347,7 @@ const PaymentsPage: FC = () => {
   return (
     <>
       <CommonBreadcrumbs title="Payments Management" breadcrumbs={BREADCRUMBS.PAYMENTS?.BASE || []} />
-      <CommonPageWrapper noPadding className="h-full bg-transparent">
+      <CommonPageWrapper noPadding className="h-full">
         <motion.div variants={staggerContainer} initial="hidden" animate="visible" className="flex flex-col gap-6 p-4 md:p-6">
           
           {/* Summary Metrics */}
@@ -348,13 +384,89 @@ const PaymentsPage: FC = () => {
           </motion.div>
 
           {/* Tables Section with nested toolbar extra tabs */}
-          <motion.div variants={blurRevealUp}>
+          <motion.div variants={blurRevealUp} className="flex flex-col gap-5">
+            <AdvancedSearch 
+              filter={activeTab === 'courses' ? [
+                { 
+                  label: "Course", 
+                  value: courseFilter, 
+                  options: courseOptions, 
+                  onChange: (val: any) => {
+                    setCourseFilter(val);
+                    setCoursePage(1);
+                  },
+                  isLoading: coursesListLoading
+                }
+              ] : [
+                { 
+                  label: "Workshop", 
+                  value: workshopFilter, 
+                  options: workshopOptions, 
+                  onChange: (val: any) => {
+                    setWorkshopFilter(val);
+                    setWorkshopPage(1);
+                  },
+                  isLoading: workshopsListLoading
+                }
+              ]}
+            >
+              <Row gutter={[24, 16]} align="bottom">
+                <Col xs={24} sm={12} md={6} style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                  <span className="text-xs font-semibold uppercase tracking-wider text-muted">Min Amount</span>
+                  <Input
+                    type="number"
+                    placeholder="Min amount (e.g. 500)"
+                    value={minAmount}
+                    onChange={(e) => {
+                      setMinAmount(e.target.value);
+                      setCoursePage(1);
+                      setWorkshopPage(1);
+                    }}
+                    className="rounded-lg h-[40px]"
+                    style={{ width: '100%' }}
+                  />
+                </Col>
+                <Col xs={24} sm={12} md={6} style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                  <span className="text-xs font-semibold uppercase tracking-wider text-muted">Max Amount</span>
+                  <Input
+                    type="number"
+                    placeholder="Max amount (e.g. 5000)"
+                    value={maxAmount}
+                    onChange={(e) => {
+                      setMaxAmount(e.target.value);
+                      setCoursePage(1);
+                      setWorkshopPage(1);
+                    }}
+                    className="rounded-lg h-[40px]"
+                    style={{ width: '100%' }}
+                  />
+                </Col>
+                {(courseFilter || workshopFilter || minAmount || maxAmount) && (
+                  <Col xs={24} sm={24} md={6}>
+                    <Button 
+                      onClick={() => {
+                        setCourseFilter(undefined);
+                        setWorkshopFilter(undefined);
+                        setMinAmount("");
+                        setMaxAmount("");
+                        setCoursePage(1);
+                        setWorkshopPage(1);
+                      }}
+                      className="h-[40px] px-6 rounded-lg font-semibold hover:border-primary hover:text-primary transition-all duration-200 text-foreground"
+                    >
+                      Clear Filters
+                    </Button>
+                  </Col>
+                )}
+              </Row>
+            </AdvancedSearch>
+
             {activeTab === 'courses' ? (
               <CommonTable
                 key="courses-table"
                 columns={courseColumns}
                 data={coursesData}
-                loading={coursesLoading}
+                loading={coursesLoading || coursesFetching}
                 total={coursesTotal}
                 current={coursePage}
                 pageSize={coursePageSize}
@@ -370,7 +482,7 @@ const PaymentsPage: FC = () => {
                 key="workshops-table"
                 columns={workshopColumns}
                 data={workshopsData}
-                loading={workshopsLoading}
+                loading={workshopsLoading || workshopsFetching}
                 total={workshopsTotal}
                 current={workshopPage}
                 pageSize={workshopPageSize}

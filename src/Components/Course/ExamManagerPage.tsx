@@ -1,7 +1,7 @@
 import { useState, useMemo, type FC, useEffect } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { Spin, Button } from 'antd'; 
-import { ArrowLeftOutlined, EditOutlined, PlusOutlined, DeleteOutlined, FileProtectOutlined, QuestionCircleOutlined, CalculatorOutlined, PictureOutlined, SoundOutlined, FileTextOutlined, LockOutlined, UnlockOutlined, BookOutlined } from '@ant-design/icons';
+import { ArrowLeftOutlined, EditOutlined, PlusOutlined, DeleteOutlined, FileProtectOutlined, QuestionCircleOutlined, CalculatorOutlined, PictureOutlined, SoundOutlined, FileTextOutlined, LockOutlined, UnlockOutlined, BookOutlined, ArrowUpOutlined, ArrowDownOutlined } from '@ant-design/icons';
 import { Queries, Mutations } from '@/Api';
 import { KEYS } from '@/Constants';
 import { useQueryClient } from '@tanstack/react-query';
@@ -71,9 +71,11 @@ const ExamManagerPage: FC = () => {
   const course = useMemo(() => extractArray(courseRes).find((c: any) => c._id === courseId), [courseRes, courseId]);
   const lesson = useMemo(() => extractArray(lessRes).find((l: any) => l._id === lessonId), [lessRes, lessonId]);
   
-  // Get all exams belonging to this lesson
+  // Get all exams belonging to this lesson sorted by priority
   const lessonExams = useMemo(() => {
-    return extractArray(examRes).filter((e: any) => String(e.courseLessonId?._id ?? e.courseLessonId) === String(lessonId));
+    return extractArray(examRes)
+      .filter((e: any) => String(e.courseLessonId?._id ?? e.courseLessonId) === String(lessonId))
+      .sort((a: any, b: any) => (a.priority || 0) - (b.priority || 0));
   }, [examRes, lessonId]);
 
   // Sync selected exam ID with url and actual exams list
@@ -100,7 +102,9 @@ const ExamManagerPage: FC = () => {
   const examQuestions = useMemo(() => {
     if (!lessonExam) return [];
     const allQuestions = extractArray(quesRes);
-    return allQuestions.filter((q: any) => lessonExam.questionIds?.some((qid: any) => String(qid?._id ?? qid) === String(q._id)));
+    return allQuestions
+      .filter((q: any) => lessonExam.questionIds?.some((qid: any) => String(qid?._id ?? qid) === String(q._id)))
+      .sort((a: any, b: any) => (a.priority || 0) - (b.priority || 0));
   }, [quesRes, lessonExam]);
 
   const totalScore = useMemo(() => examQuestions.reduce((sum: number, question: any) => sum + Number(question.score || 0), 0), [examQuestions]);
@@ -138,6 +142,43 @@ const ExamManagerPage: FC = () => {
           setDeleteTarget(null);
         },
       });
+    }
+  };
+
+  const handleMoveExam = async (index: number, direction: 'up' | 'down') => {
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= lessonExams.length) return;
+
+    const currentItem = lessonExams[index];
+    const targetItem = lessonExams[targetIndex];
+
+    try {
+      await Promise.all([
+        editExamMutation.mutateAsync({ examId: currentItem._id, priority: targetIndex } as any),
+        editExamMutation.mutateAsync({ examId: targetItem._id, priority: index } as any),
+      ]);
+      queryClient.invalidateQueries({ queryKey: [KEYS.EXAM.BASE] });
+    } catch (error) {
+      console.error("Failed to move exam priority", error);
+    }
+  };
+
+  const handleMoveQuestion = async (index: number, direction: 'up' | 'down') => {
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= examQuestions.length) return;
+
+    const currentItem = examQuestions[index];
+    const targetItem = examQuestions[targetIndex];
+
+    try {
+      await Promise.all([
+        editQuestionMutation.mutateAsync({ questionId: currentItem._id, priority: targetIndex } as any),
+        editQuestionMutation.mutateAsync({ questionId: targetItem._id, priority: index } as any),
+      ]);
+      queryClient.invalidateQueries({ queryKey: [KEYS.QUESTION.BASE] });
+      queryClient.invalidateQueries({ queryKey: [KEYS.EXAM.BASE] });
+    } catch (error) {
+      console.error("Failed to move question priority", error);
     }
   };
 
@@ -240,7 +281,7 @@ const ExamManagerPage: FC = () => {
 
             {lessonExams.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {lessonExams.map((e: any) => {
+                {lessonExams.map((e: any, index: number) => {
                   const isActive = String(e._id) === String(selectedExamId);
                   const isBlocked = e.isBlocked;
                   const eQuestions = extractArray(quesRes).filter((q: any) => e.questionIds?.some((qid: any) => String(qid?._id ?? qid) === String(q._id)));
@@ -272,7 +313,29 @@ const ExamManagerPage: FC = () => {
                           </h4>
                           <p className="text-xs text-text-muted mt-0.5 truncate">{e.description || 'No description provided.'}</p>
                         </div>
-                        <div className="flex flex-col gap-1 items-end">
+                        <div className="flex flex-col gap-1.5 items-end justify-between self-stretch" onClick={(evt) => evt.stopPropagation()}>
+                          <div className="flex items-center gap-0.5 bg-surface-muted border border-border/80 rounded-lg p-0.5">
+                            <Button
+                              type="text"
+                              size="small"
+                              icon={<ArrowUpOutlined style={{ fontSize: 10 }} />}
+                              onClick={() => handleMoveExam(index, 'up')}
+                              disabled={index === 0}
+                              className={`w-6 h-6 p-0 flex items-center justify-center rounded-md ${
+                                index === 0 ? 'text-text-muted/30 cursor-not-allowed' : 'text-text-muted hover:text-foreground hover:bg-surface'
+                              }`}
+                            />
+                            <Button
+                              type="text"
+                              size="small"
+                              icon={<ArrowDownOutlined style={{ fontSize: 10 }} />}
+                              onClick={() => handleMoveExam(index, 'down')}
+                              disabled={index === lessonExams.length - 1}
+                              className={`w-6 h-6 p-0 flex items-center justify-center rounded-md ${
+                                index === lessonExams.length - 1 ? 'text-text-muted/30 cursor-not-allowed' : 'text-text-muted hover:text-foreground hover:bg-surface'
+                              }`}
+                            />
+                          </div>
                           {isBlocked && (
                             <span className="course-chip course-chip--danger text-[10px] px-1.5 py-0.5 scale-90 origin-right">Blocked</span>
                           )}
@@ -457,6 +520,28 @@ const ExamManagerPage: FC = () => {
 
                             <div className="course-card-actions">
                               <div className="inline-flex items-center rounded-xl border border-border/80 bg-surface-muted/30 p-0.5 overflow-hidden shadow-sm">
+                                <Button
+                                  type="text"
+                                  icon={<ArrowUpOutlined />}
+                                  onClick={() => handleMoveQuestion(index, 'up')}
+                                  disabled={index === 0}
+                                  className={`rounded-lg h-8 w-8 flex items-center justify-center p-0 hover:scale-[1.05] transition-all border border-transparent ${
+                                    index === 0 ? 'text-text-muted/30 cursor-not-allowed' : 'text-text-muted hover:text-foreground hover:bg-surface'
+                                  }`}
+                                  title="Move Up"
+                                />
+                                <div className="w-[1px] h-4 bg-border/60 mx-0.5" />
+                                <Button
+                                  type="text"
+                                  icon={<ArrowDownOutlined />}
+                                  onClick={() => handleMoveQuestion(index, 'down')}
+                                  disabled={index === examQuestions.length - 1}
+                                  className={`rounded-lg h-8 w-8 flex items-center justify-center p-0 hover:scale-[1.05] transition-all border border-transparent ${
+                                    index === examQuestions.length - 1 ? 'text-text-muted/30 cursor-not-allowed' : 'text-text-muted hover:text-foreground hover:bg-surface'
+                                  }`}
+                                  title="Move Down"
+                                />
+                                <div className="w-[1px] h-4 bg-border/60 mx-0.5" />
                                 <Button
                                   type="text"
                                   icon={question.isBlocked ? <UnlockOutlined /> : <LockOutlined />}

@@ -5,7 +5,8 @@ import {
   BookOutlined, BarsOutlined, LockOutlined, UnlockOutlined,
   AppstoreOutlined, FolderOutlined, FileTextOutlined, PlusOutlined,
   QuestionCircleOutlined, ArrowLeftOutlined, EditOutlined, DeleteOutlined,
-  TeamOutlined, CheckCircleOutlined, StarOutlined, FilePdfOutlined
+  TeamOutlined, CheckCircleOutlined, StarOutlined, FilePdfOutlined,
+  ArrowUpOutlined, ArrowDownOutlined
 } from '@ant-design/icons';
 import { Queries, Mutations } from '@/Api';
 import { KEYS } from '@/Constants';
@@ -145,6 +146,25 @@ const ManageContentPage: FC = () => {
     });
   };
 
+  const handleMoveLesson = async (index: number, direction: 'up' | 'down') => {
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= lessons.length) return;
+
+    const currentItem = lessons[index];
+    const targetItem = lessons[targetIndex];
+
+    try {
+      await Promise.all([
+        editLessonMutation.mutateAsync({ courseLessonId: currentItem._id, priority: targetIndex } as any),
+        editLessonMutation.mutateAsync({ courseLessonId: targetItem._id, priority: index } as any),
+      ]);
+      queryClient.invalidateQueries({ queryKey: [KEYS.LESSON.BASE] });
+      queryClient.invalidateQueries({ queryKey: [KEYS.COURSE.BASE] });
+    } catch (error) {
+      console.error("Failed to move lesson priority", error);
+    }
+  };
+
   const handleSaveFAQ = (values: any) => {
     const payload: any = {
       question: {
@@ -210,6 +230,18 @@ const ManageContentPage: FC = () => {
         lockBadge(lesson.lessonLock),
       ]}
       actions={[
+        {
+          icon: <ArrowUpOutlined />,
+          onClick: () => handleMoveLesson(index, 'up'),
+          tooltip: 'Move Up',
+          disabled: index === 0,
+        },
+        {
+          icon: <ArrowDownOutlined />,
+          onClick: () => handleMoveLesson(index, 'down'),
+          tooltip: 'Move Down',
+          disabled: index === lessons.length - 1,
+        },
         {
           label: 'Exam',
           onClick: () => navigate(`/courses/${targetCourseId}/lesson/${lesson._id}/exam`),

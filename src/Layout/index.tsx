@@ -1,13 +1,15 @@
 import { useEffect, type FC } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import { Layout, ConfigProvider, theme } from 'antd'; 
 import Sidebar from './Sidebar';
 import DashboardHeader from './Header';
 import { useAppSelector, useAppDispatch } from '@/Store/hooks'; 
 import { setToggleSidebar, setToggleTheme } from '@/Store';
+import { motion, AnimatePresence } from 'motion/react';
 
 const DashboardLayout: FC = () => {
   const dispatch = useAppDispatch();
+  const location = useLocation();
   const { isToggleTheme, isExpanded } = useAppSelector((state) => state.layout);
   const isDark = isToggleTheme === "dark";
   useEffect(() => {
@@ -62,10 +64,22 @@ const DashboardLayout: FC = () => {
               border: '1px solid var(--border)',
               boxShadow: 'var(--shadow-card)',
               color: 'var(--foreground)',
-              transition: 'all 0.2s ease'
+              transition: 'all 0.2s ease',
+              overflow: 'hidden'
             }}
           >
-            <Outlet />
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={location.pathname}
+                initial={{ opacity: 0, scale: 0.985, y: 10 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.985, y: -10 }}
+                transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+                style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}
+              >
+                <Outlet />
+              </motion.div>
+            </AnimatePresence>
           </Layout.Content>
         </Layout>
       </Layout>

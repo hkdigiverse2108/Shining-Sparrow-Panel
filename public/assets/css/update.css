@@ -152,7 +152,7 @@
 }
 .ant-layout, 
 .ant-layout-content {
-  @apply bg-background! m-0! ;
+  @apply bg-background! m-0! rounded-none!;
 }
 .common-page-wrapper {
   @apply mt-3 bg-surface rounded-xl min-h-[calc(100vh-200px)] transition-all duration-200 ease-in-out;

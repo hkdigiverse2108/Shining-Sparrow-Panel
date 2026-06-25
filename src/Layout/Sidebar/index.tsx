@@ -68,7 +68,7 @@ const Sidebar: FC<SidebarProps> = ({ isExpanded }) => {
           />
         )}
       </div>
-      <div style={{ flex: 1, overflowY: 'auto', padding: '12px 8px' }}>
+      <div className="sidebar-scroll" style={{ flex: 1, overflowY: 'auto', padding: '12px 8px' }}>
         <div style={{ padding: '0 12px 8px', fontSize: '10px', fontWeight: 700, letterSpacing: '0.5px', textTransform: 'uppercase', color: 'var(--text-muted)' }}>
           {isActuallyCollapsed ? '' : 'Menu'}
         </div>

@@ -157,6 +157,11 @@ export const URL_KEYS = {
     GET: "/newsletter/all",
     SEND: "/newsletter/send",
   },
+  NOTIFICATION: {
+    GET: "/notification/all",
+    READ: "/notification/read",
+    DELETE: "/notification/delete",
+  },
   TRUSTED_PARTNER: {
     BASE: "/trusted-partner",
     ADD: "/trusted-partner/add",

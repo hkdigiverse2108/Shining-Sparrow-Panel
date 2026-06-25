@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { motion } from 'motion/react';
-import { blurRevealUp } from '@/Utils/animations';
+import { blurRevealUp, staggerContainer } from '@/Utils/animations';
 import { 
   TeamOutlined, 
   CheckCircleOutlined, 
@@ -45,7 +45,12 @@ export const CommonSummaryCards: React.FC<CommonSummaryCardsProps> = ({
   }, [total, active, blocked, subject]);
 
   return (
-    <motion.div variants={blurRevealUp} className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-5">
+    <motion.div 
+      variants={staggerContainer} 
+      initial="hidden" 
+      animate="visible" 
+      className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-5"
+    >
       {cards.map(card => {
         const Icon = card.icon;
         
@@ -54,7 +59,11 @@ export const CommonSummaryCards: React.FC<CommonSummaryCardsProps> = ({
         if (card.key === 'blocked') colorClass = "text-danger bg-danger/10";
 
         return (
-          <div key={card.key} className="flex flex-col p-5 rounded-2xl bg-surface border border-border hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 group">
+          <motion.div 
+            key={card.key} 
+            variants={blurRevealUp}
+            className="flex flex-col p-5 rounded-2xl bg-surface border border-border hover:shadow-lg hover:-translate-y-1 transition-all duration-200 group"
+          >
             <div className="flex items-center justify-between mb-4">
               <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${colorClass}`}>
                 <Icon />
@@ -67,7 +76,7 @@ export const CommonSummaryCards: React.FC<CommonSummaryCardsProps> = ({
             </div>
             <div className="text-[11px] font-bold text-text-muted uppercase tracking-wider mb-1">{card.title}</div>
             <div className="text-3xl font-extrabold text-foreground leading-tight">{card.value}</div>
-          </div>
+          </motion.div>
         );
       })}
     </motion.div>

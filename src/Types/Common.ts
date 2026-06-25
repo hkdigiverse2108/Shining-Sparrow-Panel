@@ -70,9 +70,8 @@ export interface CommonValidationTextFieldProps extends InputProps {
   multiline?: boolean;
   rows?: number;
 }
-
 export interface CommonCardProps {
-  title?: string;
+  title?: React.ReactNode;
   children: ReactNode;
   cardProps?: CardProps;
   hideDivider?: boolean;

@@ -126,6 +126,12 @@ export const KEYS = {
     BASE: "newsletter",
     DELETE: "delete-newsletter",
   },
+  NOTIFICATION: {
+    BASE: "notification",
+    GET: "get-notifications",
+    READ: "read-notification",
+    DELETE: "delete-notification",
+  },
   TRUSTED_PARTNER: {
     BASE: "trusted-partner",
     DELETE: "delete-trusted-partner",

@@ -1,8 +1,10 @@
-// Components/Dashboard/Header/HeaderChatIcon.tsx
 import { Badge, Button } from 'antd';
 import { MessageOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { Queries } from '@/Api/Queries';
+import { motion } from 'motion/react';
+
+const MotionButton = motion(Button);
 
 const HeaderChatIcon: React.FC = () => {
   const navigate = useNavigate();
@@ -16,7 +18,7 @@ const HeaderChatIcon: React.FC = () => {
 
   return (
     <Badge count={unreadCount} size="small" offset={[-2, 2]}>
-      <Button
+      <MotionButton
         type="text"
         icon={<MessageOutlined style={{ fontSize: 18 }} />}
         onClick={() => navigate('/chat')}
@@ -28,8 +30,10 @@ const HeaderChatIcon: React.FC = () => {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          transition: 'background 0.2s ease',
         }}
+        whileHover={{ scale: 1.08 }}
+        whileTap={{ scale: 0.93 }}
+        transition={{ type: "spring", stiffness: 400, damping: 15 }}
       />
     </Badge>
   );

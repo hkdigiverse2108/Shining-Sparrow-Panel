@@ -129,7 +129,7 @@ const Courses: FC = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [courseToDelete, setCourseToDelete] = useState<any | null>(null);
 
-  const { data: responseData, isLoading } = Queries.useGetCourses({
+  const { data: responseData, isLoading, isFetching } = Queries.useGetCourses({
     page: current,
     limit: pageSize,
     search: debouncedSearchQuery
@@ -223,7 +223,7 @@ const Courses: FC = () => {
           <motion.div variants={staggerContainer} initial="hidden" animate="visible">
             <CommonSummaryCards total={totalCourses} active={courses.filter((c: any) => !c.isBlocked).length} blocked={courses.filter((c: any) => c.isBlocked).length} subject="Courses" />
             <motion.div variants={blurRevealUp}>
-              <CommonTable columns={columns} data={courses} loading={isLoading || addCourseMutation.isPending || editCourseMutation.isPending} searchPlaceholder="Search courses..." onSearch={handleSearch} onAdd={() => { setEditingCourse(null); setIsFormOpen(true); }} fileName="Courses" title="Course Management" current={current} pageSize={pageSize} total={totalCourses} onTableChange={handleTableChange} scroll={{ x: 1000 }} />
+              <CommonTable columns={columns} data={courses} loading={isLoading || isFetching || addCourseMutation.isPending || editCourseMutation.isPending} searchPlaceholder="Search courses..." onSearch={handleSearch} onAdd={() => { setEditingCourse(null); setIsFormOpen(true); }} fileName="Courses" title="Course Management" current={current} pageSize={pageSize} total={totalCourses} onTableChange={handleTableChange} scroll={{ x: 1000 }} />
             </motion.div>
           </motion.div>
         )}

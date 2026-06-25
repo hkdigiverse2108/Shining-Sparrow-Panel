@@ -38,6 +38,7 @@ export interface ContentAction {
   onConfirm?: () => void;   // used when confirm=true
   loading?: boolean;
   tooltip?: string;
+  disabled?: boolean;
 }
 
 // ─── Main props ──────────────────────────────────────────────────────────────
@@ -147,6 +148,7 @@ const ContentItemCard: React.FC<ContentItemCardProps> = ({
                   danger={action.danger}
                   loading={action.loading}
                   onClick={action.onClick}
+                  disabled={action.disabled}
                   className={`text-xs px-4 py-2 h-9 rounded-lg font-bold inline-flex items-center gap-1.5 transition-all duration-200 ${
                     isExam
                       ? 'border border-primary/20 bg-primary/5 text-primary hover:bg-primary hover:text-white hover:border-primary hover:scale-[1.02]'
@@ -188,10 +190,13 @@ const ContentItemCard: React.FC<ContentItemCardProps> = ({
                       danger={action.danger}
                       loading={action.loading}
                       onClick={action.onClick}
+                      disabled={action.disabled}
                       className={`rounded-lg h-8 w-8 flex items-center justify-center p-0 hover:scale-[1.05] transition-all border border-transparent ${
                         action.danger 
                           ? 'text-red-500 hover:bg-red-500/10' 
-                          : 'text-text-muted hover:text-foreground hover:bg-surface'
+                          : action.disabled
+                            ? 'text-text-muted/40 cursor-not-allowed'
+                            : 'text-text-muted hover:text-foreground hover:bg-surface'
                       }`}
                     />
                   );

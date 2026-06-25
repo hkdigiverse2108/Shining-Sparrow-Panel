@@ -24,7 +24,7 @@ const UserManagement: FC = () => {
   const [pageSize, setPageSize] = useState(10);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState<any | null>(null);
-  const { data: responseData, isLoading } = Queries.useGetUser({
+  const { data: responseData, isLoading, isFetching } = Queries.useGetUser({
     page: current,
     limit: pageSize,
     search: debouncedSearchQuery 
@@ -134,7 +134,7 @@ const UserManagement: FC = () => {
               <AdvancedSearch filter={[
                 { label: "Status", value: statusFilter, options: statusOptions.filter(o => o.value !== "all"), onChange: handleStatusChange }
               ]} />
-              <CommonTable columns={columns} data={users} loading={isLoading || addUserMutation.isPending || editUserMutation.isPending} searchPlaceholder="Search users by name, email, phone..." onSearch={handleSearch} onAdd={() => { setEditingUser(null); setDrawerOpen(true); }} fileName="Users" title="User Management" current={current} pageSize={pageSize} total={totalUsers} onTableChange={handleTableChange} />
+              <CommonTable columns={columns} data={users} loading={isLoading || isFetching || addUserMutation.isPending || editUserMutation.isPending} searchPlaceholder="Search users by name, email, phone..." onSearch={handleSearch} onAdd={() => { setEditingUser(null); setDrawerOpen(true); }} fileName="Users" title="User Management" current={current} pageSize={pageSize} total={totalUsers} onTableChange={handleTableChange} />
             </motion.div>       
           </motion.div>
         )}

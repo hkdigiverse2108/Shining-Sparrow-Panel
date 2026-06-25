@@ -143,6 +143,10 @@ export const Mutations = {
   useAddTrustedPartner: () => useMutations<any, MessageStatus>([KEYS.TRUSTED_PARTNER.BASE, "ADD"], (input) => Post(URL_KEYS.TRUSTED_PARTNER.ADD, input)),
   useUpdateTrustedPartner: () => useMutations<any, MessageStatus>([KEYS.TRUSTED_PARTNER.BASE, "UPDATE"], (input) => Post(URL_KEYS.TRUSTED_PARTNER.EDIT, input)),
   useDeleteTrustedPartner: () => useMutations<string, void>([KEYS.TRUSTED_PARTNER.DELETE, KEYS.TRUSTED_PARTNER.BASE], (id) => Delete(`${URL_KEYS.TRUSTED_PARTNER.DELETE}/${id}`)),
+
+  // ************ Notifications ***********
+  useMarkNotificationRead: () => useMutations<{ id: string }, any>([KEYS.NOTIFICATION.READ, KEYS.NOTIFICATION.BASE], (payload) => Post(URL_KEYS.NOTIFICATION.READ, payload, true, false)),
+  useDeleteNotification: () => useMutations<{ id: string }, any>([KEYS.NOTIFICATION.DELETE, KEYS.NOTIFICATION.BASE], (payload) => Post(URL_KEYS.NOTIFICATION.DELETE, payload, true, false)),
 };
 
 

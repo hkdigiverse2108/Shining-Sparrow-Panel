@@ -86,5 +86,8 @@ export const Queries = {
   // ************ Payments / Purchases ***********
   useGetMyCourses: (params?: Params, options?: any) => useQueries<any>([KEYS.COURSE.MY_COURSES, params], () => Get(URL_KEYS.COURSE.MY_COURSES, params), options),
   useGetMyWorkshops: (params?: Params, options?: any) => useQueries<any>([KEYS.WORKSHOP.MY_COURSES, params], () => Get(URL_KEYS.WORKSHOP.MY_WORKSHOPS, params), options),
+
+  // ************ Notifications ***********
+  useGetNotifications: (params?: Params, options?: any) => useQueries<any>([KEYS.NOTIFICATION.BASE, params], () => Get(URL_KEYS.NOTIFICATION.GET, params), options),
 };
 

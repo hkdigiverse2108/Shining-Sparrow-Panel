@@ -1,8 +1,8 @@
 import { useState, useMemo, useEffect, type FC } from "react";
-import { EditOutlined, UserOutlined, SettingOutlined, LockOutlined, MailOutlined, PhoneOutlined, CalendarOutlined, SaveOutlined, CloseOutlined, KeyOutlined } from "@ant-design/icons";
+import { EditOutlined, UserOutlined, SettingOutlined, LockOutlined, MailOutlined, PhoneOutlined, CalendarOutlined, SaveOutlined, CloseOutlined, KeyOutlined, CameraOutlined } from "@ant-design/icons";
 import { Formik, Form } from "formik";
 import { motion } from "motion/react";
-import { Spin } from "antd";
+import { Spin, Modal, Button } from "antd";
 import { CommonBreadcrumbs, CommonPageWrapper, CommonFormSection, CommonImageUpload } from "@/Components";
 import { blurRevealUp, staggerContainer } from "@/Utils/animations";
 import { CommonButton, CommonValidationTextField } from "@/Attribute";
@@ -88,11 +88,6 @@ const PersonalInfoTab: FC<{
       >
         {({ values }) => (
           <Form className="profile-tab-form">
-            <div className="profile-form-section-card">
-              <CommonFormSection title="Profile Picture">
-                <CommonImageUpload name="profilePhoto" label="Photo" shape="circle" size={120} className="col-span-full" />
-              </CommonFormSection>
-            </div>
             <div className="profile-form-section-card">
               <CommonFormSection title="Personal Information">
                 <CommonValidationTextField name="fullName" label="Full Name" required startIcon={<UserOutlined />} className="col-span-1" />
@@ -254,7 +249,7 @@ const SiteSettingsTab: FC = () => {
           <Form className="profile-tab-form">
             <div className="profile-form-section-card">
               <CommonFormSection title="Branding">
-                <CommonImageUpload name="logo" label="Site Logo" shape="square" size={80} className="col-span-full" />
+                <CommonImageUpload name="logo" label="Site Logo" shape="circle" size={140} className="col-span-full" />
               </CommonFormSection>
             </div>
 
@@ -341,6 +336,10 @@ const SiteSettingsTab: FC = () => {
 
 const Profile: FC = () => {
   const user = useAppSelector((state) => state.auth.user);
+  const dispatch = useAppDispatch();
+  const updateProfileMutation = Mutations.useUpdateProfile();
+
+  const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false);
 
   // Manage layout container height and scrolling for profile page
   useEffect(() => {
@@ -361,6 +360,28 @@ const Profile: FC = () => {
   const designation = user?.designation || "";
   const avatar = user?.profilePhoto || user?.profileImage;
 
+  const handleUpdateAvatar = async (profilePhoto: string) => {
+    try {
+      const response = await updateProfileMutation.mutateAsync({
+        fullName: username,
+        phone: phone,
+        profilePhoto: profilePhoto,
+        designation: designation,
+      });
+      dispatch(setUser({
+        ...user,
+        fullName: response.data.fullName,
+        phone: response.data.phone || response.data.phoneNumber,
+        phoneNumber: response.data.phone || response.data.phoneNumber,
+        profilePhoto: response.data.profilePhoto,
+        designation: response.data.designation,
+      }));
+      setIsAvatarModalOpen(false);
+    } catch {
+      // handled globally
+    }
+  };
+
   return (
     <>
       <CommonBreadcrumbs title="My Profile & Settings" breadcrumbs={BREADCRUMBS.PROFILE?.BASE || []} />
@@ -368,7 +389,7 @@ const Profile: FC = () => {
         <motion.div variants={staggerContainer} initial="hidden" animate="visible" className="profile-page-layout">
           {/* Header Card (Mockup style) */}
           <motion.div variants={blurRevealUp} className="profile-header-card">
-            <div className="profile-avatar-wrapper">
+            <div className="profile-avatar-wrapper" onClick={() => setIsAvatarModalOpen(true)}>
               {avatar ? (
                 <img src={avatar} alt={username} className="profile-avatar-img" />
               ) : (
@@ -376,6 +397,9 @@ const Profile: FC = () => {
                   <UserOutlined />
                 </div>
               )}
+              <div className="profile-avatar-edit-overlay">
+                <CameraOutlined />
+              </div>
               <div className="profile-status-indicator" />
             </div>
             <div className="profile-meta-info">
@@ -408,6 +432,46 @@ const Profile: FC = () => {
           </motion.div>
         </motion.div>
       </CommonPageWrapper>
+
+      {/* Profile Photo Update Modal */}
+      <Modal
+        title="Update Profile Photo"
+        open={isAvatarModalOpen}
+        onCancel={() => setIsAvatarModalOpen(false)}
+        footer={null}
+        destroyOnClose
+        width={420}
+        className="avatar-update-modal"
+      >
+        <Formik
+          initialValues={{ profilePhoto: avatar || "" }}
+          onSubmit={async (values) => {
+            await handleUpdateAvatar(values.profilePhoto);
+          }}
+        >
+          {({ submitForm }) => (
+            <Form className="flex flex-col items-center gap-4 py-4">
+              <CommonImageUpload 
+                name="profilePhoto" 
+                label="Choose Profile Photo" 
+                shape="circle" 
+                size={140} 
+                className="w-full" 
+              />
+              <div className="flex justify-end gap-2 w-full mt-4 border-t border-border pt-4">
+                <Button onClick={() => setIsAvatarModalOpen(false)}>Cancel</Button>
+                <Button 
+                  type="primary" 
+                  onClick={submitForm}
+                  loading={updateProfileMutation.isPending}
+                >
+                  Save Photo
+                </Button>
+              </div>
+            </Form>
+          )}
+        </Formik>
+      </Modal>
     </>
   );
 };

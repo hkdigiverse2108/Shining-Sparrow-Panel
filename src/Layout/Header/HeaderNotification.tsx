@@ -1,7 +1,17 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Badge, Popover, List, Button, Space, Empty, Typography } from 'antd';
 import { BellOutlined, CheckOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+import { Queries, Mutations } from '@/Api';
+import { KEYS } from '@/Constants';
+import { motion } from 'motion/react';
+
+dayjs.extend(relativeTime);
+
+const MotionButton = motion(Button);
 
 const { Text } = Typography;
 
@@ -18,31 +28,87 @@ const HeaderNotifications = () => {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [tab, setTab] = useState<'notif' | 'alerts'>('notif');
+  
+  const queryClient = useQueryClient();
 
-  const [notif, setNotif] = useState<HeaderNotificationItem[]>([
-    { id: '1', title: 'New User', desc: 'John Doe joined', read: false, time: '5m ago', link: '/users' },
-    { id: '2', title: 'Payment', desc: '$299 from Acme', read: false, time: '30m ago', link: '/payments' },
-    { id: '3', title: 'Backup Done', desc: 'Completed successfully', read: true, time: '3h ago' },
-  ]);
+  // Fetch notifications from the backend API
+  const { data: notifRes } = Queries.useGetNotifications();
+  
+  // Mutations for marking read and deleting
+  const { mutate: markReadMutate } = Mutations.useMarkNotificationRead();
+  const { mutate: deleteNotificationMutate } = Mutations.useDeleteNotification();
 
-  const [alerts, setAlerts] = useState<HeaderNotificationItem[]>([
-    { id: '4', title: 'CPU High', desc: 'Server #3 at 90%', read: false, time: '15m ago', link: '/servers' },
-    { id: '5', title: 'Disk Low', desc: 'Server #1 below 10%', read: false, time: '45m ago', link: '/servers' },
-  ]);
+  // Categorize notifications into notif and alerts
+  const notif = useMemo<HeaderNotificationItem[]>(() => {
+    return (notifRes?.data?.notification_data || [])
+      .filter((item: any) => item.type !== 'system' && item.type !== 'alert')
+      .map((item: any) => ({
+        id: item._id,
+        title: item.title,
+        desc: item.message,
+        read: item.isRead,
+        time: dayjs(item.createdAt).fromNow(),
+        link: item.type === 'workshop' ? '/workshops' : item.type === 'news' ? '/blog' : undefined,
+      }));
+  }, [notifRes]);
+
+  const alerts = useMemo<HeaderNotificationItem[]>(() => {
+    return (notifRes?.data?.notification_data || [])
+      .filter((item: any) => item.type === 'system' || item.type === 'alert')
+      .map((item: any) => ({
+        id: item._id,
+        title: item.title,
+        desc: item.message,
+        read: item.isRead,
+        time: dayjs(item.createdAt).fromNow(),
+        link: undefined,
+      }));
+  }, [notifRes]);
 
   const currentList = tab === 'notif' ? notif : alerts;
-  const setCurrentList = tab === 'notif' ? setNotif : setAlerts;
   const unread = [...notif, ...alerts].filter((i) => !i.read).length;
   const notifUnread = notif.filter((i) => !i.read).length;
   const alertUnread = alerts.filter((i) => !i.read).length;
 
-  const markRead = (id: string) => setCurrentList((p) => p.map((i) => (i.id === id ? { ...i, read: true } : i)));
-  const markAllRead = () => setCurrentList((p) => p.map((i) => ({ ...i, read: true })));
-  const clearAll = () => setCurrentList(() => []);
+  const markRead = (id: string) => {
+    markReadMutate(
+      { id },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: [KEYS.NOTIFICATION.BASE] });
+        },
+      }
+    );
+  };
+
+  const markAllRead = () => {
+    markReadMutate(
+      { id: 'all' },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: [KEYS.NOTIFICATION.BASE] });
+        },
+      }
+    );
+  };
+
+  const clearAll = () => {
+    deleteNotificationMutate(
+      { id: 'all' },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: [KEYS.NOTIFICATION.BASE] });
+        },
+      }
+    );
+  };
   
   const handleClick = (item: HeaderNotificationItem) => {
     markRead(item.id);
-    if (item.link) { setOpen(false); navigate(item.link); }
+    if (item.link) { 
+      setOpen(false); 
+      navigate(item.link); 
+    }
   };
 
   const content = (
@@ -138,10 +204,13 @@ const HeaderNotifications = () => {
       }}
     >
       <Badge count={unread} size="small" offset={[-2, 2]}>
-        <Button
+        <MotionButton
           type="text"
           icon={<BellOutlined style={{ fontSize: 18 }} />}
-          style={{ color: 'var(--foreground)', width: 38, height: 38, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background 0.2s ease' }}
+          style={{ color: 'var(--foreground)', width: 38, height: 38, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+          whileHover={{ scale: 1.08 }}
+          whileTap={{ scale: 0.93 }}
+          transition={{ type: "spring", stiffness: 400, damping: 15 }}
         />
       </Badge>
     </Popover>
