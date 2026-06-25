@@ -1,5 +1,5 @@
 import { useState, useMemo, type FC } from 'react';
-import { Button, Tooltip, Avatar } from 'antd';
+import { Button, Avatar } from 'antd';
 import { DeleteOutlined, EditOutlined, FolderOpenOutlined } from '@ant-design/icons';
 import { motion } from 'motion/react';
 import { useQueryClient } from '@tanstack/react-query';

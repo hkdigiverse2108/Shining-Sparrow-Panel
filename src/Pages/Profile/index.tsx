@@ -1,8 +1,8 @@
 import { useState, useMemo, useEffect, type FC } from "react";
-import { EditOutlined, UserOutlined, SettingOutlined, LockOutlined, MailOutlined, PhoneOutlined, CalendarOutlined, SaveOutlined, CloseOutlined } from "@ant-design/icons";
+import { EditOutlined, UserOutlined, SettingOutlined, LockOutlined, MailOutlined, PhoneOutlined, CalendarOutlined, SaveOutlined, CloseOutlined, KeyOutlined } from "@ant-design/icons";
 import { Formik, Form } from "formik";
 import { motion } from "motion/react";
-import { Avatar, Spin, Tabs } from "antd";
+import { Spin } from "antd";
 import { CommonBreadcrumbs, CommonPageWrapper, CommonFormSection, CommonImageUpload } from "@/Components";
 import { blurRevealUp, staggerContainer } from "@/Utils/animations";
 import { CommonButton, CommonValidationTextField } from "@/Attribute";
@@ -42,18 +42,6 @@ const SettingsSchema = Yup.object().shape({
   razorpayKey: Yup.string().optional(),
   razorpaySecret: Yup.string().optional(),
 });
-
-// ─── Profile detail row component ────────────────────────────────────────────
-
-const DetailRow: FC<{ icon: React.ReactNode; label: string; value: string }> = ({ icon, label, value }) => (
-  <div className="profile-detail-row">
-    <span className="profile-detail-icon">{icon}</span>
-    <div className="profile-detail-text">
-      <span className="profile-detail-label">{label}</span>
-      <span className="profile-detail-value">{value || "Not provided"}</span>
-    </div>
-  </div>
-);
 
 // ─── Personal Info Tab ────────────────────────────────────────────────────────
 
@@ -107,14 +95,14 @@ const PersonalInfoTab: FC<{
             </div>
             <div className="profile-form-section-card">
               <CommonFormSection title="Personal Information">
-                <CommonValidationTextField name="fullName" label="Full Name" required />
-                <CommonValidationTextField name="phone" label="Phone Number" />
-                <CommonValidationTextField name="designation" label="Designation" />
-                <CommonValidationTextField name="email" label="Email Address" value={values.email} disabled />
+                <CommonValidationTextField name="fullName" label="Full Name" required startIcon={<UserOutlined />} className="col-span-1" />
+                <CommonValidationTextField name="phone" label="Phone Number" startIcon={<PhoneOutlined />} className="col-span-1" />
+                <CommonValidationTextField name="designation" label="Designation" startIcon={<EditOutlined />} className="col-span-1" />
+                <CommonValidationTextField name="email" label="Email Address" value={values.email} disabled startIcon={<MailOutlined />} className="col-span-full" />
               </CommonFormSection>
             </div>
             <div className="profile-form-actions">
-              <CommonButton type="default" icon={<CloseOutlined />} onClick={() => setIsEditing(false)} title="Cancel" />
+              <CommonButton type="default" icon={<CloseOutlined />} onClick={() => setIsEditing(false)} title="Cancel" className="course-button course-button--ghost" />
               <CommonButton htmlType="submit" type="primary" icon={<SaveOutlined />} title="Save Changes" loading={updateProfileMutation.isPending} className="course-button course-button--primary" />
             </div>
           </Form>
@@ -128,9 +116,9 @@ const PersonalInfoTab: FC<{
       <motion.div variants={blurRevealUp}>
         <div className="profile-view-header">
           <h3 className="profile-section-title">Personal Details</h3>
-          <CommonButton type="default" icon={<EditOutlined />} onClick={() => setIsEditing(true)} title="Edit Profile" />
+          <CommonButton type="default" icon={<EditOutlined />} onClick={() => setIsEditing(true)} title="Edit Profile" className="course-button course-button--ghost" />
         </div>
-        <div className="profile-details-grid">
+        <div className="profile-info-grid">
           {[
             { label: "Full Name", value: username, icon: <UserOutlined /> },
             { label: "Email Address", value: email, icon: <MailOutlined /> },
@@ -139,11 +127,11 @@ const PersonalInfoTab: FC<{
             { label: "Role", value: user?.role || "Admin", icon: <LockOutlined /> },
             { label: "Member Since", value: new Date(user?.createdAt || Date.now()).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" }), icon: <CalendarOutlined /> },
           ].map((d, i) => (
-            <div key={i} className="profile-detail-card">
-              <div className="profile-detail-card-icon">{d.icon}</div>
-              <div className="profile-detail-card-content">
-                <label className="detaillabel">{d.label}</label>
-                <p className="detailvalue">{d.value || "Not provided"}</p>
+            <div key={i} className="profile-info-item">
+              <div className="profile-info-icon-wrapper">{d.icon}</div>
+              <div className="profile-info-meta">
+                <label className="profile-info-label">{d.label}</label>
+                <p className="profile-info-value">{d.value || "Not provided"}</p>
               </div>
             </div>
           ))}
@@ -172,37 +160,40 @@ const ChangePasswordTab: FC<{ email: string }> = ({ email }) => {
   };
 
   return (
-    <Formik
-      initialValues={{ oldPassword: "", newPassword: "", confirmPassword: "" }}
-      validationSchema={PasswordSchema}
-      onSubmit={handleSubmit}
-    >
-      {() => (
-        <Form className="profile-tab-form">
-          <div className="profile-form-section-card">
-            <CommonFormSection title="Change Password">
-              <CommonValidationTextField name="oldPassword" label="Old Password" type="password" showPasswordToggle required />
-              <CommonValidationTextField name="newPassword" label="New Password" type="password" showPasswordToggle required />
-              <CommonValidationTextField name="confirmPassword" label="Confirm New Password" type="password" showPasswordToggle required />
-            </CommonFormSection>
-          </div>
-          <div className="profile-form-actions">
-            <CommonButton htmlType="submit" type="primary" icon={<LockOutlined />} title="Update Password" loading={updatePasswordMutation.isPending} className="course-button course-button--primary" />
-          </div>
-        </Form>
-      )}
-    </Formik>
+    <motion.div variants={blurRevealUp}>
+      <div className="profile-view-header">
+        <h3 className="profile-section-title">Change Password</h3>
+      </div>
+      <Formik
+        initialValues={{ oldPassword: "", newPassword: "", confirmPassword: "" }}
+        validationSchema={PasswordSchema}
+        onSubmit={handleSubmit}
+      >
+        {() => (
+          <Form className="profile-tab-form">
+            <div className="profile-form-section-card">
+              <CommonFormSection title="Password Configuration">
+                <CommonValidationTextField name="oldPassword" label="Old Password" type="password" showPasswordToggle required startIcon={<LockOutlined />} className="col-span-1" />
+                <CommonValidationTextField name="newPassword" label="New Password" type="password" showPasswordToggle required startIcon={<LockOutlined />} className="col-span-1" />
+                <CommonValidationTextField name="confirmPassword" label="Confirm New Password" type="password" showPasswordToggle required startIcon={<LockOutlined />} className="col-span-1" />
+              </CommonFormSection>
+            </div>
+            <div className="profile-form-actions">
+              <CommonButton htmlType="submit" type="primary" icon={<LockOutlined />} title="Update Password" loading={updatePasswordMutation.isPending} className="course-button course-button--primary" />
+            </div>
+          </Form>
+        )}
+      </Formik>
+    </motion.div>
   );
 };
-
-// ─── Copy Button Helper ───────────────────────────────────────────────────────
-
 
 // ─── Settings Tab ─────────────────────────────────────────────────────────────
 
 const SiteSettingsTab: FC = () => {
   const queryClient = useQueryClient();
   const { data: settingData, isLoading } = Queries.useGetSetting();
+  const [isEditing, setIsEditing] = useState(false);
 
   const addSettingMutation = Mutations.useAddSetting();
   const updateSettingMutation = Mutations.useUpdateSetting();
@@ -239,6 +230,7 @@ const SiteSettingsTab: FC = () => {
       }
 
       queryClient.invalidateQueries({ queryKey: [KEYS.SETTING.BASE] });
+      setIsEditing(false);
     } catch {
       // handled globally
     }
@@ -250,50 +242,98 @@ const SiteSettingsTab: FC = () => {
 
   const isPending = addSettingMutation.isPending || updateSettingMutation.isPending;
 
+  if (isEditing) {
+    return (
+      <Formik
+        enableReinitialize
+        initialValues={initialValues}
+        validationSchema={SettingsSchema}
+        onSubmit={handleSubmit}
+      >
+        {() => (
+          <Form className="profile-tab-form">
+            <div className="profile-form-section-card">
+              <CommonFormSection title="Branding">
+                <CommonImageUpload name="logo" label="Site Logo" shape="square" size={80} className="col-span-full" />
+              </CommonFormSection>
+            </div>
+
+            <div className="profile-form-section-card">
+              <CommonFormSection title="Stats & Metrics">
+                <CommonValidationTextField name="enrolledLearners" label="Total Enrolled Learners" type="number" startIcon={<UserOutlined />} className="col-span-1" />
+                <CommonValidationTextField name="classCompleted" label="Classes Completed" type="number" startIcon={<SettingOutlined />} className="col-span-1" />
+                <CommonValidationTextField name="satisfactionRate" label="Satisfaction Rate (%)" type="number" startIcon={<SettingOutlined />} className="col-span-1" />
+              </CommonFormSection>
+            </div>
+
+            <div className="profile-form-section-card">
+              <CommonFormSection title="Payment Gateway (Razorpay)">
+                <CommonValidationTextField 
+                  name="razorpayKey" 
+                  label="Razorpay Key ID" 
+                  type="password" 
+                  startIcon={<KeyOutlined />}
+                  className="col-span-1"
+                />
+                <CommonValidationTextField 
+                  name="razorpaySecret" 
+                  label="Razorpay Secret (leave blank to keep existing)" 
+                  type="password" 
+                  startIcon={<KeyOutlined />}
+                  className="col-span-1"
+                />
+              </CommonFormSection>
+            </div>
+
+            <div className="profile-form-actions">
+              <CommonButton type="default" icon={<CloseOutlined />} onClick={() => setIsEditing(false)} title="Cancel" className="course-button course-button--ghost" />
+              <CommonButton htmlType="submit" type="primary" icon={<SaveOutlined />} title={isExistingSetting ? "Update Settings" : "Save Settings"} loading={isPending} className="course-button course-button--primary" />
+            </div>
+          </Form>
+        )}
+      </Formik>
+    );
+  }
+
   return (
-    <Formik
-      enableReinitialize
-      initialValues={initialValues}
-      validationSchema={SettingsSchema}
-      onSubmit={handleSubmit}
-    >
-      {() => (
-        <Form className="profile-tab-form">
-          <div className="profile-form-section-card">
-            <CommonFormSection title="Branding">
-              <CommonImageUpload name="logo" label="Site Logo" shape="square" size={80} className="col-span-full" />
-            </CommonFormSection>
+    <motion.div variants={staggerContainer} initial="hidden" animate="visible">
+      <motion.div variants={blurRevealUp}>
+        <div className="profile-view-header">
+          <h3 className="profile-section-title">Site Settings & Config</h3>
+          <CommonButton type="default" icon={<EditOutlined />} onClick={() => setIsEditing(true)} title="Edit Settings" className="course-button course-button--ghost" />
+        </div>
+        <div className="profile-info-grid">
+          <div className="profile-info-item col-span-full">
+            <div className="profile-info-icon-wrapper"><SettingOutlined /></div>
+            <div className="profile-info-meta">
+              <label className="profile-info-label">Site Logo</label>
+              <div className="mt-2">
+                {setting?.logo ? (
+                  <img src={setting.logo} alt="Logo" className="h-10 object-contain rounded border border-border bg-surface-muted p-1" />
+                ) : (
+                  <p className="profile-info-value">No logo uploaded</p>
+                )}
+              </div>
+            </div>
           </div>
-
-          <div className="profile-form-section-card">
-            <CommonFormSection title="Stats & Metrics">
-              <CommonValidationTextField name="enrolledLearners" label="Total Enrolled Learners" type="number" />
-              <CommonValidationTextField name="classCompleted" label="Classes Completed" type="number" />
-              <CommonValidationTextField name="satisfactionRate" label="Satisfaction Rate (%)" type="number" />
-            </CommonFormSection>
-          </div>
-
-          <div className="profile-form-section-card">
-            <CommonFormSection title="Payment Gateway (Razorpay)">
-              <CommonValidationTextField 
-                name="razorpayKey" 
-                label="Razorpay Key ID" 
-                type="password" 
-              />
-              <CommonValidationTextField 
-                name="razorpaySecret" 
-                label="Razorpay Secret (leave blank to keep existing)" 
-                type="password" 
-              />
-            </CommonFormSection>
-          </div>
-
-          <div className="profile-form-actions">
-            <CommonButton htmlType="submit" type="primary" icon={<SaveOutlined />} title={isExistingSetting ? "Update Settings" : "Save Settings"} loading={isPending} className="course-button course-button--primary" />
-          </div>
-        </Form>
-      )}
-    </Formik>
+          {[
+            { label: "Total Enrolled Learners", value: setting?.enrolledLearners, icon: <UserOutlined /> },
+            { label: "Classes Completed", value: setting?.classCompleted, icon: <SettingOutlined /> },
+            { label: "Satisfaction Rate", value: setting?.satisfactionRate != null ? `${setting.satisfactionRate}%` : null, icon: <SettingOutlined /> },
+            { label: "Razorpay Key ID", value: setting?.razorpayKey ? "••••••••••••••••" : null, icon: <KeyOutlined /> },
+            { label: "Razorpay Secret", value: setting?.razorpaySecret ? "••••••••••••••••" : null, icon: <KeyOutlined /> },
+          ].map((d, i) => (
+            <div key={i} className="profile-info-item">
+              <div className="profile-info-icon-wrapper">{d.icon}</div>
+              <div className="profile-info-meta">
+                <label className="profile-info-label">{d.label}</label>
+                <p className="profile-info-value">{d.value ?? "Not configured"}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </motion.div>
+    </motion.div>
   );
 };
 
@@ -320,97 +360,51 @@ const Profile: FC = () => {
   const phone = user?.phone || user?.phoneNumber || "";
   const designation = user?.designation || "";
   const avatar = user?.profilePhoto || user?.profileImage;
-  const role = user?.role || "Admin";
-  const createdAt = user?.createdAt;
-
-  const tabItems = [
-    {
-      key: "personal",
-      label: (
-        <span className="profile-tab-label">
-          <UserOutlined /> Personal Info
-        </span>
-      ),
-      children: (
-        <PersonalInfoTab
-          user={user}
-          username={username}
-          email={email}
-          phone={phone}
-          designation={designation}
-          avatar={avatar || `https://api.dicebear.com/7.x/adventurer/svg?seed=${username}`}
-        />
-      ),
-    },
-    {
-      key: "settings",
-      label: (
-        <span className="profile-tab-label">
-          <SettingOutlined /> Site Settings
-        </span>
-      ),
-      children: <SiteSettingsTab />,
-    },
-    {
-      key: "password",
-      label: (
-        <span className="profile-tab-label">
-          <LockOutlined /> Change Password
-        </span>
-      ),
-      children: <ChangePasswordTab email={email} />,
-    },
-  ];
 
   return (
     <>
       <CommonBreadcrumbs title="My Profile & Settings" breadcrumbs={BREADCRUMBS.PROFILE?.BASE || []} />
       <CommonPageWrapper noPadding className="h-full bg-transparent">
         <motion.div variants={staggerContainer} initial="hidden" animate="visible" className="profile-page-layout">
-          {/* Left Sidebar */}
-          <motion.div variants={blurRevealUp} className="profile-sidebar-card">
-            {/* Header Banner Background */}
-            <div className="profile-sidebar-cover-banner" />
-
-            <div className="profile-sidebar-avatar-wrap">
+          {/* Header Card (Mockup style) */}
+          <motion.div variants={blurRevealUp} className="profile-header-card">
+            <div className="profile-avatar-wrapper">
               {avatar ? (
-                <img src={avatar} alt={username} className="profile-sidebar-avatar" />
+                <img src={avatar} alt={username} className="profile-avatar-img" />
               ) : (
-                <Avatar size={100} icon={<UserOutlined />} className="profile-sidebar-avatar-placeholder" />
+                <div className="profile-avatar-placeholder">
+                  <UserOutlined />
+                </div>
               )}
-              <div className="profile-sidebar-status-dot" />
+              <div className="profile-status-indicator" />
             </div>
-
-            <div className="profile-sidebar-info">
-              <h2 className="profile-sidebar-name">{username}</h2>
-              <span className="profile-sidebar-role">{designation || role}</span>
-              <span className={`profile-sidebar-badge ${role === "admin" ? "badge-admin" : "badge-user"}`}>
-                {role.toUpperCase()}
-              </span>
-            </div>
-
-            <div className="profile-sidebar-details">
-              <DetailRow icon={<MailOutlined />} label="Email" value={email} />
-              <DetailRow icon={<PhoneOutlined />} label="Phone" value={phone} />
-              {designation && <DetailRow icon={<UserOutlined />} label="Designation" value={designation} />}
-              {createdAt && (
-                <DetailRow
-                  icon={<CalendarOutlined />}
-                  label="Member Since"
-                  value={new Date(createdAt).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
-                />
-              )}
+            <div className="profile-meta-info">
+              <h2 className="profile-meta-name">{username}</h2>
+              <span className="profile-meta-role">{designation || "Administrator"}</span>
+              <span className="profile-meta-email">{email}</span>
             </div>
           </motion.div>
 
-          {/* Right Tabbed Content */}
+          {/* Card 2: Personal Information */}
           <motion.div variants={blurRevealUp} className="profile-content-card">
-            <Tabs
-              defaultActiveKey="personal"
-              items={tabItems}
-              className="profile-tabs"
-              size="large"
+            <PersonalInfoTab
+              user={user}
+              username={username}
+              email={email}
+              phone={phone}
+              designation={designation}
+              avatar={avatar || `https://api.dicebear.com/7.x/adventurer/svg?seed=${username}`}
             />
+          </motion.div>
+
+          {/* Card 3: Site Settings */}
+          <motion.div variants={blurRevealUp} className="profile-content-card">
+            <SiteSettingsTab />
+          </motion.div>
+
+          {/* Card 4: Change Password */}
+          <motion.div variants={blurRevealUp} className="profile-content-card">
+            <ChangePasswordTab email={email} />
           </motion.div>
         </motion.div>
       </CommonPageWrapper>

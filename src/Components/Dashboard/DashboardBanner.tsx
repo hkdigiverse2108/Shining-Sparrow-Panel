@@ -14,10 +14,14 @@ interface StatCardProps {
   label: string;
   color: string;
   bgColor: string;
+  onClick?: () => void;
 }
 
-const StatCard: React.FC<StatCardProps> = ({ icon, value, label, color, bgColor }) => (
-  <div className="flex flex-col p-5 rounded-2xl bg-surface border border-border hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 group">
+const StatCard: React.FC<StatCardProps> = ({ icon, value, label, color, bgColor, onClick }) => (
+  <div 
+    onClick={onClick}
+    className={`flex flex-col p-5 rounded-2xl bg-surface border border-border hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 group ${onClick ? 'cursor-pointer' : ''}`}
+  >
     <div className="flex items-center justify-between mb-4">
       <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${bgColor} ${color}`}>
         {icon}
@@ -70,6 +74,7 @@ const DashboardBanner: React.FC = () => {
             label="Total Students"
             color="text-primary"
             bgColor="bg-primary/10"
+            onClick={() => navigate(ROUTES.USERS.BASE)}
           />
           <StatCard
             icon={<BookOutlined />}
@@ -77,6 +82,7 @@ const DashboardBanner: React.FC = () => {
             label="Total Courses"
             color="text-info"
             bgColor="bg-info/10"
+            onClick={() => navigate(ROUTES.COURSE.BASE)}
           />
           <StatCard
             icon={<ToolOutlined />}
@@ -84,6 +90,7 @@ const DashboardBanner: React.FC = () => {
             label="Total Workshops"
             color="text-success"
             bgColor="bg-success/10"
+            onClick={() => navigate(ROUTES.WORKSHOP.BASE)}
           />
           <StatCard
             icon={<ShoppingCartOutlined />}
@@ -91,6 +98,7 @@ const DashboardBanner: React.FC = () => {
             label="Total Sales"
             color="text-warning"
             bgColor="bg-warning/10"
+            onClick={() => navigate(ROUTES.PAYMENTS)}
           />
         </div>
       </motion.div>

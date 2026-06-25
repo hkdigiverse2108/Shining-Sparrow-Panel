@@ -33,6 +33,8 @@ import Legality from "@/Pages/Legality";
 import Gallery from "@/Pages/Gallery";
 import Newsletter from "@/Pages/Newsletter";
 import TrustedPartner from "@/Pages/TrustedPartner";
+import Payments from "@/Pages/Payments";
+import PaymentDetails from "@/Pages/Payments/PaymentDetails";
 
 export const PageRoutes = [
   { path: ROUTES.DASHBOARD, name: PAGE_TITLE.DASHBOARD, element: <Dashboard /> },
@@ -74,6 +76,8 @@ export const PageRoutes = [
   { path: ROUTES.GALLERY, name: PAGE_TITLE.GALLERY, element: <Gallery /> },
   { path: ROUTES.NEWSLETTER, name: PAGE_TITLE.NEWSLETTER, element: <Newsletter /> },
   { path: ROUTES.TRUSTED_PARTNER, name: PAGE_TITLE.TRUSTED_PARTNER, element: <TrustedPartner /> },
+  { path: ROUTES.PAYMENTS, name: PAGE_TITLE.PAYMENTS, element: <Payments /> },
+  { path: ROUTES.PAYMENT_DETAILS, name: PAGE_TITLE.PAYMENT_DETAILS, element: <PaymentDetails /> },
 ];
 
 export const AuthRoutes = [

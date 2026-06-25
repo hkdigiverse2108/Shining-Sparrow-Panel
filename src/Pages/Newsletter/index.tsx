@@ -1,6 +1,6 @@
 import { useState, useMemo, type FC } from 'react';
-import { Button, Tooltip, Tag, Modal, Segmented } from 'antd';
-import { DeleteOutlined, MailOutlined, SendOutlined, PlusOutlined } from '@ant-design/icons';
+import { Button, Tag, Modal, Segmented } from 'antd';
+import { DeleteOutlined, MailOutlined, SendOutlined } from '@ant-design/icons';
 import { motion } from 'motion/react';
 import { useQueryClient } from '@tanstack/react-query';
 import { Formik, Form } from 'formik';

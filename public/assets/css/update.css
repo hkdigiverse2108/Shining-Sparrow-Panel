@@ -166,40 +166,88 @@
 
 /* ─── ADVANCED SEARCH ─── */
 .advanced-search {
-  @apply mb-6 bg-transparent! shadow-none!;
+  margin-top: 16px !important;
+  margin-bottom: 24px !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
 }
 .advanced-search .ant-collapse-item {
-  @apply border-0!;
+  background-color: var(--surface) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 14px !important;
+  box-shadow: 0 4px 12px -2px rgba(50, 50, 93, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.01) !important;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  overflow: hidden !important;
 }
-.advanced-search .ant-collapse-header {
-  @apply !py-4 !px-6 bg-surface border border-border rounded-2xl transition-all duration-200 shadow-sm! font-semibold text-foreground flex items-center!;
+
+/* Header style & transitions */
+.advanced-search .ant-collapse-item .ant-collapse-header {
+  padding: 14px 20px !important;
+  background-color: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  font-weight: 600 !important;
+  color: var(--foreground) !important;
+  display: flex !important;
+  align-items: center !important;
+  outline: none !important;
 }
-.advanced-search .ant-collapse-header:hover {
-  @apply border-primary/50! bg-surface-muted!;
+
+/* Hover Header style */
+.advanced-search .ant-collapse-item:hover {
+  border-color: var(--primary) !important;
+  box-shadow: 0 8px 24px -4px rgba(232, 100, 36, 0.08) !important;
 }
-.advanced-search .ant-collapse-item-active > .ant-collapse-header {
-  @apply rounded-b-none border-b-transparent!;
+
+/* Focus removal on Header */
+.advanced-search .ant-collapse-item .ant-collapse-header:focus,
+.advanced-search .ant-collapse-item .ant-collapse-header:focus-visible,
+.advanced-search .ant-collapse-item .ant-collapse-header:active {
+  outline: none !important;
 }
+
+/* Content panel layout resets */
 .advanced-search .ant-collapse-content {
-  @apply bg-transparent! border-0!;
+  background-color: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
 }
-.advanced-search .ant-collapse-content-box {
-  @apply !p-6 bg-surface border border-t-0 border-border rounded-b-2xl mt-[-1px] shadow-sm!;
+
+/* Force active panel body spacing */
+.advanced-search .ant-collapse-item-active .ant-collapse-content-box {
+  padding: 0 20px 20px 20px !important;
+  background-color: transparent !important;
 }
 .advanced-search .ant-select-selector {
-  @apply rounded-lg! border-border! bg-surface-muted! h-10! shadow-none transition-all duration-200 flex items-center!;
+  border-radius: 8px !important;
+  border: 1px solid var(--border) !important;
+  background-color: var(--surface-muted) !important;
+  height: 42px !important;
+  transition: all 0.2s ease !important;
+  display: flex !important;
+  align-items: center !important;
 }
 .advanced-search .ant-select-selector:hover {
-  @apply border-primary/50! bg-surface-muted!;
+  border-color: var(--border-hover) !important;
 }
 .advanced-search .ant-select-focused .ant-select-selector {
-  @apply border-primary! bg-surface! shadow-[0_0_0_3px_var(--color-primary-ring)]!;
+  border-color: var(--primary) !important;
+  background-color: var(--surface) !important;
+  box-shadow: 0 0 0 3px var(--primary-ring) !important;
 }
 .advanced-search span.text-xs {
-  @apply text-[10px] font-bold uppercase tracking-wider text-text-muted/80 mb-2 block;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.75px !important;
+  color: var(--text-muted) !important;
+  margin-bottom: 6px !important;
+  display: block !important;
 }
 .advanced-search-panel {
-  @apply bg-transparent!;
+  background: transparent !important;
 }
 .common-btn.ant-btn.btn-primary { background-color: var(--primary) !important; color: var(--surface) !important; }
 .common-btn.ant-btn.btn-secondary { background-color: var(--muted) !important; color: var(--foreground) !important; }

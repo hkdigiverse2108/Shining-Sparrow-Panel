@@ -3,6 +3,7 @@ import type { FC } from "react";
 import type { AdvancedSearchProps } from "../../Types";
 import { useState } from "react";
 import { CommonSelect } from "@/Attribute/FormFields/CommonSelect";
+import { FilterOutlined } from "@ant-design/icons";
 
 export const AdvancedSearch: FC<AdvancedSearchProps> = ({ children, filter = [] }) => {
   const [activeKey, setActiveKey] = useState<string[]>([]);
@@ -18,7 +19,9 @@ export const AdvancedSearch: FC<AdvancedSearchProps> = ({ children, filter = [] 
         {
           key: "1",
           label: (
-            <span className="text-sm font-bold text-foreground"> Advanced Search </span>
+            <span className="text-sm font-bold text-foreground flex items-center gap-2">
+              <FilterOutlined style={{ color: "var(--primary)" }} /> Advanced Search
+            </span>
           ),
           className: "advanced-search-panel",
           children: (

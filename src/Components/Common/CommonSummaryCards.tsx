@@ -9,14 +9,16 @@ import {
   CalendarOutlined, 
   FileTextOutlined,
   PictureOutlined,
-  PercentageOutlined
+  PercentageOutlined,
+  FolderOpenOutlined,
+  MailOutlined
 } from '@ant-design/icons';
 
 interface CommonSummaryCardsProps {
   total: number;
   active: number;
   blocked: number;
-  subject: 'Users' | 'Courses' | 'Workshops' | 'Blogs' | 'Banners' | 'Coupons';
+  subject: 'Users' | 'Courses' | 'Workshops' | 'Blogs' | 'Banners' | 'Coupons' | 'Gallery Folders' | 'Subscribers' | 'Partners';
 }
 
 export const CommonSummaryCards: React.FC<CommonSummaryCardsProps> = ({
@@ -32,6 +34,8 @@ export const CommonSummaryCards: React.FC<CommonSummaryCardsProps> = ({
     else if (subject === 'Blogs') totalIcon = FileTextOutlined;
     else if (subject === 'Banners') totalIcon = PictureOutlined;
     else if (subject === 'Coupons') totalIcon = PercentageOutlined;
+    else if (subject === 'Gallery Folders') totalIcon = FolderOpenOutlined;
+    else if (subject === 'Subscribers') totalIcon = MailOutlined;
 
     return [
       { key: 'total', title: `Total ${subject}`, value: total, icon: totalIcon, styleClass: 'user-metric-icon--total' },

@@ -63,7 +63,7 @@ export const URL_KEYS = {
     DELETE: "/workshop/delete",
     GET: "/workshop/all",
     PURCHASE: "/workshop/purchase",
-    MY_COURSES: "/workshop/my-courses",
+    MY_WORKSHOPS: "/workshop/my-workshops",
   },
   WORKSHOP_CURRICULUM: {
     ADD: "/workshop-curriculum/add",

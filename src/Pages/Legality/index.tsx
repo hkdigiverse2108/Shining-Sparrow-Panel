@@ -1,4 +1,4 @@
-import { useState, useEffect, type FC } from 'react';
+import { useState, type FC } from 'react';
 import { Tabs, Card, Spin } from 'antd';
 import { FileProtectOutlined } from '@ant-design/icons';
 import { Formik, Form } from 'formik';

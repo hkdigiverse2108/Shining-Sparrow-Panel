@@ -8,6 +8,8 @@ import { fadeInUp } from '@/Utils/animations';
 import { Queries } from '@/Api';
 import { CommonTag } from '@/Components/Common/CommonTag';
 
+import type { ColumnType } from 'antd/es/table';
+
 const DashboardCoursesTable: React.FC = () => {
   const navigate = useNavigate();
   const { data: courseRes, isLoading } = Queries.useGetCourses({ page: 1, limit: 100 });
@@ -16,10 +18,11 @@ const DashboardCoursesTable: React.FC = () => {
     return (courseRes?.data?.course_data || []).slice(0, 5);
   }, [courseRes]);
 
-  const columns = [
+  const columns: ColumnType<any>[] = [
     {
       title: 'Course',
       dataIndex: 'name',
+      align: "left",
       render: (_: any, r: any) => (
         <div className="flex items-center gap-3">
           <Avatar 
@@ -36,6 +39,7 @@ const DashboardCoursesTable: React.FC = () => {
     {
       title: 'Price',
       dataIndex: 'price',
+      align: "center",
       render: (_v: any, r: any) => (
         <span className="font-semibold text-foreground text-sm">
           ₹{(r.price ?? 0).toLocaleString()}
@@ -45,6 +49,7 @@ const DashboardCoursesTable: React.FC = () => {
     {
       title: 'Status',
       dataIndex: 'isBlocked',
+      align: "center",
       render: (v: any) => (
         <CommonTag className={v ? 'status-dot status-dot-blocked' : 'status-dot status-dot-active'}>
           {v ? 'Blocked' : 'Active'}

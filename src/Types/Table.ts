@@ -44,4 +44,5 @@ export interface CommonTableProps<T> {
     // summary
     summaryFields?: string[];
     scroll?: any;
+    toolbarExtra?: React.ReactNode;
 }

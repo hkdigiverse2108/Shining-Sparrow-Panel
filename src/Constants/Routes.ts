@@ -49,4 +49,6 @@ export const ROUTES = {
   GALLERY: "/gallery",
   NEWSLETTER: "/newsletter",
   TRUSTED_PARTNER: "/trusted-partner",
+  PAYMENTS: "/payments",
+  PAYMENT_DETAILS: "/payments/:type/:id",
 } as const;

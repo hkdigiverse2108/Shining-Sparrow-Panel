@@ -4,7 +4,7 @@ import { SearchOutlined, PlusOutlined, DownloadOutlined, SettingOutlined, } from
 import { CommonButton, CommonCheckbox } from "@/Attribute";
 import type { CommonTableToolbarProps } from "@/Types";
 
-const CommonTableToolbar: FC<CommonTableToolbarProps> = ({ searchText, setSearchText, searchPlaceholder, onSearch, isActive, onActiveChange, onAdd, columns, visibleCols, setVisibleCols, onExportExcel, onExportPDF }) => {
+const CommonTableToolbar: FC<CommonTableToolbarProps> = ({ searchText, setSearchText, searchPlaceholder, onSearch, isActive, onActiveChange, onAdd, columns, visibleCols, setVisibleCols, onExportExcel, onExportPDF, toolbarExtra }) => {
   const columnSelector = (
     <div className="common-table-column-menu">
       <Checkbox.Group
@@ -26,6 +26,7 @@ const CommonTableToolbar: FC<CommonTableToolbarProps> = ({ searchText, setSearch
     <div className="common-table-toolbar flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-5 bg-transparent border-b border-border/40">
       {/* Left side actions: Add, Toggle Active, Export */}
       <div className="flex items-center gap-2 flex-wrap">
+        {toolbarExtra}
         {onAdd && (
           <CommonButton buttonVariant="primary" className="common-table-add-button" icon={<PlusOutlined />} onClick={onAdd}> Add </CommonButton>
         )}

@@ -16,7 +16,6 @@ import {
   videoResourceBadge, attachmentFileBadge, editAction, deleteAction, blockAction, blockedBadge
 } from '@/Components/Common/ContentItemCard';
 import { extractArray } from '@/Utils';
-import { WorkshopCurriculumForm } from './CurriculumForm';
 import { TestimonialForm } from './TestimonialForm';
 import { FAQForm } from './FAQForm';
 
@@ -67,44 +66,7 @@ const ManageWorkshop: FC = () => {
       .sort((a: any, b: any) => (a.priority ?? 0) - (b.priority ?? 0)),
     [currRes, workshopId]);
 
-  const sessionPrioritiesForAdd = useMemo(() => {
-    return curriculums.map((c: any) => Number(c.priority));
-  }, [curriculums]);
-
-  const sessionPrioritiesForEdit = useMemo(() => {
-    if (activeForm.type !== 'editSession') return [];
-    return curriculums
-      .filter((c: any) => String(c._id) !== String(activeForm.data?._id))
-      .map((c: any) => Number(c.priority));
-  }, [curriculums, activeForm]);
-
   // ── Session handlers ──────────────────────────────────────────────────────
-
-  const handleSaveSession = (values: any) => {
-    const payload: any = {
-      workshopId,
-      title: values.title,
-      priority: Number(values.priority),
-      description: values.description || '',
-      videoLink: values.videoLink || '',
-      thumbnail: values.thumbnail || '',
-      attachment: values.attachment || '',
-    };
-    if (values.duration !== undefined && values.duration !== null && values.duration !== '')
-      payload.duration = Number(values.duration);
-    if (values.date)
-      payload.date = typeof values.date.toISOString === 'function' ? values.date.toISOString() : values.date;
-    if (values.workshopCurriculumId)
-      payload.workshopCurriculumId = values.workshopCurriculumId;
-
-    const mutation = values.workshopCurriculumId ? editCurrMutation : addCurrMutation;
-    mutation.mutate(payload, {
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: [KEYS.WORKSHOP_CURRICULUM.BASE] });
-        setActiveForm({ type: 'view' });
-      },
-    });
-  };
 
   const handleDeleteSession = (id: string) => {
     deleteCurrMutation.mutate(id, {

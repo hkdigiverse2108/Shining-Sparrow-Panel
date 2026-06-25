@@ -28,4 +28,6 @@ export const PAGE_TITLE = {
   GALLERY: "Gallery",
   NEWSLETTER: "Newsletter Subscribers",
   TRUSTED_PARTNER: "Trusted Partners",
+  PAYMENTS: "Payments",
+  PAYMENT_DETAILS: "Payment Details",
 } as const;

@@ -19,7 +19,7 @@ export const getUserColumns = ({ onEdit, onToggleStatus, onDelete, onStartChat, 
   {
     title: "User", 
     dataIndex: "fullName",
-    align: "center",
+    align: "left",
     render: (_, r) => (
       <div className="user-cell-profile">
         <Avatar src={r.profilePhoto || undefined} size={40} icon={<UserOutlined />} className="shadow-sm border-2 border-primary/20 shrink-0" />

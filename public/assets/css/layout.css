@@ -1050,247 +1050,315 @@
 /* ===================== PROFILE & SETTINGS PAGE ===================== */
 
 /* Force the layout content parent to be a flex column matching the viewport height minus header and margins */
+/* ===================== PROFILE & SETTINGS PAGE ===================== */
+
+/* Force the layout content parent to be a flex column matching the viewport height minus header and margins */
 .profile-page-layout-content {
   display: flex !important;
   flex-direction: column !important;
-  height: calc(100vh - 100px) !important;
-  overflow: hidden !important;
-  padding-bottom: 12px !important;
+  height: auto !important; /* Allow natural scrolling */
+  overflow: visible !important;
 }
 
 .profile-page-layout-content .common-page-wrapper {
-  flex: 1 !important;
+  flex: none !important;
   display: flex !important;
   flex-direction: column !important;
-  min-height: 0 !important;
-  overflow: hidden !important;
   margin-top: 8px !important;
   box-shadow: none !important;
   border: none !important;
 }
 
-.profile-page-layout-content .page-content-no-padding {
-  flex: 1 !important;
-  display: flex !important;
-  flex-direction: column !important;
-  min-height: 0 !important;
-  overflow: hidden !important;
-}
-
-/* Page layout: sidebar + content */
-/* Page layout: sidebar + content */
+/* Page layout: column style */
 .profile-page-layout {
-  @apply flex flex-col lg:flex-row gap-4 items-stretch w-full h-full min-h-0 overflow-hidden;
-}
-
-/* ── Sidebar card ── */
-.profile-sidebar-card {
-  @apply w-full lg:w-72 shrink-0 rounded-2xl border border-border bg-surface shadow-sm
-         flex flex-col items-center gap-4 p-6 overflow-y-auto relative overflow-hidden;
-}
-
-.profile-sidebar-card::-webkit-scrollbar {
-  width: 6px;
-}
-.profile-sidebar-card::-webkit-scrollbar-thumb {
-  background-color: var(--border);
-  border-radius: 4px;
-}
-
-.profile-sidebar-cover-banner {
-  @apply absolute top-0 left-0 right-0 h-24 bg-gradient-to-r from-primary/30 via-indigo/25 to-purple/20 z-0;
-}
-
-.profile-sidebar-avatar-wrap {
-  @apply relative mt-6 z-10;
-}
-
-.profile-sidebar-avatar {
-  @apply w-24 h-24 rounded-full object-cover ring-4 ring-surface shadow-lg transition-transform duration-300 hover:scale-105;
-}
-
-.profile-sidebar-avatar-placeholder {
-  @apply ring-4 ring-surface shadow-lg;
-}
-
-.profile-sidebar-status-dot {
-  @apply absolute bottom-1 right-1 w-4 h-4 rounded-full bg-success border-2 border-surface;
-}
-
-.profile-sidebar-info {
-  @apply flex flex-col items-center gap-1 text-center z-10;
-}
-
-.profile-sidebar-name {
-  @apply text-lg font-bold text-foreground leading-tight;
-}
-
-.profile-sidebar-role {
-  @apply text-xs text-muted;
-}
-
-.profile-sidebar-badge {
-  @apply mt-1 inline-flex items-center px-3 py-1 rounded-full text-[10px] font-semibold tracking-wider uppercase border border-transparent shadow-sm;
-}
-
-.badge-admin {
-  @apply bg-primary-soft/40 text-primary border-primary/20;
-}
-
-.badge-user {
-  @apply bg-success/15 text-success border-success/20;
-}
-
-/* ── Sidebar detail rows ── */
-.profile-sidebar-details {
-  @apply w-full flex flex-col gap-2 pt-4 border-t border-border z-10;
-}
-
-.profile-detail-row {
-  @apply flex items-center gap-3 px-2.5 py-2 rounded-xl hover:bg-surface-muted/65 transition-all duration-300;
-}
-
-.profile-detail-icon {
-  @apply text-primary text-sm shrink-0 bg-primary/10 p-1.5 rounded-lg;
-}
-
-.profile-detail-text {
-  @apply flex flex-col min-w-0;
-}
-
-.profile-detail-label {
-  @apply text-[9px] font-bold uppercase tracking-wider text-muted;
-}
-
-.profile-detail-value {
-  @apply text-xs text-foreground font-semibold truncate;
-}
-
-/* ── Sidebar social icons ── */
-.profile-sidebar-socials {
-  @apply flex items-center gap-4 pt-4 border-t border-border w-full justify-center mt-auto z-10;
-}
-
-.social-icon {
-  @apply text-muted text-base hover:text-primary transition-all duration-300 cursor-pointer hover:scale-110;
-}
-
-/* ── Right content card ── */
-.profile-content-card {
-  @apply flex-1 min-w-0 rounded-2xl border border-border bg-surface shadow-sm p-6
-         flex flex-col overflow-hidden;
-}
-
-/* ── Tabs styling ── */
-.profile-tabs .ant-tabs-tab {
-  @apply text-muted font-medium;
-}
-
-.profile-tabs .ant-tabs-tab-active .ant-tabs-tab-btn {
-  @apply text-primary font-semibold;
-}
-
-.profile-tabs {
   display: flex !important;
   flex-direction: column !important;
-  height: 100% !important;
-  min-height: 0 !important;
-  overflow: hidden !important;
-}
-
-.profile-tabs > .ant-tabs-content-holder {
-  flex: 1 !important;
-  min-height: 0 !important;
-  overflow-y: auto !important;
-  padding-right: 4px;
-}
-
-.profile-tabs > .ant-tabs-content-holder::-webkit-scrollbar {
-  width: 6px;
-}
-
-.profile-tabs > .ant-tabs-content-holder::-webkit-scrollbar-thumb {
-  background-color: var(--border);
-  border-radius: 4px;
-}
-
-.profile-tabs .ant-tabs-content {
-  height: 100% !important;
-}
-
-.profile-tabs .ant-tabs-tabpane {
-  height: 100% !important;
-}
-
-/* Contact page tabs override: collapse height to wrap table naturally */
-.contact-tabs,
-.contact-tabs .ant-tabs-content,
-.contact-tabs .ant-tabs-tabpane,
-.contact-tabs > .ant-tabs-content-holder {
+  gap: 24px !important;
+  width: 100% !important;
   height: auto !important;
   min-height: 0 !important;
   overflow: visible !important;
 }
 
-.profile-tab-label {
-  @apply flex items-center gap-1.5;
+/* ── Mockup Header Card ── */
+.profile-header-card {
+  position: relative !important;
+  width: 100% !important;
+  border-radius: 20px !important;
+  border: 1px solid var(--border) !important;
+  background-color: var(--surface) !important;
+  box-shadow: 0 4px 20px -2px rgba(50, 50, 93, 0.03), 0 2px 6px -1px rgba(0, 0, 0, 0.02) !important;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 28px !important;
+  padding: 32px !important;
 }
 
-/* ── View header (Personal info view) ── */
+@media (max-width: 768px) {
+  .profile-header-card {
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+    gap: 20px !important;
+    padding: 24px !important;
+  }
+}
+
+.profile-avatar-wrapper {
+  position: relative !important;
+  width: 110px !important;
+  height: 110px !important;
+  flex-shrink: 0 !important;
+}
+
+.profile-avatar-img {
+  width: 110px !important;
+  height: 110px !important;
+  border-radius: 50% !important;
+  object-fit: cover !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+  transition: all 0.3s ease !important;
+}
+
+.profile-avatar-img:hover {
+  transform: scale(1.04) !important;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08) !important;
+}
+
+.profile-avatar-placeholder {
+  width: 110px !important;
+  height: 110px !important;
+  border-radius: 50% !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+  background: linear-gradient(135deg, var(--surface-muted) 0%, var(--border) 100%) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: var(--text-muted) !important;
+  font-size: 40px !important;
+}
+
+.profile-status-indicator {
+  position: absolute !important;
+  bottom: 4px !important;
+  right: 4px !important;
+  width: 16px !important;
+  height: 16px !important;
+  border-radius: 50% !important;
+  background-color: #10b981 !important;
+  border: 3px solid var(--surface) !important;
+  box-shadow: 0 2px 6px rgba(16, 185, 129, 0.4) !important;
+}
+
+.profile-meta-info {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 6px !important;
+}
+
+.profile-meta-name {
+  font-size: 24px !important;
+  font-weight: 800 !important;
+  color: var(--foreground) !important;
+  margin: 0 !important;
+  line-height: 1.2 !important;
+  letter-spacing: -0.5px !important;
+}
+
+.profile-meta-role {
+  font-size: 14.5px !important;
+  color: var(--foreground) !important;
+  font-weight: 600 !important;
+}
+
+.profile-meta-email {
+  font-size: 13.5px !important;
+  color: var(--text-muted) !important;
+  font-weight: 500 !important;
+}
+
+/* ── Content Card ── */
+.profile-content-card {
+  width: 100% !important;
+  border-radius: 20px !important;
+  border: 1px solid var(--border) !important;
+  background-color: var(--surface) !important;
+  box-shadow: 0 4px 20px -2px rgba(50, 50, 93, 0.03), 0 2px 6px -1px rgba(0, 0, 0, 0.02) !important;
+  padding: 32px !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+/* Premium Capsule Switcher Tabs styling */
+.profile-tabs .ant-tabs-nav {
+  margin-bottom: 28px !important;
+}
+
+.profile-tabs .ant-tabs-nav::before {
+  display: none !important;
+}
+
+.profile-tabs .ant-tabs-nav-list {
+  background-color: var(--surface-muted) !important;
+  padding: 6px !important;
+  border-radius: 12px !important;
+  border: 1px solid var(--border) !important;
+  display: flex !important;
+  gap: 4px !important;
+}
+
+.profile-tabs .ant-tabs-tab {
+  padding: 8px 18px !important;
+  margin: 0 !important;
+  border-radius: 8px !important;
+  border: none !important;
+  font-size: 13.5px !important;
+  font-weight: 600 !important;
+  color: var(--text-muted) !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.profile-tabs .ant-tabs-tab::after,
+.profile-tabs .ant-tabs-tab::before {
+  display: none !important;
+}
+
+.profile-tabs .ant-tabs-tab:hover {
+  color: var(--foreground) !important;
+}
+
+.profile-tabs .ant-tabs-tab-active {
+  background-color: var(--surface) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.02) !important;
+}
+
+.profile-tabs .ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: var(--primary) !important;
+}
+
+.profile-tabs .ant-tabs-ink-bar {
+  display: none !important;
+}
+
+@media (max-width: 640px) {
+  .profile-tabs .ant-tabs-nav-list {
+    width: 100% !important;
+    overflow-x: auto !important;
+    flex-wrap: nowrap !important;
+  }
+  .profile-tabs .ant-tabs-tab {
+    flex: 1 0 auto !important;
+    text-align: center !important;
+  }
+}
+
+/* ── Profile detail view card ── */
 .profile-view-header {
-  @apply flex items-center justify-between mb-5;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  margin-bottom: 24px !important;
+  border-bottom: 1px solid var(--border) !important;
+  padding-bottom: 14px !important;
 }
 
 .profile-section-title {
-  @apply text-base font-bold text-foreground;
+  font-size: 17px !important;
+  font-weight: 755 !important;
+  color: var(--foreground) !important;
+  margin: 0 !important;
 }
 
-/* ── Details grid (view mode) ── */
-.profile-details-grid {
-  @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4;
+.profile-info-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)) !important;
+  gap: 24px !important;
+  padding: 8px 0 !important;
 }
 
-.profile-detail-card {
-  @apply p-4 rounded-xl bg-surface-muted border border-border flex items-center gap-4 transition-all duration-300 hover:shadow-md hover:border-primary/30 hover:bg-surface;
+.profile-info-item {
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 12px !important;
+  min-width: 0 !important;
 }
 
-.profile-detail-card-icon {
-  @apply text-lg text-primary bg-primary/10 p-2.5 rounded-xl shrink-0 transition-colors duration-300;
+.profile-info-icon-wrapper {
+  width: 38px !important;
+  height: 38px !important;
+  border-radius: 8px !important;
+  background-color: rgba(232, 100, 36, 0.08) !important;
+  color: var(--primary) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 16px !important;
+  flex-shrink: 0 !important;
+  border: 1px solid rgba(232, 100, 36, 0.12) !important;
 }
 
-.profile-detail-card:hover .profile-detail-card-icon {
-  @apply bg-primary text-white;
+.profile-info-meta {
+  display: flex !important;
+  flex-direction: column !important;
+  min-width: 0 !important;
 }
 
-.profile-detail-card-content {
-  @apply flex flex-col min-w-0;
+.profile-info-label {
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.75px !important;
+  color: var(--text-muted) !important;
+  margin-bottom: 4px !important;
+  line-height: 1.2 !important;
 }
 
-.detaillabel {
-  @apply text-[9px] font-bold uppercase tracking-wider text-muted mb-0.5;
+.profile-info-value {
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  color: var(--foreground) !important;
+  margin: 0 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
 }
 
-.detailvalue {
-  @apply text-sm text-foreground font-semibold truncate;
-}
-
-/* ── Form inside tabs ── */
+/* Form panel shell layout overrides for full-width comfort */
 .profile-tab-form {
-  @apply flex flex-col gap-6;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 24px !important;
 }
 
 .profile-form-section-card {
-  @apply p-6 rounded-2xl bg-surface-muted/30 border border-border/80 shadow-sm transition-all duration-300 hover:border-primary/20 hover:shadow-md;
+  border: 1px solid var(--border) !important;
+  background-color: var(--surface) !important;
+  border-radius: 16px !important;
+  padding: 24px !important;
+  transition: box-shadow 0.3s ease !important;
 }
 
-/* ── Form action buttons ── */
+.profile-form-section-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.015) !important;
+}
+
 .profile-form-actions {
-  @apply flex items-center justify-end gap-3 pt-2 border-t border-border;
+  display: flex !important;
+  justify-content: flex-end !important;
+  gap: 12px !important;
+  margin-top: 12px !important;
+  padding-top: 20px !important;
+  border-top: 1px solid var(--border) !important;
 }
 
-/* ── Loading state ── */
 .profile-loading {
-  @apply flex items-center justify-center py-20;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 80px 0 !important;
 }
 
 /* ===================== FAQ PAGE ===================== */
@@ -1370,4 +1438,29 @@
   color: #adb5bd;
   pointer-events: none;
   height: 0;
+}
+
+.profile-status-pulse {
+  width: 8px !important;
+  height: 8px !important;
+  border-radius: 50% !important;
+  background-color: #10b981 !important;
+  box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7) !important;
+  animation: pulse-green 2s infinite !important;
+  display: inline-block !important;
+}
+
+@keyframes pulse-green {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 6px rgba(16, 185, 129, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  }
 }

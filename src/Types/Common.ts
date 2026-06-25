@@ -155,6 +155,7 @@ export interface CommonTableToolbarProps {
 
   onExportExcel: () => void;
   onExportPDF: () => void;
+  toolbarExtra?: React.ReactNode;
 }
 
 export interface CommonValidationSelectProps extends Omit<CommonSelectProps, "onChange" | "value"> {

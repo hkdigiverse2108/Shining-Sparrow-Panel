@@ -82,5 +82,9 @@ export const Queries = {
 
   // ************ Trusted Partner ***********
   useGetTrustedPartners: (params?: Params) => useQueries<any>([KEYS.TRUSTED_PARTNER.BASE, params], () => Get(URL_KEYS.TRUSTED_PARTNER.GET, params)),
+
+  // ************ Payments / Purchases ***********
+  useGetMyCourses: (params?: Params, options?: any) => useQueries<any>([KEYS.COURSE.MY_COURSES, params], () => Get(URL_KEYS.COURSE.MY_COURSES, params), options),
+  useGetMyWorkshops: (params?: Params, options?: any) => useQueries<any>([KEYS.WORKSHOP.MY_COURSES, params], () => Get(URL_KEYS.WORKSHOP.MY_WORKSHOPS, params), options),
 };
 

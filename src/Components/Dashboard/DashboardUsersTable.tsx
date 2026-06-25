@@ -8,6 +8,8 @@ import { fadeInUp } from '@/Utils/animations';
 import { Queries } from '@/Api';
 import { CommonTag } from '@/Components/Common/CommonTag';
 
+import type { ColumnType } from 'antd/es/table';
+
 const DashboardUsersTable: React.FC = () => {
   const navigate = useNavigate();
   const { data: userRes, isLoading } = Queries.useGetUser({ page: 1, limit: 100 });
@@ -18,19 +20,20 @@ const DashboardUsersTable: React.FC = () => {
     return arr.slice(0, 5);
   }, [userRes]);
 
-  const columns = [
+  const columns: ColumnType<any>[] = [
     {
       title: 'User',
       dataIndex: 'fullName',
+      align: 'left',
       render: (_: any, r: any) => (
-        <div className="flex items-center gap-3">
+        <div className="user-cell-profile">
           <Avatar 
             size={40} 
             src={r.profilePhoto || r.profileImage || undefined} 
             icon={<UserOutlined />} 
-            className="shrink-0 bg-primary-soft text-primary"
+            className="shrink-0 bg-primary-soft text-primary shadow-sm border border-primary/10"
           />
-          <div className="min-w-0">
+          <div className="user-cell-info">
             <div className="font-semibold text-foreground text-sm truncate max-w-[120px]">{r.fullName || r.name || 'Unknown'}</div>
             <div className="text-xs text-text-muted truncate max-w-[120px]">{r.email}</div>
           </div>
@@ -40,6 +43,7 @@ const DashboardUsersTable: React.FC = () => {
     {
       title: 'Role',
       dataIndex: 'role',
+      align: "center",
       render: (v: any) => (
         <span className="capitalize text-sm font-medium text-foreground">{v || 'user'}</span>
       )
@@ -47,6 +51,7 @@ const DashboardUsersTable: React.FC = () => {
     {
       title: 'Status',
       dataIndex: 'isBlocked',
+      align: "center",
       render: (v: any) => (
         <CommonTag className={v ? 'status-dot status-dot-blocked' : 'status-dot status-dot-active'}>
           {v ? 'Blocked' : 'Active'}
