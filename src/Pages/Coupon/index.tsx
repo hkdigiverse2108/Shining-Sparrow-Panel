@@ -61,7 +61,7 @@ const getCouponColumns = ({
     width: 130,
     render: (v: string) => (
       <Tag color={v === 'default' ? 'cyan' : v === 'course' ? 'blue' : 'purple'} className="capitalize border-none font-medium">
-        {v === 'default' ? 'All Products' : v}
+        {v === 'default' ? 'All' : v}
       </Tag>
     )
   },

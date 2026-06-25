@@ -17,7 +17,7 @@ export interface QuestionFormValues {
 
 export type AddQuestionPayload = QuestionFormValues;
 
-export type UpdateQuestionPayload = Partial<QuestionFormValues> & { questionId: string };
+export type UpdateQuestionPayload = AddQuestionPayload;
 
 export type QuestionBase = QuestionFormValues & CommonDataType;
 

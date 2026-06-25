@@ -16,7 +16,7 @@ export interface ExamFormValues {
 
 export type AddExamPayload = ExamFormValues;
 
-export type UpdateExamPayload = Partial<ExamFormValues> & { examId: string };
+export type UpdateExamPayload = AddExamPayload;
 
 export type ExamBase = ExamFormValues & CommonDataType;
 

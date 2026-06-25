@@ -52,7 +52,7 @@ const DISCOUNT_TYPE_OPTIONS = [
 ];
 
 const APPLIES_TO_OPTIONS = [
-  { label: "All Products (Default)", value: "default" },
+  { label: "All (Default)", value: "default" },
   { label: "Specific Course", value: "course" },
   { label: "Specific Workshop", value: "workshop" },
 ];

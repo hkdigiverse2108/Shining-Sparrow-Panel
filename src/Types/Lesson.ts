@@ -18,7 +18,7 @@ export interface LessonFormValues {
 
 export type AddLessonPayload = LessonFormValues;
 
-export type UpdateLessonPayload = Partial<LessonFormValues> & { courseLessonId: string };
+export type UpdateLessonPayload = AddLessonPayload;
 
 export type LessonBase = LessonFormValues & CommonDataType;
 
