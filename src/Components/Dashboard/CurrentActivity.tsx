@@ -1,8 +1,6 @@
 import React, { useMemo } from 'react';
-import { motion } from 'motion/react';
 import { Skeleton } from 'antd';
 import { BookOutlined, ToolOutlined, UserOutlined, ShoppingCartOutlined } from '@ant-design/icons';
-import { fadeInUp } from '@/Utils/animations';
 import { CommonCard } from '@/Components';
 import { Queries } from '@/Api';
 

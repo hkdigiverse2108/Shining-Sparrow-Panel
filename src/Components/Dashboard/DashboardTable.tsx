@@ -45,7 +45,7 @@ const DashboardTable: React.FC = () => {
     {
       title: 'Price',
       dataIndex: 'price',
-      render: (v: any, r: any) => (
+      render: (_v: any, r: any) => (
         <span className="font-semibold text-foreground text-sm">
           ₹{(r.price ?? 0).toLocaleString()}
         </span>

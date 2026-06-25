@@ -81,26 +81,26 @@ const ContentItemCard: React.FC<ContentItemCardProps> = ({
 }) => {
   return (
     <div
-      className={`flex flex-col md:flex-row md:items-center justify-between p-4 bg-surface border border-border rounded-xl hover:shadow-md transition-all gap-4 ${className}`}
+      className={`flex flex-col md:flex-row md:items-center justify-between p-5 md:p-6 bg-surface border border-border rounded-2xl hover:shadow-md transition-all gap-5 ${className}`}
     >
       {/* Left: thumbnail + info */}
-      <div className="flex items-start gap-4 overflow-hidden flex-1">
+      <div className="flex items-start gap-5 overflow-hidden flex-1">
         {thumbnail ? (
           <img
             src={thumbnail}
             alt={title}
-            className="w-16 h-16 object-cover rounded-lg border border-border shadow-sm flex-shrink-0"
+            className="w-20 h-20 object-cover rounded-xl border border-border shadow-sm flex-shrink-0"
             onError={(e) => {
               (e.target as HTMLImageElement).src = 'https://placehold.co/100x100?text=Item';
             }}
           />
         ) : (
-          <div className="w-16 h-16 bg-indigo-500/10 border border-indigo-500/20 text-indigo-500 rounded-lg flex items-center justify-center font-bold text-lg flex-shrink-0">
+          <div className="w-20 h-20 bg-indigo-500/10 border border-indigo-500/20 text-indigo-500 rounded-xl flex items-center justify-center font-bold text-lg flex-shrink-0">
             {thumbnailFallbackText ?? String(index + 1).padStart(2, '0')}
           </div>
         )}
 
-        <div className="space-y-1.5 overflow-hidden flex-1">
+        <div className="space-y-2 overflow-hidden flex-1">
           <div>
             <h4 className="text-base font-semibold text-foreground truncate">{title}</h4>
             {subtitle && <p className="text-xs text-text-muted truncate">{subtitle}</p>}
@@ -134,52 +134,100 @@ const ContentItemCard: React.FC<ContentItemCardProps> = ({
 
       {/* Right: actions */}
       {actions.length > 0 && (
-        <div className="flex flex-row items-center gap-2 flex-shrink-0 self-end md:self-center">
-          {actions.map((action, i) => {
-            const btnInner = action.label ? (
-              <Button
-                size="small"
-                icon={action.icon}
-                danger={action.danger}
-                loading={action.loading}
-                onClick={action.onClick}
-                className="text-xs"
-              >
-                {action.label}
-                {!action.icon && <RightOutlined />}
-              </Button>
-            ) : (
-              <Button
-                type="text"
-                icon={action.icon}
-                danger={action.danger}
-                loading={action.loading}
-                onClick={action.onClick}
-                className={`rounded-lg ${action.danger ? 'hover:bg-red-500/10 hover:!text-red-500' : 'hover:bg-surface-muted'}`}
-              />
-            );
+        <div className="flex flex-row items-center gap-3 flex-shrink-0 self-end md:self-center">
+          {/* 1. Label actions (like "Exam >") */}
+          {actions
+            .filter((action) => action.label)
+            .map((action, i) => {
+              const isExam = action.label === 'Exam';
+              const btnInner = (
+                <Button
+                  size="small"
+                  icon={isExam ? <FileTextOutlined /> : action.icon}
+                  danger={action.danger}
+                  loading={action.loading}
+                  onClick={action.onClick}
+                  className={`text-xs px-4 py-2 h-9 rounded-lg font-bold inline-flex items-center gap-1.5 transition-all duration-200 ${
+                    isExam
+                      ? 'border border-primary/20 bg-primary/5 text-primary hover:bg-primary hover:text-white hover:border-primary hover:scale-[1.02]'
+                      : 'hover:scale-[1.02]'
+                  }`}
+                >
+                  {action.label}
+                  {!action.icon && !isExam && <RightOutlined className="text-[10px]" />}
+                </Button>
+              );
 
-            const btnConfirm = action.confirm ? (
-              <Popconfirm
-                title={action.confirmTitle ?? 'Are you sure?'}
-                description={action.confirmDesc}
-                onConfirm={action.onConfirm}
-                okText="Delete"
-                cancelText="Cancel"
-                okButtonProps={{ danger: true }}
-              >
-                {btnInner}
-              </Popconfirm>
-            ) : btnInner;
+              return action.confirm ? (
+                <Popconfirm
+                  key={i}
+                  title={action.confirmTitle ?? 'Are you sure?'}
+                  description={action.confirmDesc}
+                  onConfirm={action.onConfirm}
+                  okText="Delete"
+                  cancelText="Cancel"
+                  okButtonProps={{ danger: true }}
+                >
+                  {btnInner}
+                </Popconfirm>
+              ) : (
+                <span key={i}>{btnInner}</span>
+              );
+            })}
 
-            return action.tooltip ? (
-              <Tooltip title={action.tooltip} key={i}>
-                <span>{btnConfirm}</span>
-              </Tooltip>
-            ) : (
-              <span key={i}>{btnConfirm}</span>
-            );
-          })}
+          {/* 2. Icon-only actions group (Edit, Lock/Block, Delete) */}
+          {actions.filter((action) => !action.label).length > 0 && (
+            <div className="inline-flex items-center rounded-xl border border-border/80 bg-surface-muted/30 p-0.5 overflow-hidden shadow-sm">
+              {actions
+                .filter((action) => !action.label)
+                .map((action, i, arr) => {
+                  const btnInner = (
+                    <Button
+                      type="text"
+                      icon={action.icon}
+                      danger={action.danger}
+                      loading={action.loading}
+                      onClick={action.onClick}
+                      className={`rounded-lg h-8 w-8 flex items-center justify-center p-0 hover:scale-[1.05] transition-all border border-transparent ${
+                        action.danger 
+                          ? 'text-red-500 hover:bg-red-500/10' 
+                          : 'text-text-muted hover:text-foreground hover:bg-surface'
+                      }`}
+                    />
+                  );
+
+                  const btnConfirm = action.confirm ? (
+                    <Popconfirm
+                      title={action.confirmTitle ?? 'Are you sure?'}
+                      description={action.confirmDesc}
+                      onConfirm={action.onConfirm}
+                      okText="Delete"
+                      cancelText="Cancel"
+                      okButtonProps={{ danger: true }}
+                    >
+                      {btnInner}
+                    </Popconfirm>
+                  ) : btnInner;
+
+                  const element = action.tooltip ? (
+                    <Tooltip title={action.tooltip} key={i}>
+                      <span>{btnConfirm}</span>
+                    </Tooltip>
+                  ) : (
+                    <span key={i}>{btnConfirm}</span>
+                  );
+
+                  return (
+                    <div key={i} className="flex items-center">
+                      {element}
+                      {i < arr.length - 1 && (
+                        <div className="w-[1px] h-4 bg-border/60 mx-0.5" />
+                      )}
+                    </div>
+                  );
+                })}
+            </div>
+          )}
         </div>
       )}
     </div>
@@ -195,11 +243,15 @@ export const priorityBadge = (priority: number): ContentBadge => ({
   color: 'neutral',
 });
 
-export const durationBadge = (duration: string | number): ContentBadge => ({
-  label: String(duration),
-  icon: <ClockCircleOutlined />,
-  color: 'neutral',
-});
+export const durationBadge = (duration: string | number): ContentBadge => {
+  const str = String(duration);
+  const hasUnit = /[a-zA-Z]/.test(str);
+  return {
+    label: hasUnit ? str : `${str} mins`,
+    icon: <ClockCircleOutlined />,
+    color: 'neutral',
+  };
+};
 
 export const dateBadge = (date: string): ContentBadge => ({
   label: new Date(date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }),

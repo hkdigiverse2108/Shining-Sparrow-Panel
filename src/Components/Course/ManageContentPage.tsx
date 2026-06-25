@@ -84,7 +84,7 @@ const ManageContentPage: FC = () => {
 
   const handleToggleBlockLesson = (lesson: any) => {
     editLessonMutation.mutate(
-      { courseLessonId: lesson._id, isBlocked: !lesson.isBlocked },
+      { courseLessonId: lesson._id, isBlocked: !lesson.isBlocked } as any,
       {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: [KEYS.LESSON.BASE] });
@@ -95,7 +95,7 @@ const ManageContentPage: FC = () => {
 
   const handleToggleBlockFAQ = (faq: any) => {
     editFAQMutation.mutate(
-      { faqId: faq._id, isBlocked: !faq.isBlocked },
+      { faqId: faq._id, isBlocked: !faq.isBlocked } as any,
       {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: [KEYS.FAQ.BASE] });
@@ -329,6 +329,29 @@ const ManageContentPage: FC = () => {
               {/* ── Main Content ── */}
               <section className="course-layout">
                 <main className="course-main">
+                  {/* ── Workflow Guide Card ── */}
+                  <div className="course-workflow-guide">
+                    <div className="course-workflow-guide__icon">
+                      <BookOutlined />
+                    </div>
+                    <div className="course-workflow-guide__content">
+                      <h4 className="course-workflow-guide__title">
+                        {activeTab === 'lessons' 
+                          ? (isBundle ? 'Managing Course Bundle Lessons' : 'Managing Standalone Lessons')
+                          : 'Managing Course FAQs'}
+                      </h4>
+                      <p className="course-workflow-guide__text">
+                        {activeTab === 'lessons' ? (
+                          isBundle 
+                            ? 'This is a bundle course. Lessons are organized under their respective sub-courses. To add a lesson, find the sub-course block below and click the "+ Add Lesson" button inside its header.'
+                            : 'This is a standalone course. You can manage lessons sequentially. To add a new lesson, use the "+ Add Lesson" button at the top-right of the page.'
+                        ) : (
+                          'FAQs are configured globally for this course. You can add new FAQ cards using the "+ Add FAQ" button at the top-right of the page.'
+                        )}
+                      </p>
+                    </div>
+                  </div>
+
                   {activeTab === 'lessons' ? (
                     isBundle ? (
                       <div className="course-section-card">
@@ -350,7 +373,7 @@ const ManageContentPage: FC = () => {
                                     <div className="text-indigo-500 bg-indigo-500/10 border border-indigo-500/20 p-2 rounded-lg"><FolderOutlined className="course-icon--glyph-lg" /></div>
                                     <div>
                                       <h3 className="text-base font-semibold text-foreground">{sub.name}</h3>
-                                      <p className="text-xs text-text-muted line-clamp-1">{sub.description || 'No description provided.'}</p>
+                                      <p className="text-xs text-text-muted line-clamp-1" dangerouslySetInnerHTML={{ __html: sub.description || 'No description provided.' }} />
                                     </div>
                                   </div>
                                   <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate(`/courses/${sub._id}/lesson/new?redirectBack=/courses/${courseId}/manage`)} className="course-button course-button--primary course-button--compact self-end sm:self-center">
@@ -448,7 +471,7 @@ const ManageContentPage: FC = () => {
                                     </div>
                                   )}
                                 </div>
-                                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
+                                <div className="flex items-center gap-1 opacity-50 group-hover:opacity-100 transition-all duration-200 flex-shrink-0">
                                   <Button
                                     type="text"
                                     size="small"
@@ -495,17 +518,7 @@ const ManageContentPage: FC = () => {
                         </div>
                       </div>
 
-                      <div className="course-sidebar-card course-sidebar-card--accent">
-                        <span className="course-sidebar-label">Quick actions</span>
-                        <h3 className="course-sidebar-title">Keep building</h3>
-                        <div className="course-sidebar-actions">
-                          {isBundle ? (
-                            <span className="text-xs text-gray-500 italic block py-2">Add lessons directly inside each bundled curriculum section.</span>
-                          ) : (
-                            <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate(`/courses/${courseId}/lesson/new`)} className="course-button course-button--primary course-button--compact course-button--wide">New Lesson</Button>
-                          )}
-                        </div>
-                      </div>
+
 
                       {/* Course Trailer */}
                       {course?.trailerUrl && (
@@ -557,13 +570,7 @@ const ManageContentPage: FC = () => {
                         </div>
                       </div>
 
-                      <div className="course-sidebar-card course-sidebar-card--accent">
-                        <span className="course-sidebar-label">Quick actions</span>
-                        <h3 className="course-sidebar-title">Add Q&A</h3>
-                        <div className="course-sidebar-actions">
-                          <Button type="primary" icon={<PlusOutlined />} onClick={() => setActiveForm({ type: 'addFAQ' })} className="course-button course-button--primary course-button--compact course-button--wide">New FAQ</Button>
-                        </div>
-                      </div>
+
 
                       <div className="course-sidebar-card">
                         <span className="course-sidebar-label">Workflow tip</span>

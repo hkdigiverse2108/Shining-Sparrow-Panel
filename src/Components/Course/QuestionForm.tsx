@@ -66,6 +66,7 @@ const QuestionFormObserver: FC = () => {
 
 export const QuestionForm: FC<QuestionFormProps> = ({ editing, onSave, loading }) => {
   const defaults = { 
+    instructions: '',
     questionText: '', 
     questionType: 'calculation', 
     correctAnswer: '', 
@@ -79,14 +80,24 @@ export const QuestionForm: FC<QuestionFormProps> = ({ editing, onSave, loading }
 
   const initialValues = useMemo(() => {
     if (editing) {
-      const isVertical = editing.questionText && editing.questionText.includes('\n');
+      let instructions = '';
+      let qText = editing.questionText || '';
+      if (qText.includes('|||')) {
+        const parts = qText.split('|||');
+        instructions = parts[0];
+        qText = parts.slice(1).join('|||');
+      }
+
+      const isVertical = qText && qText.includes('\n');
       const separator = isVertical ? '\n' : ' ';
-      const steps = editing.questionType === 'calculation' && editing.questionText 
-        ? editing.questionText.split(separator).filter(Boolean) 
+      const steps = editing.questionType === 'calculation' && qText 
+        ? qText.split(separator).filter(Boolean) 
         : [''];
       return { 
         ...defaults, 
         ...editing,
+        instructions,
+        questionText: qText,
         calculationLayout: isVertical ? 'vertical' : 'horizontal',
         calculationSteps: steps.length ? steps : ['']
       };
@@ -141,9 +152,11 @@ export const QuestionForm: FC<QuestionFormProps> = ({ editing, onSave, loading }
       return;
     }
 
+    const finalQuestionText = v.instructions ? `${v.instructions}|||${v.questionText}` : v.questionText;
+
     // Construct the payload by copying only the keys allowed by the backend Joi schema
     const payload: any = {
-      questionText: v.questionText,
+      questionText: finalQuestionText,
       questionType: v.questionType,
       correctAnswer: v.correctAnswer,
       score: Number(v.score),
@@ -193,6 +206,20 @@ export const QuestionForm: FC<QuestionFormProps> = ({ editing, onSave, loading }
 
               {/* Priority Input */}
               <CommonValidationTextField name="priority" label="Priority / Order" type="number" />
+
+              {/* Question Instructions Input */}
+              <div className="col-span-2 mb-2">
+                <label className="block text-xs font-bold uppercase tracking-widest text-muted mb-1.5">
+                  Question Instructions / Context (Optional)
+                </label>
+                <Input.TextArea
+                  placeholder="Enter context, passage, or special instructions here (e.g. Read the text carefully before answering)..."
+                  value={values.instructions}
+                  onChange={(e) => setFieldValue('instructions', e.target.value)}
+                  rows={2}
+                  className="rounded-lg border border-border px-3 py-2 w-full"
+                />
+              </div>
 
               {/* Standard text question field (Hidden for calculation since it has its own builder) */}
               {values.questionType !== 'calculation' && (

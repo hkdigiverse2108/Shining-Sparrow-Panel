@@ -2,7 +2,6 @@ import { Avatar, Button, Tooltip } from "antd";
 import { DeleteOutlined, EditOutlined, LockOutlined, UnlockOutlined, CommentOutlined, UserOutlined, MailOutlined, PhoneOutlined } from "@ant-design/icons";
 import type { ColumnType, HandlerProps } from "@/Types";
 import { CommonTag } from "@/Components/Common/CommonTag";
-import { userStatusColors } from "@/Data";
 import { Link } from "react-router-dom";
 import { ROUTES } from "@/Constants";
 import dayjs from "dayjs";
