@@ -25,8 +25,9 @@ const getCouponColumns = ({
   pageSize = 10 
 }: any): ColumnType<any>[] => [
   {
-    title: 'Sr. No.',
+    title: '#',
     key: 'srNo',
+    align:"center",
     width: 70,
     render: (_: any, __: any, index: number) => (current - 1) * pageSize + index + 1
   },
@@ -34,6 +35,7 @@ const getCouponColumns = ({
     title: 'Code',
     dataIndex: 'code',
     width: 140,
+    align:"center",
     render: (v: string) => (
       <span className="px-2 py-0.5 rounded bg-primary/10 text-primary border border-primary/20 text-xs font-mono font-bold uppercase tracking-wider">
         {v}
@@ -43,12 +45,14 @@ const getCouponColumns = ({
   {
     title: 'Title',
     dataIndex: 'title',
+    align:"center",
     render: (v: string) => <span className="font-semibold text-foreground">{v}</span>
   },
   {
     title: 'Discount',
     dataIndex: 'discountValue',
     width: 130,
+    align:"center",
     render: (_, r: any) => (
       <span className="font-medium">
         {r.discountType === 'percentage' ? `${r.discountValue}%` : `₹${r.discountValue}`}
@@ -58,6 +62,7 @@ const getCouponColumns = ({
   {
     title: 'Applies To',
     dataIndex: 'appliesTo',
+    align:"center",
     width: 130,
     render: (v: string) => (
       <Tag color={v === 'default' ? 'cyan' : v === 'course' ? 'blue' : 'purple'} className="capitalize border-none font-medium">
@@ -68,8 +73,9 @@ const getCouponColumns = ({
   {
     title: 'Validity',
     width: 220,
+    align:"center",
     render: (_, r: any) => (
-      <div className="flex flex-col gap-0.5 text-xs text-muted">
+      <div className="flex flex-col items-center justify-center gap-0.5 text-xs text-muted">
         <span className="flex items-center gap-1">
           <CalendarOutlined className="text-[10px]" />
           Start: {r.startDate ? dayjs(r.startDate).format('DD MMM YYYY') : '—'}
@@ -84,6 +90,7 @@ const getCouponColumns = ({
   {
     title: 'Usage',
     width: 130,
+    align:"center",
     render: (_, r: any) => (
       <span className="text-xs text-muted">
         {r.usedCount} / {r.usageLimit ? r.usageLimit : 'Unlimited'}
@@ -94,6 +101,7 @@ const getCouponColumns = ({
     title: 'Status',
     dataIndex: 'status',
     width: 100,
+    align:"center",
     render: (v: string) => {
       const isAct = v === 'active';
       return (
@@ -111,7 +119,7 @@ const getCouponColumns = ({
     title: 'Actions',
     dataIndex: 'actions',
     width: 120,
-    fixed: 'right' as const,
+    align:"center",
     render: (_: any, r: any) => {
       const isAct = r.status === 'active';
       return (

@@ -79,7 +79,7 @@ export const CommonValidationTextField: FC<CommonValidationTextFieldProps> = ({
       help={showError ? meta.error : ""}
       labelCol={{ span: 24 }} 
       wrapperCol={{ span: 24 }}
-      className="modern-form-item" // Applied modern class
+      className={`modern-form-item ${className || ""}`.trim()}
     >
       {content}
     </Form.Item>

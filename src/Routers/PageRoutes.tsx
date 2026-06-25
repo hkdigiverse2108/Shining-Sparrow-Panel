@@ -29,6 +29,10 @@ import AboutUs from "@/Pages/AboutUs";
 import Chat from "@/Pages/Chat";
 import Setting from "@/Pages/Profile";
 import Coupon from "@/Pages/Coupon";
+import Legality from "@/Pages/Legality";
+import Gallery from "@/Pages/Gallery";
+import Newsletter from "@/Pages/Newsletter";
+import TrustedPartner from "@/Pages/TrustedPartner";
 
 export const PageRoutes = [
   { path: ROUTES.DASHBOARD, name: PAGE_TITLE.DASHBOARD, element: <Dashboard /> },
@@ -66,6 +70,10 @@ export const PageRoutes = [
   { path: ROUTES.FAQ, name: PAGE_TITLE.FAQ, element: <FaqPage /> },
   { path: ROUTES.SETTING.BASE, name: "Settings", element: <Setting /> },
   { path: ROUTES.COUPON_CODE, name: PAGE_TITLE.COUPON_CODE, element: <Coupon /> },
+  { path: ROUTES.LEGALITY, name: PAGE_TITLE.LEGALITY, element: <Legality /> },
+  { path: ROUTES.GALLERY, name: PAGE_TITLE.GALLERY, element: <Gallery /> },
+  { path: ROUTES.NEWSLETTER, name: PAGE_TITLE.NEWSLETTER, element: <Newsletter /> },
+  { path: ROUTES.TRUSTED_PARTNER, name: PAGE_TITLE.TRUSTED_PARTNER, element: <TrustedPartner /> },
 ];
 
 export const AuthRoutes = [

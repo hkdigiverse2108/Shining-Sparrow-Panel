@@ -137,4 +137,31 @@ export const URL_KEYS = {
     GET: "/contact-us/all",
     ADD_EDIT: "/contact-us/add-edit",
   },
+  LEGALITY: {
+    BASE: "/legality",
+    ADD: "/legality/add",
+    EDIT: "/legality/add",
+    GET: "/legality",
+  },
+  GALLERY: {
+    BASE: "/gallery",
+    ADD: "/gallery/add",
+    EDIT: "/gallery/edit",
+    DELETE: "/gallery/delete",
+    GET: "/gallery/all",
+  },
+  NEWSLETTER: {
+    BASE: "/newsletter",
+    ADD: "/newsletter/add",
+    DELETE: "/newsletter/delete",
+    GET: "/newsletter/all",
+    SEND: "/newsletter/send",
+  },
+  TRUSTED_PARTNER: {
+    BASE: "/trusted-partner",
+    ADD: "/trusted-partner/add",
+    EDIT: "/trusted-partner/edit",
+    DELETE: "/trusted-partner/delete",
+    GET: "/trusted-partner/all",
+  },
 } as const;

@@ -1,7 +1,7 @@
 import { type FC } from "react";
 import { Breadcrumb } from "antd";
 import { Link } from "react-router-dom";
-import { HomeFilled } from "@ant-design/icons";
+import { HomeOutlined } from "@ant-design/icons";
 import type { BreadcrumbHeaderProps } from "@/Types";
 import { ROUTES } from "@/Constants";
 
@@ -10,7 +10,7 @@ const CommonBreadcrumbs: FC<BreadcrumbHeaderProps> = ({ title, breadcrumbs = [] 
     {
       title: (
         <Link to={ROUTES.DASHBOARD} className="home-crumb">
-          <HomeFilled style={{ fontSize: '14px' }} />
+          <HomeOutlined style={{ fontSize: '14px' }} />
         </Link>
       ),
     },

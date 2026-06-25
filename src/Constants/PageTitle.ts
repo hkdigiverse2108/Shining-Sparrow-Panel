@@ -24,4 +24,8 @@ export const PAGE_TITLE = {
   CHAT: "Chat Support",
   FAQ: "FAQ",
   COUPON_CODE: "Coupon Codes",
+  LEGALITY: "Privacy & Terms",
+  GALLERY: "Gallery",
+  NEWSLETTER: "Newsletter Subscribers",
+  TRUSTED_PARTNER: "Trusted Partners",
 } as const;

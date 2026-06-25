@@ -124,6 +124,26 @@ export const Mutations = {
 
   // ************ Contact Us details ***********
   useUpdateContactUs: () => useMutations<any, MessageStatus>([KEYS.CONTACT_US.BASE], (input) => Post(URL_KEYS.CONTACT_US.ADD_EDIT, input)),
+
+  // ************ Legality ***********
+  useAddLegality: () => useMutations<any, MessageStatus>([KEYS.LEGALITY.BASE, "ADD"], (input) => Post(URL_KEYS.LEGALITY.ADD, input)),
+  useUpdateLegality: () => useMutations<any, MessageStatus>([KEYS.LEGALITY.BASE, "UPDATE"], (input) => Post(URL_KEYS.LEGALITY.EDIT, input)),
+
+  // ************ Gallery ***********
+  useAddGallery: () => useMutations<any, MessageStatus>([KEYS.GALLERY.BASE, "ADD"], (input) => Post(URL_KEYS.GALLERY.ADD, input)),
+  useUpdateGallery: () => useMutations<any, MessageStatus>([KEYS.GALLERY.BASE, "UPDATE"], (input) => Post(URL_KEYS.GALLERY.EDIT, input)),
+  useDeleteGallery: () => useMutations<string, void>([KEYS.GALLERY.DELETE, KEYS.GALLERY.BASE], (id) => Delete(`${URL_KEYS.GALLERY.DELETE}/${id}`)),
+
+  // ************ Newsletter ***********
+  useAddNewsletter: () => useMutations<any, MessageStatus>([KEYS.NEWSLETTER.BASE, "ADD"], (input) => Post(URL_KEYS.NEWSLETTER.ADD, input)),
+  useDeleteNewsletter: () => useMutations<string, void>([KEYS.NEWSLETTER.DELETE, KEYS.NEWSLETTER.BASE], (id) => Delete(`${URL_KEYS.NEWSLETTER.DELETE}/${id}`)),
+  useSendNewsletter: () => useMutations<any, MessageStatus>([KEYS.NEWSLETTER.BASE, "SEND"], (input) => Post(URL_KEYS.NEWSLETTER.SEND, input)),
+
+  // ************ Trusted Partner ***********
+  useAddTrustedPartner: () => useMutations<any, MessageStatus>([KEYS.TRUSTED_PARTNER.BASE, "ADD"], (input) => Post(URL_KEYS.TRUSTED_PARTNER.ADD, input)),
+  useUpdateTrustedPartner: () => useMutations<any, MessageStatus>([KEYS.TRUSTED_PARTNER.BASE, "UPDATE"], (input) => Post(URL_KEYS.TRUSTED_PARTNER.EDIT, input)),
+  useDeleteTrustedPartner: () => useMutations<string, void>([KEYS.TRUSTED_PARTNER.DELETE, KEYS.TRUSTED_PARTNER.BASE], (id) => Delete(`${URL_KEYS.TRUSTED_PARTNER.DELETE}/${id}`)),
 };
+
 
 

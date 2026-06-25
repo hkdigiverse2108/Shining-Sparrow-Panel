@@ -623,12 +623,14 @@
 }
 .user-cell-profile {
   @apply flex items-center gap-3 min-w-0;
+  text-align: left !important;
 }
 .user-cell-info {
   @apply min-w-0 flex flex-col gap-0.5;
+  text-align: left !important;
 }
 .user-cell-name {
-  @apply text-sm font-semibold text-foreground truncate leading-tight;
+  @apply text-sm items-start! font-semibold text-foreground truncate leading-tight;
 }
 .user-cell-date {
   @apply text-[11px] text-muted leading-none;
@@ -1218,6 +1220,16 @@
 
 .profile-tabs .ant-tabs-tabpane {
   height: 100% !important;
+}
+
+/* Contact page tabs override: collapse height to wrap table naturally */
+.contact-tabs,
+.contact-tabs .ant-tabs-content,
+.contact-tabs .ant-tabs-tabpane,
+.contact-tabs > .ant-tabs-content-holder {
+  height: auto !important;
+  min-height: 0 !important;
+  overflow: visible !important;
 }
 
 .profile-tab-label {

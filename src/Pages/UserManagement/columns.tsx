@@ -10,6 +10,7 @@ export const getUserColumns = ({ onEdit, onToggleStatus, onDelete, onStartChat, 
   {
     title: "#",
     key: "srNo",
+    align: "center",
     width: 60,
     render: (_: any, __: any, index: number) => (
       <span className="font-mono text-muted text-xs font-semibold">{(current - 1) * pageSize + index + 1}</span>
@@ -18,11 +19,12 @@ export const getUserColumns = ({ onEdit, onToggleStatus, onDelete, onStartChat, 
   {
     title: "User", 
     dataIndex: "fullName",
+    align: "center",
     render: (_, r) => (
       <div className="user-cell-profile">
         <Avatar src={r.profilePhoto || undefined} size={40} icon={<UserOutlined />} className="shadow-sm border-2 border-primary/20 shrink-0" />
         <div className="user-cell-info">
-          <Link to={`${ROUTES.USERS.BASE}/${r._id}`} className="user-cell-name hover:!text-primary transition-colors text-sm font-semibold">
+          <Link to={`${ROUTES.USERS.BASE}/${r._id}`} className="user-cell-name items-start hover:!text-primary transition-colors text-sm font-semibold">
             {r.fullName}
           </Link>
           <div className="user-cell-date flex items-center gap-1 text-[10px] text-muted mt-0.5">
@@ -35,6 +37,7 @@ export const getUserColumns = ({ onEdit, onToggleStatus, onDelete, onStartChat, 
   {
     title: "Email", 
     dataIndex: "email", 
+    align: "center",
     render: (v) => (
       <div className="flex items-center gap-2 text-sm text-muted">
         <MailOutlined className="text-primary/40 text-xs shrink-0" />
@@ -45,6 +48,7 @@ export const getUserColumns = ({ onEdit, onToggleStatus, onDelete, onStartChat, 
   {
     title: "Phone", 
     dataIndex: "phoneNumber", 
+    align: "center",
     render: (v) => (
       <div className="flex items-center gap-2 text-sm text-muted">
         <PhoneOutlined className="text-primary/40 text-xs shrink-0" />
@@ -55,6 +59,7 @@ export const getUserColumns = ({ onEdit, onToggleStatus, onDelete, onStartChat, 
   {
     title: "OTR", 
     dataIndex: "otr", 
+    align: "center",
     render: (v) => (
       v ? (
         <span className="px-2.5 py-1 rounded-lg bg-primary/10 text-primary border border-primary/20 text-xs font-mono font-semibold tracking-wide">
@@ -68,6 +73,7 @@ export const getUserColumns = ({ onEdit, onToggleStatus, onDelete, onStartChat, 
   {
     title: "Status", 
     dataIndex: "isBlocked", 
+    align: "center",
     render: (v) => (
       <CommonTag className={v ? "status-dot status-dot-blocked" : "status-dot status-dot-active"}>
         {v ? "Blocked" : "Active"}
@@ -77,6 +83,7 @@ export const getUserColumns = ({ onEdit, onToggleStatus, onDelete, onStartChat, 
   {
     title: "Actions", 
     dataIndex: "actions",
+    align: "center",
     width: 120,
     render: (_, r) => (
       <div className="user-cell-actions flex items-center gap-1">
