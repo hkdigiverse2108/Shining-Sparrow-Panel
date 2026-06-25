@@ -104,7 +104,7 @@ export const CommonImageUpload: FC<CommonImageUploadProps> = ({
           ]}
           value={mode}
           onChange={(val) => setMode(val as "upload" | "url")}
-          className="w-fit bg-gray-150/70 dark:bg-gray-800/50 p-1 rounded-xl border border-border"
+          className="w-fit bg-surface-muted p-1 rounded-xl border border-border"
         />
 
         <input 
@@ -235,7 +235,7 @@ export const CommonImageUpload: FC<CommonImageUploadProps> = ({
                     />
                   </div>
                 </div>
-                <div className="flex items-center gap-1.5 p-2 bg-blue-500/10 border border-blue-500/20 rounded-lg text-[10px] text-blue-400">
+                <div className="flex items-center gap-1.5 p-2 bg-primary/10 border border-primary/20 rounded-lg text-[10px] text-primary">
                   <InfoCircleOutlined className="text-xs" />
                   <span>Preview loads dynamically. Invalid links default to a placeholder.</span>
                 </div>

@@ -9,9 +9,9 @@ import dayjs from "dayjs";
 
 export const getUserColumns = ({ onEdit, onToggleStatus, onDelete, onStartChat, current = 1, pageSize = 10 }: HandlerProps & { current?: number; pageSize?: number }): ColumnType<any>[] => [
   {
-    title: "Sr. No.",
+    title: "#",
     key: "srNo",
-    width: 80,
+    width: 60,
     render: (_: any, __: any, index: number) => (
       <span className="font-mono text-muted text-xs font-semibold">{(current - 1) * pageSize + index + 1}</span>
     )
@@ -21,7 +21,7 @@ export const getUserColumns = ({ onEdit, onToggleStatus, onDelete, onStartChat, 
     dataIndex: "fullName",
     render: (_, r) => (
       <div className="user-cell-profile">
-        <Avatar src={r.profilePhoto || undefined} size={42} icon={<UserOutlined />} className="shadow-sm border border-border" />
+        <Avatar src={r.profilePhoto || undefined} size={40} icon={<UserOutlined />} className="shadow-sm border-2 border-primary/20 shrink-0" />
         <div className="user-cell-info">
           <Link to={`${ROUTES.USERS.BASE}/${r._id}`} className="user-cell-name hover:!text-primary transition-colors text-sm font-semibold">
             {r.fullName}
@@ -38,18 +38,18 @@ export const getUserColumns = ({ onEdit, onToggleStatus, onDelete, onStartChat, 
     dataIndex: "email", 
     render: (v) => (
       <div className="flex items-center gap-2 text-sm text-muted">
-        <MailOutlined className="text-muted/50 text-xs shrink-0" />
+        <MailOutlined className="text-primary/40 text-xs shrink-0" />
         <span className="user-cell-email truncate max-w-[180px]">{v}</span>
       </div>
     ) 
   },
   {
-    title: "Phone Number", 
+    title: "Phone", 
     dataIndex: "phoneNumber", 
     render: (v) => (
       <div className="flex items-center gap-2 text-sm text-muted">
-        <PhoneOutlined className="text-muted/50 text-xs shrink-0" />
-        <span className="user-cell-phone font-mono">{v || "N/A"}</span>
+        <PhoneOutlined className="text-primary/40 text-xs shrink-0" />
+        <span className="user-cell-phone font-mono text-xs">{v || "N/A"}</span>
       </div>
     ) 
   },
@@ -58,11 +58,11 @@ export const getUserColumns = ({ onEdit, onToggleStatus, onDelete, onStartChat, 
     dataIndex: "otr", 
     render: (v) => (
       v ? (
-        <span className="px-2 py-0.5 rounded bg-primary/10 text-primary border border-primary/20 text-xs font-mono font-medium">
+        <span className="px-2.5 py-1 rounded-lg bg-primary/10 text-primary border border-primary/20 text-xs font-mono font-semibold tracking-wide">
           {v}
         </span>
       ) : (
-        <span className="text-muted/40 font-mono">-</span>
+        <span className="text-muted/30 font-mono">—</span>
       )
     ) 
   },
@@ -70,7 +70,7 @@ export const getUserColumns = ({ onEdit, onToggleStatus, onDelete, onStartChat, 
     title: "Status", 
     dataIndex: "isBlocked", 
     render: (v) => (
-      <CommonTag className={v ? userStatusColors.blocked : userStatusColors.active}>
+      <CommonTag className={v ? "status-dot status-dot-blocked" : "status-dot status-dot-active"}>
         {v ? "Blocked" : "Active"}
       </CommonTag>
     ) 
@@ -78,15 +78,16 @@ export const getUserColumns = ({ onEdit, onToggleStatus, onDelete, onStartChat, 
   {
     title: "Actions", 
     dataIndex: "actions",
+    width: 120,
     render: (_, r) => (
-      <div className="user-cell-actions flex items-center gap-1.5">
+      <div className="user-cell-actions flex items-center gap-1">
         <Tooltip title="Start Chat">
           <Button 
             type="text" 
             shape="circle"
             icon={<CommentOutlined />} 
             onClick={() => onStartChat?.(r)} 
-            className="hover:!bg-blue-500/10 hover:!text-blue-500 text-muted transition-all duration-200"
+            className="hover:!bg-primary/10 hover:!text-primary text-muted transition-all duration-200"
           />
         </Tooltip>
         <Tooltip title="Edit User">

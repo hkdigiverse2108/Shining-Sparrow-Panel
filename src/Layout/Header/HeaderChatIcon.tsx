@@ -22,12 +22,13 @@ const HeaderChatIcon: React.FC = () => {
         onClick={() => navigate('/chat')}
         style={{
           color: 'var(--foreground)',
-          width: 40,
-          height: 40,
-          borderRadius: 8,
+          width: 38,
+          height: 38,
+          borderRadius: 10,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
+          transition: 'background 0.2s ease',
         }}
       />
     </Badge>

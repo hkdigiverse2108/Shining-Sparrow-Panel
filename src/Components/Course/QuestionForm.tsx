@@ -223,10 +223,10 @@ export const QuestionForm: FC<QuestionFormProps> = ({ editing, onSave, loading }
                       className="w-fit"
                     />
                   </div>
-                  <div className="p-5 bg-gray-50/50 border border-gray-150 rounded-xl space-y-4 shadow-sm">
+                  <div className="p-5 bg-surface-muted border border-border rounded-xl space-y-4 shadow-sm">
                     <div className="flex flex-wrap items-center gap-3">
                       {values.calculationSteps.map((step: string, index: number) => (
-                        <div key={index} className="flex items-center gap-1.5 bg-white p-2 border border-gray-200 rounded-xl shadow-sm hover:border-indigo-300 transition-all">
+                        <div key={index} className="flex items-center gap-1.5 bg-surface p-2 border border-border rounded-xl shadow-sm hover:border-primary/50 transition-all">
                           <input
                             type="text"
                             value={step}
@@ -236,7 +236,7 @@ export const QuestionForm: FC<QuestionFormProps> = ({ editing, onSave, loading }
                               newSteps[index] = e.target.value;
                               setFieldValue('calculationSteps', newSteps);
                             }}
-                            className="w-16 h-8 text-center text-sm font-semibold border-0 focus:outline-none focus:ring-0 p-0 text-indigo-700"
+                            className="w-16 h-8 text-center text-sm font-semibold border-0 focus:outline-none focus:ring-0 p-0 text-primary"
                           />
                           {values.calculationSteps.length > 1 && (
                             <button
@@ -259,17 +259,17 @@ export const QuestionForm: FC<QuestionFormProps> = ({ editing, onSave, loading }
                           const newSteps = [...values.calculationSteps, ''];
                           setFieldValue('calculationSteps', newSteps);
                         }}
-                        className="flex items-center justify-center w-12 h-12 border border-dashed border-indigo-400 text-indigo-600 hover:border-indigo-650 hover:text-indigo-800 hover:bg-indigo-50/50 rounded-xl text-xl font-bold bg-white transition-all shadow-sm"
+                        className="flex items-center justify-center w-12 h-12 border border-dashed border-primary/50 text-primary hover:border-primary hover:text-primary-dark hover:bg-primary/5 rounded-xl text-xl font-bold bg-surface transition-all shadow-sm"
                         title="Add step"
                       >
                         +
                       </button>
                     </div>
 
-                    <div className="text-xs text-gray-500 bg-white border border-gray-100 p-4 rounded-xl flex items-center justify-between shadow-xs">
+                    <div className="text-xs text-text-muted bg-surface border border-border p-4 rounded-xl flex items-center justify-between shadow-xs">
                       <div>
-                        <span className="font-semibold text-gray-700 block text-xs uppercase tracking-wider text-muted mb-1">Generated Calculation String</span>
-                        <span className="font-mono text-indigo-600 text-base font-bold bg-indigo-50/50 border border-indigo-100 px-3 py-1 rounded-lg inline-block mt-0.5 whitespace-pre-wrap">
+                        <span className="font-semibold text-foreground block text-xs uppercase tracking-wider text-muted mb-1">Generated Calculation String</span>
+                        <span className="font-mono text-primary text-base font-bold bg-primary/5 border border-primary/20 px-3 py-1 rounded-lg inline-block mt-0.5 whitespace-pre-wrap">
                           {values.questionText || "(Empty)"}
                         </span>
                       </div>
@@ -298,7 +298,7 @@ export const QuestionForm: FC<QuestionFormProps> = ({ editing, onSave, loading }
                   <label className="block text-xs font-bold uppercase tracking-widest text-muted mb-2">
                     Question Audio Resource
                   </label>
-                  <div className="flex flex-col gap-3 p-4 bg-gray-50/50 border border-gray-150 rounded-xl">
+                  <div className="flex flex-col gap-3 p-4 bg-surface-muted border border-border rounded-xl">
                     <Segmented
                       options={[
                         { label: 'Upload Audio File', value: 'upload' },
@@ -324,25 +324,25 @@ export const QuestionForm: FC<QuestionFormProps> = ({ editing, onSave, loading }
                             icon={<UploadOutlined />} 
                             loading={audioUploading} 
                             onClick={() => audioFileInputRef.current?.click()}
-                            className="rounded-lg h-10 border-gray-200"
+                            className="rounded-lg h-10 border-border"
                           >
                             Select Audio File
                           </Button>
-                          <span className="text-xs text-gray-400">Supports MP3, WAV, OGG, etc.</span>
+                          <span className="text-xs text-text-muted">Supports MP3, WAV, OGG, etc.</span>
                         </div>
 
                         {audioUploading && (
-                          <div className="w-full max-w-md bg-white p-3 border border-gray-150 rounded-lg">
-                            <span className="text-xs font-medium text-gray-700 block mb-1">Uploading Audio...</span>
+                          <div className="w-full max-w-md bg-surface p-3 border border-border rounded-lg">
+                            <span className="text-xs font-medium text-foreground block mb-1">Uploading Audio...</span>
                             <Progress percent={audioProgress} size="small" status="active" />
                           </div>
                         )}
 
                         {!audioUploading && values.questionAudio && (
-                          <div className="p-3 bg-white border border-gray-150 rounded-lg flex items-center justify-between max-w-md">
+                          <div className="p-3 bg-surface border border-border rounded-lg flex items-center justify-between max-w-md">
                             <div className="flex items-center gap-2 overflow-hidden mr-2">
-                              <SoundOutlined className="text-indigo-500 text-lg flex-shrink-0" />
-                              <span className="text-xs text-gray-600 truncate">Audio file loaded successfully</span>
+                              <SoundOutlined className="text-primary text-lg flex-shrink-0" />
+                              <span className="text-xs text-foreground truncate">Audio file loaded successfully</span>
                             </div>
                             <Button 
                               type="text" 
@@ -362,7 +362,7 @@ export const QuestionForm: FC<QuestionFormProps> = ({ editing, onSave, loading }
                           placeholder="Paste audio URL (e.g. https://example.com/audio.mp3)"
                           value={values.questionAudio && !values.questionAudio.startsWith('data:') ? values.questionAudio : ''}
                           onChange={(e) => setFieldValue('questionAudio', e.target.value)}
-                          className="w-full h-10 rounded-lg border border-gray-200 px-3"
+                          className="w-full h-10 rounded-lg border border-border px-3"
                         />
                       </div>
                     )}

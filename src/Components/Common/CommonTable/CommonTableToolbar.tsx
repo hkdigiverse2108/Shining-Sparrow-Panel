@@ -23,27 +23,15 @@ const CommonTableToolbar: FC<CommonTableToolbarProps> = ({ searchText, setSearch
   );
 
   return (
-    <div className="common-table-toolbar">
-      <Input
-        allowClear
-        prefix={<SearchOutlined />}
-        placeholder={searchPlaceholder}
-        className="common-table-search"
-        value={searchText}
-        onChange={(e) => {
-          const value = e.target.value;
-          setSearchText(value);
-          onSearch?.(value);
-        }}
-        onPressEnter={() => onSearch?.(searchText)}
-      />
-      <Space className="common-table-actions" wrap>
+    <div className="common-table-toolbar flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-5 bg-transparent border-b border-border/40">
+      {/* Left side actions: Add, Toggle Active, Export */}
+      <div className="flex items-center gap-2 flex-wrap">
+        {onAdd && (
+          <CommonButton buttonVariant="primary" className="common-table-add-button" icon={<PlusOutlined />} onClick={onAdd}> Add </CommonButton>
+        )}
         {typeof isActive === "boolean" && (
           <Switch checked={isActive} onChange={onActiveChange} checkedChildren="Active" unCheckedChildren="Inactive" />
         )}
-        <Dropdown popupRender={() => columnSelector} trigger={["click"]}>
-          <CommonButton buttonVariant="iconOnly" className="common-table-button" icon={<SettingOutlined />} />
-        </Dropdown>
         <Dropdown menu={{
             items: [
               {
@@ -59,12 +47,30 @@ const CommonTableToolbar: FC<CommonTableToolbarProps> = ({ searchText, setSearch
             ],
           }}
         >
-        <CommonButton buttonVariant="outline" className="common-table-button" icon={<DownloadOutlined />}> Export </CommonButton>
+          <CommonButton buttonVariant="outline" className="common-table-button" icon={<DownloadOutlined />}> Export </CommonButton>
         </Dropdown>
-        {onAdd && (
-          <CommonButton buttonVariant="primary" className="common-table-add-button" icon={<PlusOutlined />} onClick={onAdd} > Add </CommonButton>
-        )}
-      </Space>
+      </div>
+
+      {/* Right side controls: Search input & Settings gear */}
+      <div className="flex items-center gap-3">
+        <Input
+          allowClear
+          prefix={<SearchOutlined className="text-text-muted/60" />}
+          placeholder={searchPlaceholder}
+          className="common-table-search !h-9 !rounded-lg !border-border !bg-surface-muted hover:!border-border-hover focus:!border-primary"
+          style={{ width: 200 }}
+          value={searchText}
+          onChange={(e) => {
+            const value = e.target.value;
+            setSearchText(value);
+            onSearch?.(value);
+          }}
+          onPressEnter={() => onSearch?.(searchText)}
+        />
+        <Dropdown popupRender={() => columnSelector} trigger={["click"]}>
+          <CommonButton buttonVariant="iconOnly" className="common-table-button !h-9 !w-9 flex items-center justify-center rounded-lg border border-border bg-surface hover:bg-surface-muted" icon={<SettingOutlined className="text-text-muted" />} />
+        </Dropdown>
+      </div>
     </div>
   );
 };

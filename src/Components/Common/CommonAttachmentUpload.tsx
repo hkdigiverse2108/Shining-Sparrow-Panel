@@ -21,7 +21,7 @@ const getFileIcon = (url: string) => {
       return <FileExcelOutlined className="text-green-600 text-lg flex-shrink-0" />;
     case "doc":
     case "docx":
-      return <FileWordOutlined className="text-blue-500 text-lg flex-shrink-0" />;
+      return <FileWordOutlined className="text-primary text-lg flex-shrink-0" />;
     case "ppt":
     case "pptx":
       return <FilePptOutlined className="text-amber-500 text-lg flex-shrink-0" />;
@@ -142,7 +142,7 @@ export const CommonAttachmentUpload: FC<CommonAttachmentUploadProps> = ({
           ]}
           value={mode}
           onChange={(val) => setMode(val as "upload" | "url")}
-          className="w-fit bg-gray-150/70 dark:bg-gray-800/50 p-1 rounded-xl border border-border"
+          className="w-fit bg-surface-muted p-1 rounded-xl border border-border"
         />
 
         <input

@@ -11,9 +11,14 @@ const HeaderBrand: React.FC<HeaderBrandProps> = ({ collapsed, setCollapsed }) =>
       onClick={() => setCollapsed(!collapsed)}
       style={{
         fontSize: '16px',
-        width: 64,
-        height: 64,
-        color: 'var(--foreground)', 
+        width: 40,
+        height: 40,
+        borderRadius: 10,
+        color: 'var(--foreground)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        transition: 'background 0.2s ease',
       }}
     />
   );

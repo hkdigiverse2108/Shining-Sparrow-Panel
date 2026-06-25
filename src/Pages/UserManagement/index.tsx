@@ -123,7 +123,7 @@ const UserManagement: FC = () => {
             <UserForm open={drawerOpen} onClose={() => setDrawerOpen(false)} onSave={handleSave} editingUser={editingUser} />
           </div>
         ) : (
-          <motion.div variants={staggerContainer} initial="hidden" animate="visible">
+          <motion.div variants={staggerContainer} initial="hidden" animate="visible" className="flex flex-col gap-5">
             <CommonSummaryCards 
               total={totalUsers} 
               active={users.filter((u: any) => !u.isBlocked).length} 
@@ -134,7 +134,7 @@ const UserManagement: FC = () => {
               <AdvancedSearch filter={[
                 { label: "Status", value: statusFilter, options: statusOptions.filter(o => o.value !== "all"), onChange: handleStatusChange }
               ]} />
-              <CommonTable columns={columns} data={users} loading={isLoading || addUserMutation.isPending || editUserMutation.isPending} searchPlaceholder="Search users..." onSearch={handleSearch} onAdd={() => { setEditingUser(null); setDrawerOpen(true); }} fileName="Users" title="User Management" current={current} pageSize={pageSize} total={totalUsers} onTableChange={handleTableChange} />
+              <CommonTable columns={columns} data={users} loading={isLoading || addUserMutation.isPending || editUserMutation.isPending} searchPlaceholder="Search users by name, email, phone..." onSearch={handleSearch} onAdd={() => { setEditingUser(null); setDrawerOpen(true); }} fileName="Users" title="User Management" current={current} pageSize={pageSize} total={totalUsers} onTableChange={handleTableChange} />
             </motion.div>       
           </motion.div>
         )}

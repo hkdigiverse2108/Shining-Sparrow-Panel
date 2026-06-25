@@ -4,19 +4,19 @@
   }
 
   .dashboard-grid-banner {
-    @apply grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,2fr)_minmax(280px,1fr)] lg:gap-6 ;
+    @apply grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,2fr)_minmax(280px,1fr)] lg:gap-5;
   }
 
   .dashboard-grid-three {
-    @apply mt-4 grid grid-cols-1 gap-4 md:grid-cols-2 lg:mt-6 lg:grid-cols-3 lg:gap-6;
+    @apply mt-4 grid grid-cols-1 gap-4 md:grid-cols-2 lg:mt-5 lg:grid-cols-3 lg:gap-5;
   }
 
   .dashboard-grid-charts {
-    @apply mt-4 grid grid-cols-1 gap-4 md:grid-cols-2 lg:mt-6 lg:grid-cols-[minmax(0,2fr)_minmax(260px,1fr)_minmax(260px,1fr)] lg:gap-6;
+    @apply mt-4 grid grid-cols-1 gap-4 md:grid-cols-2 lg:mt-5 lg:grid-cols-[minmax(0,2fr)_minmax(260px,1fr)_minmax(260px,1fr)] lg:gap-5;
   }
 
   .dashboard-card {
-    @apply flex min-w-0 flex-col justify-between rounded-xl border border-border bg-surface p-4 shadow-sm transition-all duration-300 hover:shadow-md sm:p-5;
+    @apply flex min-w-0 flex-col justify-between rounded-2xl border border-border bg-surface p-4 shadow-card transition-all duration-300 hover:shadow-card-hover hover:-translate-y-0.5 sm:p-5;
   }
 
   .dashboard-card-header {
@@ -36,7 +36,7 @@
   }
 
   .dashboard-banner {
-    @apply relative flex min-h-[230px] overflow-hidden rounded-xl bg-gradient-to-br from-primary to-primary-dark p-5 text-white shadow-lg sm:min-h-[240px] sm:p-8;
+    @apply relative flex min-h-[230px] overflow-hidden rounded-2xl bg-gradient-to-br from-primary via-primary/90 to-primary-dark p-5 text-white shadow-lg sm:min-h-[240px] sm:p-8;
   }
 
   .dashboard-banner-content {
@@ -60,7 +60,7 @@
   }
 
   .dashboard-banner-stat-icon {
-    @apply flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/20 backdrop-blur-md;
+    @apply flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/15 backdrop-blur-md ring-1 ring-white/10;
   }
 
   .dashboard-banner-stat-value {
@@ -80,7 +80,7 @@
   }
 
   .dashboard-create-card {
-    @apply flex flex-col justify-between border! border-primary/20! bg-background!;
+    @apply flex flex-col justify-between border! border-primary/15! bg-background! shadow-card!;
   }
 
   .dashboard-create-title {
@@ -92,7 +92,7 @@
   }
 
   .dashboard-primary-button {
-    @apply flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg border-0 bg-primary py-2.5 text-xs font-bold text-white shadow-md transition-all hover:opacity-90 hover:shadow-lg;
+    @apply flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl border-0 bg-primary py-2.5 text-xs font-bold text-white shadow-md transition-all hover:shadow-lg hover:brightness-110;
   }
 
   .dashboard-soft-button {
@@ -344,7 +344,7 @@
   }
 
   .dashboard-pass-dot-boys {
-    @apply bg-[#3b82f6];
+    @apply bg-info;
   }
 
   .dashboard-pass-dot-girls {
@@ -386,7 +386,7 @@
   @apply grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6;
 }
 .workshop-container-main {
-  @apply bg-surface border border-border rounded-xl overflow-hidden hover:shadow-lg transition-shadow cursor-pointer flex flex-col;
+  @apply bg-surface border border-border rounded-xl overflow-hidden hover:shadow-card-hover transition-all cursor-pointer flex flex-col;
 }
 .worshop-container-title{
   @apply h-40 bg-surface-muted overflow-hidden;

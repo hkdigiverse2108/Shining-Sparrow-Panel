@@ -523,7 +523,7 @@ const ChatPage: FC = () => {
                         {selectedRoom.type === 'global' ? (
                           <Tag color="orange">Broadcast to all users</Tag>
                         ) : (
-                          <Tag color="blue">{getOtherParticipant(selectedRoom)?.role || 'User'}</Tag>
+                          <Tag color="primary">{getOtherParticipant(selectedRoom)?.role || 'User'}</Tag>
                         )}
                       </span>
                     </div>
@@ -636,7 +636,7 @@ const ChatPage: FC = () => {
                                             style={{
                                               display: 'flex', alignItems: 'center', gap: 8,
                                               padding: '6px 10px', borderRadius: 8,
-                                              background: isSentByMe ? 'rgba(255,255,255,0.15)' : 'var(--bg-tertiary, #f5f5f5)',
+                                              background: isSentByMe ? 'rgba(255,255,255,0.15)' : 'var(--surface-muted)',
                                               color: 'inherit', fontSize: 12, textDecoration: 'none',
                                             }}
                                           >
@@ -691,12 +691,12 @@ const ChatPage: FC = () => {
                     <div style={{
                       display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                       padding: '8px 12px', margin: '0 12px 8px',
-                      background: 'var(--bg-secondary, #fafafa)',
-                      borderLeft: '4px solid var(--primary, #e86424)',
+                      background: 'var(--surface-muted)',
+                      borderLeft: '4px solid var(--primary)',
                       borderRadius: 8,
                     }}>
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontWeight: 'bold', fontSize: 10, color: 'var(--primary, #e86424)' }}>
+                        <div style={{ fontWeight: 'bold', fontSize: 10, color: 'var(--primary)' }}>
                           Replying to {replyToMessage.senderId?.fullName || 'User'}
                         </div>
                         <div style={{ fontSize: 11, color: 'var(--text-muted, #999)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
@@ -732,7 +732,7 @@ const ChatPage: FC = () => {
                         <div style={{
                           width: 36, height: 36, borderRadius: 6,
                           display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          background: 'var(--primary-light, rgba(24,144,255,0.1))',
+                          background: 'color-mix(in srgb, var(--primary) 10%, transparent)',
                         }}>
                           {selectedFile.type === 'application/pdf' ? <FilePdfOutlined /> : <FileOutlined />}
                         </div>

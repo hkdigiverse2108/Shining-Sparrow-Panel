@@ -70,7 +70,7 @@ export const CommonVideoUpload: FC<CommonVideoUploadProps> = ({
     }
 
     return (
-      <div className="w-full h-full flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-900 gap-2 p-4 text-center">
+      <div className="w-full h-full flex flex-col items-center justify-center bg-surface-muted gap-2 p-4 text-center">
         <PlayCircleOutlined className="text-4xl text-muted" />
         <span className="text-xs font-semibold text-foreground">External Link Set</span>
         <span className="text-[10px] text-muted truncate max-w-full px-2">{field.value}</span>

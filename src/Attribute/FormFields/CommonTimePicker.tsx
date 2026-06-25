@@ -49,7 +49,7 @@ export const CommonTimePicker: React.FC<CommonTimePickerProps & { name?: string 
           onBlur={() => { if (name && formikContext) helpers.setTouched(true); }}
           format={format} 
           placeholder={rangePlaceholder}
-          className="w-full h-10 rounded-lg border border-border bg-surface text-foreground hover:border-primary focus:border-primary transition-colors"
+          className="modern-input w-full"
           popupClassName="ant-datepicker-popup"
         />
       ) : (
@@ -59,7 +59,7 @@ export const CommonTimePicker: React.FC<CommonTimePickerProps & { name?: string 
           onBlur={() => { if (name && formikContext) helpers.setTouched(true); }}
           format={format} 
           placeholder={singlePlaceholder}
-          className="w-full h-10 rounded-lg border border-border bg-surface text-foreground hover:border-primary focus:border-primary transition-colors"
+          className="modern-input w-full"
           popupClassName="ant-datepicker-popup"
         />
       )}

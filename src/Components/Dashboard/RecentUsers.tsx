@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { motion } from 'motion/react';
 import { Link } from 'react-router-dom';
 import { Skeleton, Avatar } from 'antd';
-import { UserOutlined, MailOutlined } from '@ant-design/icons';
+import { UserOutlined } from '@ant-design/icons';
 import { ROUTES } from '@/Constants';
 import { fadeInUp } from '@/Utils/animations';
 import { CommonCard } from '@/Components';
@@ -19,19 +19,19 @@ const RecentUsers: React.FC = () => {
 
   const getRoleColor = (role: string) => {
     const map: Record<string, string> = {
-      admin: 'bg-purple/10 text-purple',
-      instructor: 'bg-orange/10 text-orange',
-      student: 'bg-teal/10 text-teal',
+      admin: 'bg-purple/15 text-purple',
+      instructor: 'bg-primary/15 text-primary',
+      student: 'bg-info/15 text-info',
     };
-    return map[role?.toLowerCase()] || 'bg-muted/10 text-muted';
+    return map[role?.toLowerCase()] || 'bg-surface-muted text-text-muted';
   };
 
   return (
     <motion.div variants={fadeInUp}>
       <CommonCard
         title="Recent Users"
-        extra={<Link to={ROUTES.USERS.BASE} className="text-sm text-primary hover:underline">View All</Link>}
-        cardProps={{ className: 'h-full bg-surface!' }}
+        extra={<Link to={ROUTES.USERS.BASE} className="text-sm text-primary hover:text-primary-dark font-medium">View All</Link>}
+        cardProps={{ className: 'h-full' }}
       >
         {isLoading ? (
           <Skeleton active avatar paragraph={{ rows: 3 }} />
@@ -42,25 +42,24 @@ const RecentUsers: React.FC = () => {
             {recentUsers.map((user: any) => (
               <div
                 key={user._id}
-                className="flex items-center gap-3 p-2 rounded-xl hover:bg-muted/30 transition-colors cursor-pointer group"
+                className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-surface-muted transition-colors cursor-pointer group"
                 onClick={() => {}}
               >
                 <Avatar
                   src={user.profileImage || user.image}
-                  size={36}
+                  size={40}
                   icon={<UserOutlined />}
-                  className="shrink-0 bg-primary/10 text-primary"
+                  className="shrink-0 bg-surface-muted text-muted"
                 />
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors truncate">
                     {user.name || user.username || 'Unknown User'}
                   </p>
-                  <p className="text-xs text-muted flex items-center gap-1 truncate">
-                    <MailOutlined className="shrink-0" />
+                  <p className="text-xs text-text-muted truncate">
                     {user.email}
                   </p>
                 </div>
-                <span className={`text-xs font-semibold px-2 py-0.5 rounded-full shrink-0 ${getRoleColor(user.role)}`}>
+                <span className={`text-xs font-medium px-2 py-0.5 rounded-full shrink-0 ${getRoleColor(user.role)}`}>
                   {user.role || 'user'}
                 </span>
               </div>

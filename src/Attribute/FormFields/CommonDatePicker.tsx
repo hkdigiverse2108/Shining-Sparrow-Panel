@@ -50,7 +50,7 @@ export const CommonDatePicker: React.FC<CommonDatePickerProps> = ({
         onBlur={() => { if (formikContext && name) helpers.setTouched(true); }}
         format={format} 
         placeholder={placeholder}
-        className="w-full h-10 rounded-lg border border-border bg-surface text-foreground hover:border-primary focus:border-primary transition-colors"
+        className="modern-input w-full"
         popupClassName="ant-datepicker-popup"
       />
     </Form.Item>
