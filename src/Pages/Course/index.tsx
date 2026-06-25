@@ -4,7 +4,7 @@ import { DeleteOutlined, EditOutlined, FolderOpenOutlined, LockOutlined, UnlockO
 import { useNavigate } from 'react-router-dom';
 import { KEYS } from '@/Constants';
 import { BREADCRUMBS } from '@/Data';
-import { CommonPageWrapper, CommonBreadcrumbs, CommonTable, CommonSummaryCards, CommonDeleteModal, CourseForm } from '@/Components'; // Added CommonDeleteModal
+import { CommonPageWrapper, CommonBreadcrumbs, CommonTable, CommonSummaryCards, CommonDeleteModal, CourseForm, CommonTag } from '@/Components'; // Added CommonDeleteModal
 import { motion } from 'motion/react';
 import { blurRevealUp, staggerContainer } from '@/Utils/animations';
 import { useQueryClient } from '@tanstack/react-query';
@@ -71,7 +71,11 @@ const getCourseColumns = ({ onEdit, onManage, onToggleStatus, onDelete, current 
     title: "Status", 
     dataIndex: "isBlocked", 
     width: 100,
-    render: (v: any) => <Tag color={v ? "red" : "green"}>{v ? "Blocked" : "Active"}</Tag> 
+    render: (v: any) => (
+      <CommonTag className={v ? "status-dot status-dot-blocked" : "status-dot status-dot-active"}>
+        {v ? "Blocked" : "Active"}
+      </CommonTag>
+    ) 
   },
   {
     title: "Actions", 

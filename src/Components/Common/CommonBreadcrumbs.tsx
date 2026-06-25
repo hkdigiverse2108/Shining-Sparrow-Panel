@@ -27,8 +27,8 @@ const CommonBreadcrumbs: FC<BreadcrumbHeaderProps> = ({ title, breadcrumbs = [] 
 
   return (
     <div className="common-breadcrumbs">
-      <h2 className="common-breadcrumbs-title"> {title} </h2>
-      <Breadcrumb className="common-breadcrumb-nav" separator=">" items={items} />
+      <h2 className="common-breadcrumbs-title">{title}</h2>
+      <Breadcrumb className="common-breadcrumb-nav" separator="/" items={items} />
     </div>
   );
 };

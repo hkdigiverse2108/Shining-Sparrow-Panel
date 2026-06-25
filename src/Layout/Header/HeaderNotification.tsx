@@ -93,7 +93,7 @@ const HeaderNotifications = () => {
               cursor: 'pointer',
               padding: '10px 8px',
               borderRadius: 8,
-              background: item.read ? 'transparent' : tab === 'notif' ? 'rgba(24,144,255,0.08)' : 'rgba(255,77,79,0.08)',
+              background: item.read ? 'transparent' : tab === 'notif' ? 'color-mix(in srgb, var(--primary) 8%, transparent)' : 'rgba(255,77,79,0.08)',
               border: 'none',
             }}
           >
@@ -101,7 +101,7 @@ const HeaderNotifications = () => {
               title={
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   {!item.read && (
-                    <div style={{ width: 6, height: 6, borderRadius: '50%', background: tab === 'notif' ? '#1890ff' : '#ff4d4f', flexShrink: 0 }} />
+                    <div style={{ width: 6, height: 6, borderRadius: '50%', background: tab === 'notif' ? 'var(--primary)' : '#ff4d4f', flexShrink: 0 }} />
                   )}
                   <Text style={{ color: 'var(--foreground)', fontSize: 13 }} strong={!item.read} ellipsis>
                     {item.title}
@@ -132,16 +132,16 @@ const HeaderNotifications = () => {
       overlayInnerStyle={{
         padding: '16px',
         background: 'var(--surface)',
-        borderRadius: 12,
+        borderRadius: 14,
         border: '1px solid var(--border)',
-        boxShadow: '0 6px 16px rgba(0,0,0,0.08)',
+        boxShadow: '0 8px 24px rgba(0,0,0,0.1)',
       }}
     >
       <Badge count={unread} size="small" offset={[-2, 2]}>
         <Button
           type="text"
           icon={<BellOutlined style={{ fontSize: 18 }} />}
-          style={{ color: 'var(--foreground)', width: 40, height: 40, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+          style={{ color: 'var(--foreground)', width: 38, height: 38, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background 0.2s ease' }}
         />
       </Badge>
     </Popover>

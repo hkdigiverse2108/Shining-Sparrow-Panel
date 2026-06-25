@@ -32,7 +32,7 @@ const HeaderActions: React.FC = () => {
       <Space style={{ cursor: "pointer", color: "var(--foreground)" }}>
         <Avatar
           icon={<UserOutlined />}
-          style={{ backgroundColor: "var(--primary)" }}
+          style={{ backgroundColor: "var(--primary)", boxShadow: '0 2px 8px var(--primary-ring)' }}
         />
       </Space>
     </Dropdown>

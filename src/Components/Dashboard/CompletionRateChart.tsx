@@ -26,56 +26,61 @@ const CompletionRateChart: React.FC = () => {
 
   return (
     <motion.div variants={fadeInUp}>
-      <CommonCard title="Course Activity Rate" cardProps={{ className: "h-full bg-surface!" }}>
+      <CommonCard title="Course Activity" cardProps={{ className: "h-full" }}>
         {loading ? (
           <Skeleton active paragraph={{ rows: 4 }} />
         ) : (
           <>
             <div className="flex justify-center py-4">
-              <svg viewBox="0 0 160 160" width="160" height="160">
-                {/* Background Circle */}
-                <circle cx="80" cy="80" r="45" fill="transparent" stroke="var(--border)" strokeWidth="12" />
-
-                {/* Active Circle */}
+              <svg viewBox="0 0 160 160" width="140" height="140">
+                <defs>
+                  <linearGradient id="activeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#10b981" />
+                    <stop offset="100%" stopColor="#34d399" />
+                  </linearGradient>
+                  <linearGradient id="blockedGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#f87171" />
+                    <stop offset="100%" stopColor="#ef4444" />
+                  </linearGradient>
+                </defs>
+                <circle cx="80" cy="80" r="46" fill="transparent" stroke="var(--border)" strokeWidth="6" opacity="0.4" />
                 <circle
-                  cx="80" cy="80" r="45" fill="transparent"
-                  stroke="var(--primary)" strokeWidth="12"
+                  cx="80" cy="80" r="46" fill="transparent"
+                  stroke="url(#activeGrad)" strokeWidth="10"
                   strokeDasharray={circumference}
                   strokeDashoffset={circumference - (circumference * (chartStats.activePercent / 100))}
                   transform="rotate(-90 80 80)"
                   strokeLinecap="round"
                   style={{ transition: 'stroke-dashoffset 1s ease-out' }}
                 />
-
-                {/* Blocked Circle */}
-                <circle
-                  cx="80" cy="80" r="45" fill="transparent"
-                  stroke="#f97316" strokeWidth="12"
-                  strokeDasharray={circumference}
-                  strokeDashoffset={circumference - (circumference * (chartStats.remaining / 100))}
-                  transform={`rotate(${360 * (chartStats.activePercent / 100) - 90} 80 80)`}
-                  strokeLinecap="round"
-                  style={{ transition: 'stroke-dashoffset 1s ease-out' }}
-                />
-
+                {chartStats.blockedCourses > 0 && (
+                  <circle
+                    cx="80" cy="80" r="46" fill="transparent"
+                    stroke="url(#blockedGrad)" strokeWidth="10"
+                    strokeDasharray={circumference}
+                    strokeDashoffset={circumference - (circumference * (chartStats.remaining / 100))}
+                    transform={`rotate(${360 * (chartStats.activePercent / 100) - 90} 80 80)`}
+                    strokeLinecap="round"
+                    style={{ transition: 'stroke-dashoffset 1s ease-out' }}
+                  />
+                )}
                 <g>
-                  <text x="80" y="77" textAnchor="middle" fill="var(--foreground)" fontSize="24" fontWeight="bold">
+                  <text x="80" y="77" textAnchor="middle" fill="var(--foreground)" fontSize="24" fontWeight="800">
                     {chartStats.activePercent}%
                   </text>
-                  <text x="80" y="95" textAnchor="middle" fill="var(--muted)" fontSize="10">
+                  <text x="80" y="94" textAnchor="middle" fill="var(--text-muted)" fontSize="9" fontWeight="600" letterSpacing="0.1em" className="uppercase">
                     Active
                   </text>
                 </g>
               </svg>
             </div>
-
-            <div className="flex justify-center gap-6 mt-2 pb-2">
-              <div className="flex items-center gap-2 text-xs text-muted">
-                <span className="w-3 h-3 rounded-full" style={{ backgroundColor: 'var(--primary)' }} />
+            <div className="flex justify-center gap-5 mt-1.5">
+              <div className="flex items-center gap-2 text-xs font-semibold text-text-muted/80">
+                <span className="w-2.5 h-2.5 rounded-full bg-success shadow-[0_0_8px_rgba(16,185,129,0.4)]" />
                 Active ({chartStats.activeCourses})
               </div>
-              <div className="flex items-center gap-2 text-xs text-muted">
-                <span className="w-3 h-3 rounded-full" style={{ backgroundColor: '#f97316' }} />
+              <div className="flex items-center gap-2 text-xs font-semibold text-text-muted/80">
+                <span className="w-2.5 h-2.5 rounded-full bg-danger shadow-[0_0_8px_rgba(239,68,68,0.4)]" />
                 Blocked ({chartStats.blockedCourses})
               </div>
             </div>

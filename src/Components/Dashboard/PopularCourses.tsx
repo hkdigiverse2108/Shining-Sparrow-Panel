@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { motion } from 'motion/react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Skeleton, Avatar } from 'antd';
-import { BookOutlined, TagOutlined } from '@ant-design/icons';
+import { BookOutlined } from '@ant-design/icons';
 import { ROUTES } from '@/Constants';
 import { fadeInUp } from '@/Utils/animations';
 import { CommonCard } from '@/Components';
@@ -22,8 +22,8 @@ const PopularCourses: React.FC = () => {
     <motion.div variants={fadeInUp}>
       <CommonCard
         title="Recent Courses"
-        extra={<Link to={ROUTES.COURSE.BASE} className="text-sm text-primary hover:underline">All Courses</Link>}
-        cardProps={{ className: 'h-full bg-surface!' }}
+        extra={<Link to={ROUTES.COURSE.BASE} className="text-sm text-primary hover:text-primary-dark font-medium">View All</Link>}
+        cardProps={{ className: 'h-full' }}
       >
         {isLoading ? (
           <Skeleton active paragraph={{ rows: 4 }} />
@@ -34,7 +34,7 @@ const PopularCourses: React.FC = () => {
             {courses.map((course: any) => (
               <div
                 key={course._id}
-                className="flex items-center gap-3 p-3 rounded-xl border border-border hover:border-primary/40 hover:bg-primary/5 transition-all cursor-pointer group"
+                className="flex items-center gap-3 p-3 rounded-lg hover:bg-surface-muted transition-colors cursor-pointer group border border-transparent hover:border-border"
                 onClick={() => navigate(ROUTES.COURSE.BASE)}
               >
                 {course.image ? (
@@ -45,20 +45,17 @@ const PopularCourses: React.FC = () => {
                     onError={(e: any) => { e.target.src = ''; e.target.style.display = 'none'; }}
                   />
                 ) : (
-                  <Avatar shape="square" size={48} icon={<BookOutlined />} className="shrink-0 bg-primary/10 text-primary" />
+                  <Avatar shape="square" size={48} icon={<BookOutlined />} className="shrink-0 bg-primary-soft text-primary" />
                 )}
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-semibold text-foreground truncate group-hover:text-primary transition-colors">
                     {course.name}
                   </p>
-                  <div className="flex items-center gap-2 mt-0.5">
-                    <TagOutlined className="text-muted text-xs" />
-                    <span className="text-xs text-muted">
-                      ₹{(course.price ?? 0).toLocaleString()} &nbsp;·&nbsp; MRP ₹{(course.mrpPrice ?? 0).toLocaleString()}
-                    </span>
-                  </div>
+                  <p className="text-xs text-text-muted mt-0.5">
+                    ₹{(course.price ?? 0).toLocaleString()} {course.mrpPrice > course.price && <span className="text-muted line-through">₹{course.mrpPrice.toLocaleString()}</span>}
+                  </p>
                 </div>
-                <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${course.isBlocked ? 'bg-danger/10 text-danger' : 'bg-success/10 text-success'}`}>
+                <span className={`text-xs font-medium px-2.5 py-1 rounded-full shrink-0 ${course.isBlocked ? 'bg-danger/10 text-danger' : 'bg-success/10 text-success'}`}>
                   {course.isBlocked ? 'Blocked' : 'Active'}
                 </span>
               </div>

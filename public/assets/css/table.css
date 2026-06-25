@@ -89,13 +89,13 @@
 
   /* ─── MODERN TABLE WRAPPER ─── */
   .common-table {
-    @apply space-y-4 border-0!;
+    @apply rounded-2xl border border-border bg-surface shadow-sm overflow-hidden mb-6;
   }
 
   /* ─── TOOLBAR ─── */
   .common-table-toolbar {
     @apply flex flex-col justify-between gap-3 sm:flex-row sm:items-center
-           p-4 rounded-xl border border-border bg-surface shadow-sm;
+           p-5 bg-transparent border-b border-border/40;
   }
 
   .common-table-search {
@@ -104,13 +104,13 @@
 
   /* Search input inside toolbar */
   .common-table-toolbar .ant-input-affix-wrapper {
-    @apply rounded-lg border-border bg-background h-10! shadow-none transition-all duration-200;
+    @apply rounded-lg border-border bg-surface-muted h-9! shadow-none transition-all duration-200;
   }
   .common-table-toolbar .ant-input-affix-wrapper:hover {
-    @apply border-primary/60!;
+    @apply border-border-hover!;
   }
   .common-table-toolbar .ant-input-affix-wrapper-focused {
-    @apply border-primary! shadow-[0_0_0_3px_var(--color-primary-ring)]!;
+    @apply border-primary! bg-surface shadow-[0_0_0_3px_var(--color-primary-ring)]!;
   }
 
   .common-table-actions {
@@ -118,8 +118,8 @@
   }
 
   .common-table-button {
-    @apply border-border bg-background text-foreground shadow-sm transition-all duration-200 rounded-lg
-           hover:border-primary/50 hover:text-primary hover:bg-primary/5;
+    @apply border-border bg-surface text-foreground shadow-sm transition-all duration-200 rounded-lg
+           hover:border-primary/50 hover:text-primary hover:bg-surface-muted;
   }
 
   .common-table-add-button {
@@ -133,28 +133,24 @@
 
   /* ─── TABLE SURFACE ─── */
   .common-table-surface {
-    @apply overflow-hidden rounded-xl border border-border bg-surface shadow-sm;
+    @apply overflow-hidden rounded-none border-0 bg-transparent shadow-none!;
   }
 
   .common-table-surface .ant-table {
-    @apply bg-surface text-foreground;
+    @apply bg-transparent text-foreground;
   }
 
   .common-table-surface .ant-table-container {
-    @apply bg-surface;
+    @apply bg-transparent;
   }
 
-  /* ─── MODERN GRADIENT HEADER ─── */
+  /* ─── MODERN HEADER ─── */
   .common-table-surface .ant-table-thead > tr > th {
-    @apply border-border text-xs font-bold uppercase tracking-wider text-foreground/70
-           border-b border-border text-center;
-    background: linear-gradient(
-      180deg,
-      var(--surface-muted) 0%,
-      color-mix(in srgb, var(--surface-muted) 80%, var(--surface)) 100%
-    ) !important;
-    padding: 14px 16px !important;
-    letter-spacing: 0.06em;
+    @apply text-xs font-bold uppercase tracking-wider text-text-muted/80
+           border-b border-border/80 text-left;
+    background: transparent !important;
+    padding: 16px 16px !important;
+    letter-spacing: 0.08em;
   }
 
   .common-table-surface .ant-table-thead > tr > th::before {
@@ -163,25 +159,24 @@
 
   /* ─── TABLE ROWS ─── */
   .common-table-surface .ant-table-tbody > tr > td {
-    @apply border-border bg-surface text-foreground transition-colors duration-150;
-    border-bottom: 1px solid var(--border) !important;
-    padding: 13px 16px !important;
+    @apply text-foreground transition-all duration-150 bg-transparent;
+    border-bottom: 1px solid color-mix(in srgb, var(--border) 60%, transparent) !important;
+    padding: 16px 16px !important;
     vertical-align: middle !important;
   }
 
-  /* Zebra striping */
+  /* Zebra striping disabled for clean look */
   .common-table-surface .ant-table-tbody > tr:nth-child(even) > td {
-    background: color-mix(in srgb, var(--surface-muted) 40%, var(--surface)) !important;
+    background: transparent !important;
   }
 
   /* Premium row hover */
   .common-table-surface .ant-table-tbody > tr:hover > td {
-    background: color-mix(in srgb, var(--primary) 5%, var(--surface)) !important;
-    border-left-color: var(--primary) !important;
+    background: var(--surface-muted) !important;
   }
 
   .common-table-surface .ant-table-cell-row-hover {
-    background: color-mix(in srgb, var(--primary) 5%, var(--surface)) !important;
+    background: var(--surface-muted) !important;
   }
 
   /* ─── PAGINATION ─── */
@@ -206,11 +201,12 @@
   }
 
   .common-table-surface .ant-pagination-item-active {
-    @apply border-primary bg-primary;
+    background-color: var(--primary) !important;
+    border-color: var(--primary) !important;
   }
 
   .common-table-surface .ant-pagination-item-active a {
-    @apply text-white!;
+    color: #ffffff !important;
   }
 
   /* ─── INPUTS IN TABLE ─── */

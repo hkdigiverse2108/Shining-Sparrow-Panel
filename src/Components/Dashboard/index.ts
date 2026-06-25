@@ -6,3 +6,5 @@ export { default as CompletionRateChart } from './CompletionRateChart';
 export { default as PopularCourses } from './PopularCourses';
 export { default as CategoryPerformanceChart } from "./CategoryPerformanceChart";
 export { default as WorkshopSummary } from './WorkshopSummary';
+export { default as DashboardCoursesTable } from './DashboardCoursesTable';
+export { default as DashboardUsersTable } from './DashboardUsersTable';

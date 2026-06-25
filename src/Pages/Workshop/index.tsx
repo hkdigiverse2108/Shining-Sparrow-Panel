@@ -4,7 +4,7 @@ import { DeleteOutlined, EditOutlined, FolderOpenOutlined, LockOutlined, UnlockO
 import { useNavigate } from 'react-router-dom';
 import { KEYS } from '@/Constants';
 import { BREADCRUMBS } from '@/Data';
-import { CommonPageWrapper, CommonBreadcrumbs, CommonTable, CommonSummaryCards, CommonDeleteModal } from '@/Components'; 
+import { CommonPageWrapper, CommonBreadcrumbs, CommonTable, CommonSummaryCards, CommonDeleteModal, CommonTag } from '@/Components'; 
 import { motion } from 'motion/react';
 import { blurRevealUp, staggerContainer } from '@/Utils/animations';
 import { useQueryClient } from '@tanstack/react-query';
@@ -79,7 +79,11 @@ const getWorkshopColumns = ({ onEdit, onManage, onToggleStatus, onDelete, curren
     title: "Status", 
     dataIndex: "isBlocked", 
     width: 90,
-    render: (v: any) => <Tag color={v ? "red" : "green"}>{v ? "Blocked" : "Active"}</Tag> 
+    render: (v: any) => (
+      <CommonTag className={v ? "status-dot status-dot-blocked" : "status-dot status-dot-active"}>
+        {v ? "Blocked" : "Active"}
+      </CommonTag>
+    ) 
   },
   {
     title: "Actions", 

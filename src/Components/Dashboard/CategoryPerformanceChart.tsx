@@ -52,7 +52,7 @@ const CategoryPerformanceChart: React.FC = () => {
           <div className="text-center py-8 text-muted text-sm">No data available.</div>
         ) : (
           <>
-            <div className="w-full overflow-x-auto">
+            <div className="w-full overflow-x-auto rounded-xl bg-surface-muted/50 p-3">
               <svg viewBox="0 0 420 180" className="w-full" style={{ minWidth: '280px' }}>
                 {/* Grid lines */}
                 {[0, 25, 50, 75, 100].map(pct => {
@@ -94,10 +94,10 @@ const CategoryPerformanceChart: React.FC = () => {
               </svg>
             </div>
 
-            <div className="flex flex-wrap gap-3 mt-2">
+            <div className="flex flex-wrap gap-2.5 mt-3">
               {chartData.map((item, i) => (
-                <div key={item.name} className="flex items-center gap-1.5 text-xs text-muted">
-                  <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: barColors[i % barColors.length] }} />
+                <div key={item.name} className="flex items-center gap-1.5 text-[11px] text-muted">
+                  <span className="w-2 h-2 rounded-full" style={{ backgroundColor: barColors[i % barColors.length] }} />
                   {item.name} ({item.value})
                 </div>
               ))}

@@ -1,36 +1,35 @@
 import React from 'react';
-import { PlusOutlined, UserOutlined, BookOutlined, ToolOutlined, ShoppingCartOutlined, AppstoreOutlined } from '@ant-design/icons';
+import { PlusOutlined, UserOutlined, BookOutlined, ToolOutlined, ShoppingCartOutlined } from '@ant-design/icons';
 import { motion } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
-import LottieModule from 'lottie-react';
-import { Skeleton } from 'antd';
 
 import { ROUTES } from '@/Constants';
 import { fadeInUp } from '@/Utils/animations';
 import { CommonButton } from '@/Attribute';
-import { CommonCard } from '@/Components';
 import { Queries } from '@/Api';
-
-import animationData from '@/Data/MainBanner.json';
-
-const Lottie = (LottieModule as any).default;
 
 interface StatCardProps {
   icon: React.ReactNode;
   value: number | string;
   label: string;
   color: string;
+  bgColor: string;
 }
 
-const StatCard: React.FC<StatCardProps> = ({ icon, value, label, color }) => (
-  <div className={`flex items-center gap-3 p-3 rounded-xl ${color}`}>
-    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white/20 text-white text-base">
-      {icon}
+const StatCard: React.FC<StatCardProps> = ({ icon, value, label, color, bgColor }) => (
+  <div className="flex flex-col p-5 rounded-2xl bg-surface border border-border hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 group">
+    <div className="flex items-center justify-between mb-4">
+      <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${bgColor} ${color}`}>
+        {icon}
+      </div>
+      <div className="text-text-muted opacity-40 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-200">
+        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M7 17L17 7M17 7H7M17 7V17" />
+        </svg>
+      </div>
     </div>
-    <div>
-      <div className="text-xl font-extrabold text-white leading-none">{value}</div>
-      <div className="text-xs text-white/80 mt-0.5">{label}</div>
-    </div>
+    <div className="text-[11px] font-bold text-text-muted uppercase tracking-wider mb-1">{label}</div>
+    <div className="text-3xl font-extrabold text-foreground leading-tight">{value}</div>
   </div>
 );
 
@@ -48,89 +47,52 @@ const DashboardBanner: React.FC = () => {
   const loading = isLoading;
 
   return (
-    <div className="dashboard-grid-banner">
-      <motion.div variants={fadeInUp} className="dashboard-banner">
-        <div className="dashboard-banner-content">
+    <div className="mb-6">
+      <motion.div variants={fadeInUp}>
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-5">
           <div>
-            <h1 className="dashboard-banner-title">Welcome to Shining Sparrow!</h1>
-            <p className="dashboard-banner-copy">
-              Manage courses, workshops, and students — all in one place.
-            </p>
+            <h1 className="text-2xl font-bold text-foreground m-0">Dashboard</h1>
+            <p className="text-sm text-text-muted mt-1 m-0">Welcome back! Here's what's happening with your platform.</p>
           </div>
-          <div className="dashboard-banner-stats">
-            <div className="dashboard-banner-stat">
-              <div className="dashboard-banner-stat-icon"><UserOutlined /></div>
-              <div>
-                <div className="dashboard-banner-stat-value">
-                  {loading ? '—' : totalStudents.toLocaleString()}
-                </div>
-                <div className="dashboard-banner-stat-label">Total Students</div>
-              </div>
-            </div>
-            <div className="dashboard-banner-stat">
-              <div className="dashboard-banner-stat-icon"><BookOutlined /></div>
-              <div>
-                <div className="dashboard-banner-stat-value">
-                  {loading ? '—' : totalCourses.toLocaleString()}
-                </div>
-                <div className="dashboard-banner-stat-label">Total Courses</div>
-              </div>
-            </div>
-            <div className="dashboard-banner-stat">
-              <div className="dashboard-banner-stat-icon"><ToolOutlined /></div>
-              <div>
-                <div className="dashboard-banner-stat-value">
-                  {loading ? '—' : totalWorkshops.toLocaleString()}
-                </div>
-                <div className="dashboard-banner-stat-label">Workshops</div>
-              </div>
-            </div>
-          </div>
+          <CommonButton
+            type="primary"
+            onClick={() => navigate(ROUTES.COURSE.BASE)}
+            className="flex items-center gap-2"
+          >
+            <PlusOutlined /> Create New Course
+          </CommonButton>
         </div>
 
-        <div className="dashboard-banner-illustration">
-          <Lottie
-            animationData={animationData}
-            loop={true}
-            autoplay={true}
-            className="dashboard-banner-svg"
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <StatCard
+            icon={<UserOutlined />}
+            value={loading ? '—' : totalStudents.toLocaleString()}
+            label="Total Students"
+            color="text-primary"
+            bgColor="bg-primary/10"
+          />
+          <StatCard
+            icon={<BookOutlined />}
+            value={loading ? '—' : totalCourses.toLocaleString()}
+            label="Total Courses"
+            color="text-info"
+            bgColor="bg-info/10"
+          />
+          <StatCard
+            icon={<ToolOutlined />}
+            value={loading ? '—' : totalWorkshops.toLocaleString()}
+            label="Total Workshops"
+            color="text-success"
+            bgColor="bg-success/10"
+          />
+          <StatCard
+            icon={<ShoppingCartOutlined />}
+            value={loading ? '—' : (coursePurchaseCount + workshopPurchaseCount).toLocaleString()}
+            label="Total Sales"
+            color="text-warning"
+            bgColor="bg-warning/10"
           />
         </div>
-      </motion.div>
-
-      <motion.div variants={fadeInUp}>
-        <CommonCard
-          title="Platform Overview"
-          cardProps={{ className: 'dashboard-create-card bg-surface!' }}
-        >
-          {loading ? (
-            <Skeleton active paragraph={{ rows: 3 }} />
-          ) : (
-            <>
-              <div className="grid grid-cols-1 gap-3 mb-4">
-                <StatCard
-                  icon={<ShoppingCartOutlined />}
-                  value={coursePurchaseCount}
-                  label="Course Purchases"
-                  color="bg-primary/80"
-                />
-                <StatCard
-                  icon={<AppstoreOutlined />}
-                  value={workshopPurchaseCount}
-                  label="Workshop Purchases"
-                  color="bg-teal/70"
-                />
-              </div>
-              <CommonButton
-                type="primary"
-                onClick={() => navigate(ROUTES.COURSE.BASE)}
-                className="dashboard-primary-button w-full justify-center"
-              >
-                <PlusOutlined /> Create New Course
-              </CommonButton>
-            </>
-          )}
-        </CommonCard>
       </motion.div>
     </div>
   );

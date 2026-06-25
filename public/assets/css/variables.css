@@ -16,6 +16,10 @@
   --color-orb-subtle: var(--orb-subtle);
   --shadow-primary: 0 2px 8px color-mix(in srgb, var(--foreground) 14%, transparent);
   --shadow-primary-hover: 0 4px 12px color-mix(in srgb, var(--foreground) 18%, transparent);
+  --shadow-card: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02);
+  --shadow-card-hover: 0 4px 12px rgba(0,0,0,0.06), 0 2px 4px rgba(0,0,0,0.03);
+  --shadow-header: 0 1px 3px rgba(0,0,0,0.03);
+  --shadow-sidebar: 1px 0 8px rgba(0,0,0,0.03);
   --color-surface-muted: var(--surface-muted);
   --color-primary-soft: var(--primary-soft);
   --color-success: var(--success);
@@ -102,6 +106,10 @@
   --success-dark: #15803d;
   --danger: #f87171;
   --danger-dark: #ef4444;
+  --shadow-card: 0 1px 3px rgba(0,0,0,0.2), 0 1px 2px rgba(0,0,0,0.12);
+  --shadow-card-hover: 0 4px 12px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.15);
+  --shadow-header: 0 1px 3px rgba(0,0,0,0.2);
+  --shadow-sidebar: 1px 0 8px rgba(0,0,0,0.2);
 
   --purple: #c084fc;
   --pink: #f472b6;

@@ -53,39 +53,44 @@ const Sidebar: FC<SidebarProps> = ({ isExpanded }) => {
 
   const sidebarContent = (
     <Flex vertical style={{ height: '100%' }}>
-      <div className="flex items-center justify-center" style={{ height: 64, borderBottom: '1px solid var(--border)' }} >
+      <div style={{ padding: '20px 16px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: isActuallyCollapsed ? 'center' : 'flex-start' }}>
         {isActuallyCollapsed ? (
           <img 
             src="/assets/images/Logo_icon.png" 
             alt="Logo Icon" 
-            style={{ height: 36, width: 36, objectFit: 'contain' }} 
+            style={{ height: 32, width: 32, objectFit: 'contain' }} 
           />
         ) : (
           <img 
             src="/assets/images/Logo_full.png" 
             alt="Logo Full" 
-            style={{ height: 44, width: 'auto', objectFit: 'contain', padding: '0 16px' }} 
+            style={{ height: 38, width: 'auto', objectFit: 'contain' }} 
           />
         )}
       </div>
-      <div style={{ flex: 1, overflowY: 'auto' }}>
+      <div style={{ flex: 1, overflowY: 'auto', padding: '12px 8px' }}>
+        <div style={{ padding: '0 12px 8px', fontSize: '10px', fontWeight: 700, letterSpacing: '0.5px', textTransform: 'uppercase', color: 'var(--text-muted)' }}>
+          {isActuallyCollapsed ? '' : 'Menu'}
+        </div>
         <Menu mode="inline" selectedKeys={[getSelectedKey()]} items={menuItems} onClick={handleMenuClick} style={{ borderRight: 0, background: 'transparent' }} />
       </div>
-      <Dropdown menu={{ items: userMenuItems }} trigger={['click']} placement="topRight">
-        <div style={{ borderTop: '1px solid var(--border)', padding: '12px 16px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '12px' }} >
-          <Avatar icon={<UserOutlined />} style={{ backgroundColor: 'var(--primary)', flexShrink: 0 }} />
-          {!isActuallyCollapsed && (
-            <div style={{ overflow: 'hidden' }}>
-              <div style={{ color: 'var(--foreground)', fontWeight: 500, fontSize: '14px', lineHeight: '20px', whiteSpace: 'nowrap' }}>
-                 {user?.name || 'Guest User'}
+      <div style={{ borderTop: '1px solid var(--border)', padding: '12px 8px' }}>
+        <Dropdown menu={{ items: userMenuItems }} trigger={['click']} placement="topRight">
+          <div style={{ padding: '10px 12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', borderRadius: '8px', transition: 'background 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.background = 'var(--surface-muted)'} onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'} >
+            <Avatar icon={<UserOutlined />} size={36} style={{ backgroundColor: '#e86424', flexShrink: 0 }} />
+            {!isActuallyCollapsed && (
+              <div style={{ overflow: 'hidden', flex: 1 }}>
+                <div style={{ color: 'var(--foreground)', fontWeight: 600, fontSize: '13px', lineHeight: '18px', whiteSpace: 'nowrap' }}>
+                   {user?.name || 'Guest User'}
+                </div>
+                <div style={{ color: 'var(--text-muted)', fontSize: '11px', lineHeight: '14px', whiteSpace: 'nowrap' }}>
+                  {user?.email || 'guest@myapp.com'}
+                </div>
               </div>
-              <div style={{ color: 'var(--text-muted)', fontSize: '12px', lineHeight: '16px', whiteSpace: 'nowrap' }}>
-                {user?.email || 'guest@myapp.com'}
-              </div>
-            </div>
-          )}
-        </div>
-      </Dropdown>
+            )}
+          </div>
+        </Dropdown>
+      </div>
     </Flex>
   );
     if (isMobile) {
@@ -96,7 +101,7 @@ const Sidebar: FC<SidebarProps> = ({ isExpanded }) => {
     );
   }
   return (
-    <Sider  trigger={null} collapsible collapsed={isActuallyCollapsed} width={250} collapsedWidth={80} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} style={{ overflow: 'hidden', height: '100vh', position: 'sticky', top: 0, left: 0, background: 'var(--surface)', borderRight: '1px solid var(--border)',transition: 'all 0.2s ease' }} >
+    <Sider  trigger={null} collapsible collapsed={isActuallyCollapsed} width={250} collapsedWidth={80} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} style={{ overflow: 'hidden', height: '100vh', position: 'sticky', top: 0, left: 0, background: 'var(--surface)', borderRight: '1px solid var(--border)', transition: 'all 0.2s ease' }} >
       {sidebarContent}
     </Sider>
   );

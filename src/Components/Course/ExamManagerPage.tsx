@@ -322,7 +322,7 @@ const ExamManagerPage: FC = () => {
                                   <img 
                                     src={question.questionImage} 
                                     alt="Question Image" 
-                                    className="w-16 h-16 object-cover rounded-lg border border-gray-200 shadow-sm"
+                                    className="w-16 h-16 object-cover rounded-lg border border-border shadow-sm"
                                     onError={(e) => {
                                       (e.target as HTMLImageElement).src = 'https://placehold.co/100x100?text=Invalid';
                                     }}
@@ -338,10 +338,10 @@ const ExamManagerPage: FC = () => {
 
                               <div className="course-lesson-meta flex flex-wrap gap-2 mt-1">
                                 <span className={`course-chip inline-flex items-center gap-1 ${
-                                  question.questionType === 'calculation' ? 'bg-indigo-50 text-indigo-700 border-indigo-100' :
-                                  question.questionType === 'image' ? 'bg-purple-50 text-purple-700 border-purple-100' :
-                                  question.questionType === 'audio' ? 'bg-amber-50 text-amber-700 border-amber-100' :
-                                  'bg-blue-50 text-blue-700 border-blue-100'
+                                  question.questionType === 'calculation' ? 'bg-info/10 text-info border-info/20' :
+                                  question.questionType === 'image' ? 'bg-purple/15 text-purple border-purple/20' :
+                                  question.questionType === 'audio' ? 'bg-warning/10 text-warning border-warning/20' :
+                                  'bg-primary/10 text-primary border-primary/20'
                                 }`}>
                                   {question.questionType === 'calculation' && <CalculatorOutlined className="text-xs" />}
                                   {question.questionType === 'image' && <PictureOutlined className="text-xs" />}

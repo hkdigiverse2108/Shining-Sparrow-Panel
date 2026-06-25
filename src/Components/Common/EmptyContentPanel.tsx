@@ -23,11 +23,11 @@ const EmptyContentPanel: React.FC<EmptyContentPanelProps> = ({
 }) => {
   if (variant === 'inline') {
     return (
-      <div className="flex items-start gap-3 p-4 bg-white border border-gray-100 rounded-xl text-gray-400">
+      <div className="flex items-start gap-3 p-4 bg-surface border border-border rounded-xl text-muted">
         <span className="text-lg">{icon}</span>
         <div>
-          <h4 className="text-sm text-gray-600 font-medium">{title}</h4>
-          {description && <p className="text-xs text-gray-400 mt-0.5">{description}</p>}
+          <h4 className="text-sm text-foreground font-medium">{title}</h4>
+          {description && <p className="text-xs text-text-muted mt-0.5">{description}</p>}
         </div>
       </div>
     );
@@ -35,12 +35,12 @@ const EmptyContentPanel: React.FC<EmptyContentPanelProps> = ({
 
   return (
     <div className="flex flex-col items-center justify-center py-16 px-6 text-center gap-4">
-      <div className="w-16 h-16 rounded-2xl bg-gray-50 border border-gray-100 flex items-center justify-center text-gray-300 text-3xl">
+      <div className="w-16 h-16 rounded-2xl bg-surface-muted border border-border flex items-center justify-center text-muted text-3xl">
         {icon}
       </div>
       <div className="space-y-1">
-        <h3 className="text-base font-bold text-gray-700">{title}</h3>
-        {description && <p className="text-sm text-gray-400 max-w-sm">{description}</p>}
+        <h3 className="text-base font-bold text-foreground">{title}</h3>
+        {description && <p className="text-sm text-text-muted max-w-sm">{description}</p>}
       </div>
       {action && (
         <Button

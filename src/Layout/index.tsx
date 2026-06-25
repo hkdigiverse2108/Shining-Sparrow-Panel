@@ -39,7 +39,7 @@ const DashboardLayout: FC = () => {
       theme={{ algorithm: isDark ? theme.darkAlgorithm : theme.defaultAlgorithm,
         token: {
           colorPrimary: brandColor,
-          colorBgContainer: 'transparent', 
+          colorBgContainer: 'var(--surface)', 
           colorBgElevated: 'var(--surface)', 
           colorBorderSecondary: 'var(--border)',
         },
@@ -54,13 +54,15 @@ const DashboardLayout: FC = () => {
           <DashboardHeader collapsed={!isExpanded} setCollapsed={setCollapsed} isDark={isDark} setIsDark={setIsDark} />
           <Layout.Content 
             style={{ 
-              margin: '14px 16px', 
-              padding: 10, 
+              margin: '16px 18px', 
+              padding: 16, 
               minHeight: 280, 
-              borderRadius: 8, 
+              borderRadius: 12, 
               background: 'var(--surface)', 
               border: '1px solid var(--border)',
-              color: 'var(--foreground)'
+              boxShadow: 'var(--shadow-card)',
+              color: 'var(--foreground)',
+              transition: 'all 0.2s ease'
             }}
           >
             <Outlet />

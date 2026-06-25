@@ -83,11 +83,13 @@
   }
   /* ─── BREADCRUMBS ─── */
 .common-breadcrumbs {
-  @apply flex flex-col md:flex-row md:items-center md:justify-between gap-2 md:gap-4 p-3 md:px-6 md:py-4 bg-surface!  z-20 mb-0! rounded-xl shadow-md transition-colors duration-300 ease-in-out;
-  /* sticky top-[44px] */
+  @apply flex flex-col md:flex-row md:items-center md:justify-between gap-2 md:gap-4 mb-5 z-20 transition-colors duration-300 ease-in-out;
 }
 .common-breadcrumbs-title {
-  @apply m-0! p-0! text-base md:text-xl font-bold leading-tight text-foreground truncate min-w-0; 
+  @apply m-0! p-0! text-xl md:text-2xl font-bold leading-tight text-foreground truncate min-w-0; 
+}
+.common-breadcrumb-nav {
+  @apply text-[11px] md:text-sm text-muted shrink-0 bg-surface border border-border px-3 py-1.5 md:px-4 md:py-2 rounded-lg shadow-sm;
 }
 .common-breadcrumb-nav {
   @apply text-[11px] md:text-sm text-muted shrink-0;
@@ -121,13 +123,51 @@
   @apply bg-background! m-0! ;
 }
 .common-page-wrapper {
-  @apply mt-3 bg-surface rounded-xl shadow-lg min-h-[calc(100vh-200px)] transition-colors duration-300 ease-in-out;
+  @apply mt-3 bg-surface rounded-xl min-h-[calc(100vh-200px)] transition-all duration-200 ease-in-out;
 }
 .page-content-padding {
   @apply p-4 md:p-6;
 }
 .page-content-no-padding {
   @apply p-0;
+}
+
+/* ─── ADVANCED SEARCH ─── */
+.advanced-search {
+  @apply mb-6 bg-transparent! shadow-none!;
+}
+.advanced-search .ant-collapse-item {
+  @apply border-0!;
+}
+.advanced-search .ant-collapse-header {
+  @apply !py-4 !px-6 bg-surface border border-border rounded-2xl transition-all duration-200 shadow-sm! font-semibold text-foreground flex items-center!;
+}
+.advanced-search .ant-collapse-header:hover {
+  @apply border-primary/50! bg-surface-muted!;
+}
+.advanced-search .ant-collapse-item-active > .ant-collapse-header {
+  @apply rounded-b-none border-b-transparent!;
+}
+.advanced-search .ant-collapse-content {
+  @apply bg-transparent! border-0!;
+}
+.advanced-search .ant-collapse-content-box {
+  @apply !p-6 bg-surface border border-t-0 border-border rounded-b-2xl mt-[-1px] shadow-sm!;
+}
+.advanced-search .ant-select-selector {
+  @apply rounded-lg! border-border! bg-surface-muted! h-10! shadow-none transition-all duration-200 flex items-center!;
+}
+.advanced-search .ant-select-selector:hover {
+  @apply border-primary/50! bg-surface-muted!;
+}
+.advanced-search .ant-select-focused .ant-select-selector {
+  @apply border-primary! bg-surface! shadow-[0_0_0_3px_var(--color-primary-ring)]!;
+}
+.advanced-search span.text-xs {
+  @apply text-[10px] font-bold uppercase tracking-wider text-text-muted/80 mb-2 block;
+}
+.advanced-search-panel {
+  @apply bg-transparent!;
 }
 .common-btn.ant-btn.btn-primary { background-color: var(--primary) !important; color: var(--surface) !important; }
 .common-btn.ant-btn.btn-secondary { background-color: var(--muted) !important; color: var(--foreground) !important; }
@@ -448,4 +488,48 @@
 }
 .ant-list-item{
   @apply mb-1;
+}
+
+/* Status dot tag styles matching PolicyPilot design */
+.common-tag.status-dot {
+  background: transparent !important;
+  border: 1px solid transparent !important;
+  font-weight: 600;
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-transform: capitalize;
+}
+
+.common-tag.status-dot-active {
+  color: var(--success) !important;
+  background: color-mix(in srgb, var(--success) 8%, transparent) !important;
+  border-color: color-mix(in srgb, var(--success) 12%, transparent) !important;
+}
+
+.common-tag.status-dot-active::before {
+  content: "";
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--success);
+}
+
+.common-tag.status-dot-blocked {
+  color: var(--danger) !important;
+  background: color-mix(in srgb, var(--danger) 8%, transparent) !important;
+  border-color: color-mix(in srgb, var(--danger) 12%, transparent) !important;
+}
+
+.common-tag.status-dot-blocked::before {
+  content: "";
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--danger);
 }

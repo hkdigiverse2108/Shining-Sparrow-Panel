@@ -1,6 +1,6 @@
-/* ===================================================
-   COURSE MODULE — Compact, Fully Responsive CSS
-   Breakpoints: 480 · 640 · 768 · 1024
+ï»¿/* ===================================================
+   COURSE MODULE â€” Compact, Fully Responsive CSS
+   Breakpoints: 480 Â· 640 Â· 768 Â· 1024
    =================================================== */
 
 /* ---- Shell & Container --------------------------------- */
@@ -11,7 +11,7 @@
 }
 
 .course-container {
-  width: min(100%, 72rem);
+  width: 100%;
   margin: 0 auto;
   padding: 1.25rem;
   display: flex;
@@ -19,8 +19,8 @@
   gap: 1.25rem;
 }
 
-.course-container--wide  { width: min(100%, 72rem); }
-.course-container--narrow { width: min(100%, 38rem); }
+.course-container--wide  { width: 100%; }
+.course-container--narrow { width: 100%; }
 
 .course-loading {
   min-height: 100vh;
@@ -606,7 +606,7 @@
   .course-hero-actions { justify-content: flex-start; }
   .course-kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .course-hero-header { flex-direction: column; gap: 0.75rem; }
-  .course-container--narrow { width: min(100%, 36rem); }
+  .course-container--narrow { width: 100%; }
 }
 
 /* Large Mobile / Small Tablet (= 768px) */
@@ -674,3 +674,4 @@
   .course-chip { font-size: 0.625rem; padding: 0.17rem 0.42rem; }
   .course-kpi-grid { grid-template-columns: 1fr 1fr; }
 }
+

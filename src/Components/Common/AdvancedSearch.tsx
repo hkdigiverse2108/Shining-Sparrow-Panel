@@ -23,7 +23,7 @@ export const AdvancedSearch: FC<AdvancedSearchProps> = ({ children, filter = [] 
           className: "advanced-search-panel",
           children: (
             <div className="advanced-search-body" style={{ width: "100%" }} >
-              <Row gutter={[16, 12]} align="top" style={{ width: "100%", margin: 0 }} >
+              <Row gutter={[24, 16]} align="middle">
                 {filter.map((item, i) => (
                   <Col
                     key={i}
