@@ -45,4 +45,8 @@ export const ROUTES = {
   CHAT: "/chat",
   FAQ: "/faq",
   COUPON_CODE: "/coupon-code",
+  LEGALITY: "/legality",
+  GALLERY: "/gallery",
+  NEWSLETTER: "/newsletter",
+  TRUSTED_PARTNER: "/trusted-partner",
 } as const;

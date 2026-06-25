@@ -17,7 +17,7 @@ const getWorkshopColumns = ({ onEdit, onManage, onToggleStatus, onDelete, curren
   {
     title: "#",
     width: 50,
-    align: 'center' as 'center',
+    align: "center",
     render: (_: any, __: any, index: number) => {
       // Calculate global index across pagination
       return (current - 1) * pageSize + index + 1;
@@ -27,33 +27,26 @@ const getWorkshopColumns = ({ onEdit, onManage, onToggleStatus, onDelete, curren
     title: "Image", 
     dataIndex: "image", 
     width: 70,
+    align: "center",
     render: (v: any) => (
-      <Image 
-        src={v} 
-        width={40} 
-        height={40} 
-        style={{ objectFit: 'cover', borderRadius: 6, background: 'var(--surface-muted)' }} 
-        fallback="https://via.placeholder.com/40x40/E2E8F0/94A3B8?text=WS"
-      />
+      <Image src={v} width={40} height={40} style={{ objectFit: 'cover', borderRadius: 6, background: 'var(--surface-muted)' }} fallback="https://via.placeholder.com/40x40/E2E8F0/94A3B8?text=WS" />
     )
   },
   {
     title: "Title", 
     dataIndex: "title", 
-    width: 180,
-    ellipsis: true,
+    align: "center",
     render: (v: any) => <span className="font-semibold text-foreground">{v}</span> 
   },
   {
     title: "Price", 
     dataIndex: "price", 
     width: 120,
+    align: "center",
     render: (price: number, record: any) => {
       if (price === 0) return <Tag color="green">Free</Tag>;
-      
       const mrp = record.mrpPrice || 0;
       const hasDiscount = mrp > price;
-
       return (
         <div className="flex flex-col">
           <span className="font-semibold text-foreground">₹{price}</span>
@@ -66,12 +59,14 @@ const getWorkshopColumns = ({ onEdit, onManage, onToggleStatus, onDelete, curren
     title: "Language", 
     dataIndex: "language", 
     width: 100,
+    align: "center",
     render: (v: any) => <Tag color="blue">{v || 'N/A'}</Tag> 
   },
   {
     title: "Duration", 
     dataIndex: "duration", 
     width: 120,
+    align: "center",
     ellipsis: true,
     render: (v: any) => <span className="text-gray-600 text-sm">{v || 'N/A'}</span> 
   },
@@ -79,6 +74,7 @@ const getWorkshopColumns = ({ onEdit, onManage, onToggleStatus, onDelete, curren
     title: "Status", 
     dataIndex: "isBlocked", 
     width: 90,
+    align: "center",
     render: (v: any) => (
       <CommonTag className={v ? "status-dot status-dot-blocked" : "status-dot status-dot-active"}>
         {v ? "Blocked" : "Active"}
@@ -89,7 +85,7 @@ const getWorkshopColumns = ({ onEdit, onManage, onToggleStatus, onDelete, curren
     title: "Actions", 
     dataIndex: "actions",
     width: 160,
-    fixed: 'right' as 'right',
+    align: "center",
     render: (_: any, r: any) => (
       <div className="flex gap-1 justify-center">
         <Button type="text" size="small" icon={<FolderOpenOutlined />} onClick={() => onManage(r)} title="Manage Curriculum" />

@@ -115,4 +115,19 @@ export const KEYS = {
   CONTACT_US: {
     BASE: "contact-us",
   },
+  LEGALITY: {
+    BASE: "legality",
+  },
+  GALLERY: {
+    BASE: "gallery",
+    DELETE: "delete-gallery",
+  },
+  NEWSLETTER: {
+    BASE: "newsletter",
+    DELETE: "delete-newsletter",
+  },
+  TRUSTED_PARTNER: {
+    BASE: "trusted-partner",
+    DELETE: "delete-trusted-partner",
+  },
 };

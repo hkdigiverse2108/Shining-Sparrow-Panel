@@ -149,7 +149,7 @@
     @apply text-xs font-bold uppercase tracking-wider text-text-muted/80
            border-b border-border/80 text-left;
     background: transparent !important;
-    padding: 16px 16px !important;
+    padding: 14px 12px !important;
     letter-spacing: 0.08em;
   }
 
@@ -161,8 +161,18 @@
   .common-table-surface .ant-table-tbody > tr > td {
     @apply text-foreground transition-all duration-150 bg-transparent;
     border-bottom: 1px solid color-mix(in srgb, var(--border) 60%, transparent) !important;
-    padding: 16px 16px !important;
+    padding: 14px 12px !important;
     vertical-align: middle !important;
+  }
+
+  /* Reset padding, border, and height of the hidden measurement row to prevent extra vertical space */
+  .common-table-surface .ant-table-tbody > tr.ant-table-measure-row > td,
+  tr.ant-table-measure-row td {
+    padding: 0 !important;
+    border: 0 !important;
+    height: 0 !important;
+    line-height: 0 !important;
+    font-size: 0 !important;
   }
 
   /* Zebra striping disabled for clean look */
@@ -179,34 +189,158 @@
     background: var(--surface-muted) !important;
   }
 
+  /* Fix overlapping/transparency for fixed/sticky columns on horizontal scroll */
+  .common-table-surface .ant-table-cell-fix-left,
+  .common-table-surface .ant-table-cell-fix-right {
+    background: var(--surface) !important;
+  }
+
+  /* Keep hover background color for fixed/sticky cells */
+  .common-table-surface .ant-table-tbody > tr:hover > td.ant-table-cell-fix-left,
+  .common-table-surface .ant-table-tbody > tr:hover > td.ant-table-cell-fix-right,
+  .common-table-surface .ant-table-cell-fix-left.ant-table-cell-row-hover,
+  .common-table-surface .ant-table-cell-fix-right.ant-table-cell-row-hover {
+    background: var(--surface-muted) !important;
+  }
+
   /* ─── PAGINATION ─── */
   .common-table-surface .ant-table-pagination {
-    @apply px-4 py-3 border-t border-border mt-0!;
+    padding: 16px 20px !important;
+    border-top: 1px solid var(--border) !important;
+    margin: 0 !important;
+    background-color: transparent !important;
   }
 
-  .common-table-surface .ant-empty-description,
-  .common-table-surface .ant-pagination,
-  .common-table-surface .ant-pagination-item a,
+  .common-table-surface .ant-pagination {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: 6px !important;
+  }
+
+  /* Total count pill badge */
+  .common-table-surface .ant-pagination-total-text {
+    font-size: 0.75rem !important;
+    font-weight: 600 !important;
+    color: var(--text-muted) !important;
+    background-color: var(--surface-muted) !important;
+    padding: 4px 12px !important;
+    border-radius: 9999px !important;
+    border: 1px solid var(--border) !important;
+    margin-right: 12px !important;
+    line-height: 1.6 !important;
+  }
+
+  /* Prev/Next buttons */
   .common-table-surface .ant-pagination-prev,
   .common-table-surface .ant-pagination-next {
-    @apply text-muted;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-width: 32px !important;
+    height: 32px !important;
+    line-height: 30px !important;
+    border: 1px solid var(--border) !important;
+    background-color: var(--surface) !important;
+    border-radius: 8px !important;
+    transition: all 0.2s ease-in-out !important;
   }
 
+  .common-table-surface .ant-pagination-prev button,
+  .common-table-surface .ant-pagination-next button {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: var(--text-muted) !important;
+  }
+
+  .common-table-surface .ant-pagination-prev:hover,
+  .common-table-surface .ant-pagination-next:hover {
+    border-color: var(--primary) !important;
+    background-color: var(--surface-muted) !important;
+  }
+
+  .common-table-surface .ant-pagination-disabled,
+  .common-table-surface .ant-pagination-disabled:hover {
+    opacity: 0.4 !important;
+    border-color: var(--border) !important;
+    background-color: var(--surface) !important;
+    pointer-events: none !important;
+  }
+
+  /* Page numbers */
   .common-table-surface .ant-pagination-item {
-    @apply border-border bg-surface rounded-lg transition-all duration-150;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-width: 32px !important;
+    height: 32px !important;
+    line-height: 30px !important;
+    border: 1px solid var(--border) !important;
+    background-color: var(--surface) !important;
+    border-radius: 8px !important;
+    transition: all 0.2s ease-in-out !important;
+    font-weight: 500 !important;
+  }
+
+  .common-table-surface .ant-pagination-item a {
+    color: var(--foreground) !important;
+    font-size: 0.8125rem !important;
+    transition: none !important;
   }
 
   .common-table-surface .ant-pagination-item:hover {
-    @apply border-primary/50 bg-primary/5;
+    border-color: var(--primary) !important;
+    background-color: var(--surface-muted) !important;
   }
 
   .common-table-surface .ant-pagination-item-active {
     background-color: var(--primary) !important;
     border-color: var(--primary) !important;
+    box-shadow: 0 2px 6px var(--primary-ring) !important;
   }
 
   .common-table-surface .ant-pagination-item-active a {
     color: #ffffff !important;
+    font-weight: 600 !important;
+  }
+
+  /* Ellipsis / jump indicator */
+  .common-table-surface .ant-pagination-jump-prev,
+  .common-table-surface .ant-pagination-jump-next {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-width: 32px !important;
+    height: 32px !important;
+  }
+
+  /* Page size selector */
+  .common-table-surface .ant-pagination-options-size-changer {
+    margin-left: 12px !important;
+  }
+
+  .common-table-surface .ant-pagination-options-size-changer .ant-select-selector {
+    height: 32px !important;
+    padding: 0 10px !important;
+    border-radius: 8px !important;
+    border-color: var(--border) !important;
+    background-color: var(--surface) !important;
+    transition: all 0.2s ease-in-out !important;
+    display: flex !important;
+    align-items: center !important;
+  }
+
+  .common-table-surface .ant-pagination-options-size-changer .ant-select:hover .ant-select-selector,
+  .common-table-surface .ant-pagination-options-size-changer .ant-select-focused .ant-select-selector {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 2px var(--primary-ring) !important;
+  }
+
+  .common-table-surface .ant-pagination-options-size-changer .ant-select-selection-item {
+    font-size: 0.8125rem !important;
+    font-weight: 500 !important;
+    color: var(--foreground) !important;
   }
 
   /* ─── INPUTS IN TABLE ─── */

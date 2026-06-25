@@ -395,12 +395,12 @@ const ContactPage: FC = () => {
   return (
     <>
       <CommonBreadcrumbs title="Contact Us" breadcrumbs={BREADCRUMBS.CONTACT || []} />
-      <CommonPageWrapper className="h-full bg-transparent">
+      <CommonPageWrapper className="!bg-transparent !h-auto !min-h-0">
         <Tabs
           activeKey={activeTab}
           onChange={setActiveTab}
           items={tabItems}
-          className="profile-tabs"
+          className="profile-tabs contact-tabs"
           size="large"
         />
       </CommonPageWrapper>

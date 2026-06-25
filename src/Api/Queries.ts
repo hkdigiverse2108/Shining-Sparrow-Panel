@@ -69,5 +69,18 @@ export const Queries = {
 
   // ************ Contact Us details ***********
   useGetContactUs: (options?: any) => useQueries<any>([KEYS.CONTACT_US.BASE], () => Get(URL_KEYS.CONTACT_US.GET), options),
+
+  // ************ Legality ***********
+  useGetLegalities: (params?: Params) => useQueries<any>([KEYS.LEGALITY.BASE, params], () => Get(URL_KEYS.LEGALITY.GET, params)),
+  useGetLegalityByType: (type: string, options?: any) => useQueries<any>([KEYS.LEGALITY.BASE, "TYPE", type], () => Get(URL_KEYS.LEGALITY.GET, { typeFilter: type }), options),
+
+  // ************ Gallery ***********
+  useGetGalleries: (params?: Params) => useQueries<any>([KEYS.GALLERY.BASE, params], () => Get(URL_KEYS.GALLERY.GET, params)),
+
+  // ************ Newsletter ***********
+  useGetNewsletters: (params?: Params) => useQueries<any>([KEYS.NEWSLETTER.BASE, params], () => Get(URL_KEYS.NEWSLETTER.GET, params)),
+
+  // ************ Trusted Partner ***********
+  useGetTrustedPartners: (params?: Params) => useQueries<any>([KEYS.TRUSTED_PARTNER.BASE, params], () => Get(URL_KEYS.TRUSTED_PARTNER.GET, params)),
 };
 

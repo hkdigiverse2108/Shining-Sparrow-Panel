@@ -15,15 +15,17 @@ import type { CourseBase, CourseColumnProps } from '@/Types';
 
 const getCourseColumns = ({ onEdit, onManage, onToggleStatus, onDelete, current = 1, pageSize = 10 }: CourseColumnProps & { current?: number; pageSize?: number }): ColumnType<CourseBase>[] => [
   {
-    title: "Sr. No.",
+    title: "#",
     key: "srNo",
     width: 80,
+    align: "center",
     render: (_: any, __: any, index: number) => (current - 1) * pageSize + index + 1
   },
   {
     title: "Image", 
     dataIndex: "image", 
     width: 70,
+    align: "center",
     render: (v: any) => (
       <Avatar shape="square" size={40} src={v} className="bg-surface-muted">
         {!v && "N/A"}
@@ -32,17 +34,19 @@ const getCourseColumns = ({ onEdit, onManage, onToggleStatus, onDelete, current 
   },
   {
     title: "Name", 
-    dataIndex: "name", 
+    dataIndex: "name",
+    align: "center", 
     render: (v: any) => <span className="font-semibold text-foreground">{v}</span> 
   },
   {
     title: "Price", 
     dataIndex: "price", 
     width: 120,
+    align: "center",    
     sorter: (a: any, b: any) => a.price - b.price,
     render: (v: any, r: any) => (
       <div>
-        <span className="font-semibold">₹{r.mrpPrice || v}</span>
+        <span className="font-semibold">₹{r.mrpPrice || v}</span><br />
         {v > r.mrpPrice && r.mrpPrice > 0 && (
           <span className="text-muted line-through text-xs ml-1">₹{v}</span>
         )}
@@ -53,11 +57,13 @@ const getCourseColumns = ({ onEdit, onManage, onToggleStatus, onDelete, current 
     title: "Language", 
     dataIndex: "language", 
     width: 110,
+    align: "center",
     render: (v: any) => <Tag color="blue">{v || "N/A"}</Tag> 
   },
   {
     title: "Duration", 
     dataIndex: "duration", 
+    align: "center",
     width: 110,
     render: (v: any) => <span className="text-text-muted">{v ? `${v} hrs` : "N/A"}</span> 
   },
@@ -65,12 +71,14 @@ const getCourseColumns = ({ onEdit, onManage, onToggleStatus, onDelete, current 
     title: "Access (Days)", 
     dataIndex: "accessDurationDays", 
     width: 120,
+    align: "center",
     render: (v: any) => <span className="text-text-muted">{v ? `${v} days` : "N/A"}</span> 
   },
   {
     title: "Status", 
     dataIndex: "isBlocked", 
     width: 100,
+    align: "center",
     render: (v: any) => (
       <CommonTag className={v ? "status-dot status-dot-blocked" : "status-dot status-dot-active"}>
         {v ? "Blocked" : "Active"}
@@ -81,7 +89,7 @@ const getCourseColumns = ({ onEdit, onManage, onToggleStatus, onDelete, current 
     title: "Actions", 
     dataIndex: "actions",
     width: 160,
-    fixed: 'right' as const, 
+    align: "center",
     render: (_: any, r: any) => (
       <div className="flex gap-1 justify-center">
         <Button 

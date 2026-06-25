@@ -1,4 +1,4 @@
-import { DashboardOutlined, BookOutlined, TeamOutlined, UserOutlined, LogoutOutlined , ReadOutlined, PictureOutlined, CalendarOutlined, InfoCircleOutlined, MessageOutlined, QuestionCircleOutlined, ContactsOutlined, IdcardOutlined, PercentageOutlined } from '@ant-design/icons';
+import { DashboardOutlined, BookOutlined, TeamOutlined, UserOutlined, LogoutOutlined , ReadOutlined, PictureOutlined, CalendarOutlined, InfoCircleOutlined, MessageOutlined, QuestionCircleOutlined, ContactsOutlined, IdcardOutlined, PercentageOutlined, FileProtectOutlined, FileImageOutlined, MailOutlined, StarOutlined } from '@ant-design/icons';
 import type { NavItem, UserMenuItems } from "@/Types";
 import { PAGE_TITLE, ROUTES } from "@/Constants";
 
@@ -14,8 +14,11 @@ export const NavItems: NavItem[] = [
   { icon: <InfoCircleOutlined />, name: PAGE_TITLE.ABOUT_US, path: ROUTES.ABOUT_US },
   { icon: <ContactsOutlined />, name: PAGE_TITLE.CONTACT, path: ROUTES.CONTACT },
   { icon: <IdcardOutlined />, name: PAGE_TITLE.PROFILE.BASE, path: ROUTES.PROFILE.BASE },
+  { icon: <FileProtectOutlined />, name: PAGE_TITLE.LEGALITY, path: ROUTES.LEGALITY },
+  { icon: <FileImageOutlined />, name: PAGE_TITLE.GALLERY, path: ROUTES.GALLERY },
+  { icon: <MailOutlined />, name: PAGE_TITLE.NEWSLETTER, path: ROUTES.NEWSLETTER },
+  { icon: <StarOutlined />, name: PAGE_TITLE.TRUSTED_PARTNER, path: ROUTES.TRUSTED_PARTNER },
   { icon: <MessageOutlined />, name: PAGE_TITLE.CHAT, path: ROUTES.CHAT },
-  
 ];
 
 export const UserMenuData: UserMenuItems[] = [

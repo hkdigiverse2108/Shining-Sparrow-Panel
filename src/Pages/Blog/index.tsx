@@ -12,14 +12,14 @@ import { Mutations, Queries } from '@/Api';
 import type { ColumnType } from 'antd/es/table';
 
 const getBlogColumns = ({ onEdit, onToggleStatus, onDelete, current = 1, pageSize = 10 }: any): ColumnType<any>[] => [
-  { title: "Sr. No.", key: "srNo", width: 80, render: (_: any, __: any, index: number) => (current - 1) * pageSize + index + 1 },
-  { title: "Image", dataIndex: "coverImage", width: 70, render: (v: any) => <Avatar shape="square" size={40} src={v} className="bg-surface-muted">{!v && "N/A"}</Avatar> },
-  { title: "Title", dataIndex: "title", width: 230, render: (v: any) => <span className="font-medium">{v}</span> },
-  { title: "Category", dataIndex: "category", width: 130, render: (v: any) => <Tag color="blue">{v || "Uncategorized"}</Tag> },
-  { title: "Author", dataIndex: "author", width: 120, render: (v: any) => <span className="text-text-muted">{v || "Admin"}</span> },
-  { title: "Featured", dataIndex: "isFeatured", width: 90, render: (v: any) => <Tag color={v ? "gold" : "purple"} icon={<StarOutlined />}>{v ? "Featured" : "Standard"}</Tag> },
-  { title: "Status", dataIndex: "isBlocked", width: 90, render: (v: any) => <Tag color={v ? "red" : "green"}>{v ? "Blocked" : "Active"}</Tag> },
-  { title: "Actions", dataIndex: "actions", width: 120, fixed: 'right' as const, render: (_: any, r: any) => (
+  { title: "#", key: "srNo", width: 80, align:"center",render: (_: any, __: any, index: number) => (current - 1) * pageSize + index + 1 },
+  { title: "Image", dataIndex: "coverImage", width: 70, align:"center", render: (v: any) => <Avatar shape="square" size={40} src={v} className="bg-surface-muted">{!v && "N/A"}</Avatar> },
+  { title: "Title", dataIndex: "title",align:"center", render: (v: any) => <span className="font-medium">{v}</span> },
+  { title: "Category", dataIndex: "category", width: 130,align:"center", render: (v: any) => <Tag color="blue">{v || "Uncategorized"}</Tag> },
+  { title: "Author", dataIndex: "author", width: 120,  align:"center",render: (v: any) => <span className="text-text-muted">{v || "Admin"}</span> },
+  { title: "Featured", dataIndex: "isFeatured", width: 90, align:"center", render: (v: any) => <Tag color={v ? "gold" : "purple"} icon={<StarOutlined />}>{v ? "Featured" : "Standard"}</Tag> },
+  { title: "Status", dataIndex: "isBlocked", width: 90, align:"center", render: (v: any) => <Tag color={v ? "red" : "green"}>{v ? "Blocked" : "Active"}</Tag> },
+  { title: "Actions", dataIndex: "actions", width: 120, align:"center", render: (_: any, r: any) => (
     <div className="flex gap-1 justify-center">
       <Tooltip title={r.isBlocked ? "Unblock Blog" : "Block Blog"}>
         <Button
