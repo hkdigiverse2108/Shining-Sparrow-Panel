@@ -1,5 +1,5 @@
 import { useState, useMemo, type FC } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Spin, Popconfirm, Button, Segmented, Rate, Tag } from 'antd';
 import {
   FolderOutlined, PlusOutlined, EditOutlined, DeleteOutlined,
@@ -31,6 +31,7 @@ type FormMode =
 
 const ManageWorkshop: FC = () => {
   const { workshopId } = useParams<{ workshopId: string }>();
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
 
   const [activeForm, setActiveForm] = useState<FormMode>({ type: 'view' });
@@ -113,7 +114,7 @@ const ManageWorkshop: FC = () => {
 
   const handleToggleBlockSession = (curr: any) => {
     editCurrMutation.mutate(
-      { workshopCurriculumId: curr._id, isBlocked: !curr.isBlocked },
+      { workshopCurriculumId: curr._id, isBlocked: !curr.isBlocked } as any,
       {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: [KEYS.WORKSHOP_CURRICULUM.BASE] });
@@ -142,7 +143,7 @@ const ManageWorkshop: FC = () => {
         const testimonialId = res.data?._id;
         if (!values._id && testimonialId) {
           const updatedIds = [...(workshop?.workshopTestimonials || []).map((t: any) => t._id || t), testimonialId];
-          editWorkshopMutation.mutate({ workshopId, workshopTestimonials: updatedIds }, {
+          editWorkshopMutation.mutate({ workshopId, workshopTestimonials: updatedIds } as any, {
             onSuccess: () => {
               queryClient.invalidateQueries({ queryKey: [KEYS.WORKSHOP.BASE] });
               setActiveForm({ type: 'view' });
@@ -158,7 +159,7 @@ const ManageWorkshop: FC = () => {
 
   const handleDeleteTestimonial = (testimonialId: string) => {
     const updatedIds = (workshop?.workshopTestimonials || []).map((t: any) => t._id || t).filter((id: any) => id !== testimonialId);
-    editWorkshopMutation.mutate({ workshopId, workshopTestimonials: updatedIds }, {
+    editWorkshopMutation.mutate({ workshopId, workshopTestimonials: updatedIds } as any, {
       onSuccess: () => {
         deleteTestimonialMutation.mutate(testimonialId, {
           onSuccess: () => queryClient.invalidateQueries({ queryKey: [KEYS.WORKSHOP.BASE] }),
@@ -170,7 +171,7 @@ const ManageWorkshop: FC = () => {
 
   const handleToggleBlockTestimonial = (test: any) => {
     editTestimonialMutation.mutate(
-      { testimonialId: test._id, isBlocked: !test.isBlocked },
+      { testimonialId: test._id, isBlocked: !test.isBlocked } as any,
       {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: [KEYS.WORKSHOP.BASE] });
@@ -218,7 +219,7 @@ const ManageWorkshop: FC = () => {
 
   const handleToggleBlockFAQ = (faq: any) => {
     editFAQMutation.mutate(
-      { faqId: faq._id, isBlocked: !faq.isBlocked },
+      { faqId: faq._id, isBlocked: !faq.isBlocked } as any,
       {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: [KEYS.FAQ.BASE] });
@@ -251,8 +252,6 @@ const ManageWorkshop: FC = () => {
                 <span className="font-semibold text-foreground text-sm">Back to Workshop Builder</span>
               </div>
 
-              {activeForm.type === 'addSession' && <WorkshopCurriculumForm editing={null} onSave={handleSaveSession} loading={isMutationLoading} existingPriorities={sessionPrioritiesForAdd} />}
-              {activeForm.type === 'editSession' && <WorkshopCurriculumForm editing={activeForm.data} onSave={handleSaveSession} loading={isMutationLoading} existingPriorities={sessionPrioritiesForEdit} />}
               {activeForm.type === 'addTestimonial' && <TestimonialForm editing={null} onSave={handleSaveTestimonial} loading={isMutationLoading} />}
               {activeForm.type === 'editTestimonial' && <TestimonialForm editing={activeForm.data} onSave={handleSaveTestimonial} loading={isMutationLoading} />}
               {activeForm.type === 'addFAQ' && <FAQForm editing={null} onSave={handleSaveFAQ} loading={isMutationLoading} />}
@@ -289,7 +288,13 @@ const ManageWorkshop: FC = () => {
                 <Button
                   type="primary"
                   icon={<PlusOutlined />}
-                  onClick={() => setActiveForm({ type: tabAddMode[activeTab] as 'addSession' | 'addTestimonial' | 'addFAQ' })}
+                  onClick={() => {
+                    if (activeTab === 'schedule') {
+                      navigate(`/workshops/${workshopId}/curriculum/new/edit`);
+                    } else {
+                      setActiveForm({ type: tabAddMode[activeTab] as 'addTestimonial' | 'addFAQ' });
+                    }
+                  }}
                   className="bg-indigo-600 hover:!bg-indigo-700 text-white rounded-lg h-10 px-5 font-medium"
                 >
                   {tabAddLabel[activeTab]}
@@ -308,6 +313,31 @@ const ManageWorkshop: FC = () => {
                   onChange={(val) => setActiveTab(val as typeof activeTab)}
                   className="p-1 bg-surface border border-border shadow-sm rounded-xl font-medium"
                 />
+              </div>
+
+              {/* ── Workflow Guide Card ── */}
+              <div className="course-workflow-guide">
+                <div className="course-workflow-guide__icon">
+                  <BookOutlined />
+                </div>
+                <div className="course-workflow-guide__content">
+                  <h4 className="course-workflow-guide__title">
+                    {activeTab === 'schedule'
+                      ? 'Managing Workshop Schedule'
+                      : activeTab === 'testimonials'
+                      ? 'Managing Customer Testimonials'
+                      : 'Managing Workshop FAQs'}
+                  </h4>
+                  <p className="course-workflow-guide__text">
+                    {activeTab === 'schedule' ? (
+                      'Plan and sequence your workshop sessions. You can edit the session titles, summaries, dates, duration, resources, and change the ordering priority.'
+                    ) : activeTab === 'testimonials' ? (
+                      'Manage ratings and reviews from customers. Toggling block status controls visibility on the public landing page.'
+                    ) : (
+                      'Configure frequently asked questions for workshop learners. Translating to multiple languages improves reach.'
+                    )}
+                  </p>
+                </div>
               </div>
 
               {/* ── Schedule Tab ── */}
@@ -336,7 +366,7 @@ const ManageWorkshop: FC = () => {
                           ...(curr.attachment ? [attachmentFileBadge(curr.attachment)] : []),
                         ]}
                         actions={[
-                          editAction(() => setActiveForm({ type: 'editSession', data: curr })),
+                          editAction(() => navigate(`/workshops/${workshopId}/curriculum/${curr._id}/edit`)),
                           blockAction(curr.isBlocked, () => handleToggleBlockSession(curr), editCurrMutation.isPending),
                           deleteAction(() => handleDeleteSession(curr._id), 'This will permanently delete this session.'),
                         ]}
@@ -346,7 +376,7 @@ const ManageWorkshop: FC = () => {
                         icon={<FolderOutlined />}
                         title="No Sessions Added"
                         description="Add sessions to build the timeline for this workshop."
-                        action={{ label: 'Create Session', onClick: () => setActiveForm({ type: 'addSession' }) }}
+                        action={{ label: 'Create Session', onClick: () => navigate(`/workshops/${workshopId}/curriculum/new/edit`) }}
                       />
                     )}
                   </div>
@@ -358,7 +388,6 @@ const ManageWorkshop: FC = () => {
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <h3 className="text-lg font-bold text-foreground flex items-center gap-2"><CommentOutlined className="text-muted" /> Customer Testimonials</h3>
-                    <span className="text-xs font-semibold text-muted bg-surface-muted px-2.5 py-1 rounded-full">{(workshop?.workshopTestimonials || []).length} Testimonial{(workshop?.workshopTestimonials || []).length !== 1 ? 's' : ''}</span>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {(workshop?.workshopTestimonials || []).length > 0 ? workshop?.workshopTestimonials.map((test: any) => (
@@ -368,7 +397,7 @@ const ManageWorkshop: FC = () => {
                             <Rate disabled defaultValue={test.rate || 5} className="text-xs" />
                             {test.isBlocked && <Tag color="red" className="m-0 ml-2">Blocked</Tag>}
                           </div>
-                          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <div className="flex items-center gap-1.5 p-1 bg-surface border border-border rounded-xl opacity-50 group-hover:opacity-100 group-hover:border-indigo-500/30 transition-all">
                             <Button
                               type="text"
                               size="small"
@@ -379,13 +408,15 @@ const ManageWorkshop: FC = () => {
                               danger={!test.isBlocked}
                               loading={editTestimonialMutation.isPending}
                             />
-                            <Button type="text" size="small" icon={<EditOutlined />} onClick={() => setActiveForm({ type: 'editTestimonial', data: test })} className="h-7 w-7 rounded-full flex items-center justify-center p-0" />
+                            <Button type="text" size="small" icon={<EditOutlined />} onClick={() => setActiveForm({ type: 'editTestimonial', data: test })} className="h-7 w-7 rounded-full flex items-center justify-center p-0 hover:bg-surface-muted" />
                             <Popconfirm title="Delete this testimonial?" description="This will remove it from the workshop." onConfirm={() => handleDeleteTestimonial(test._id)} okText="Delete" cancelText="Cancel" okButtonProps={{ danger: true }}>
                               <Button type="text" size="small" danger icon={<DeleteOutlined />} className="hover:bg-red-50 h-7 w-7 rounded-full flex items-center justify-center p-0" />
                             </Popconfirm>
                           </div>
                         </div>
-                        <p className="text-sm text-text-muted italic leading-relaxed mb-6">"{test.description || 'No review text provided.'}"</p>
+                        <div className="course-hero-description-wrapper text-sm text-text-muted italic leading-relaxed mb-6">
+                          "{test.description || 'No review text provided.'}"
+                        </div>
                         <div className="flex items-center gap-3 border-t border-border pt-4 mt-auto">
                           {test.image
                             ? <img src={test.image} alt={test.name} className="w-10 h-10 rounded-full object-cover border border-border shadow-sm" />
@@ -411,7 +442,6 @@ const ManageWorkshop: FC = () => {
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <h3 className="text-lg font-bold text-foreground flex items-center gap-2"><QuestionCircleOutlined className="text-muted" /> Workshop FAQs</h3>
-                    <span className="text-xs font-semibold text-muted bg-surface-muted px-2.5 py-1 rounded-full">{faqs.length} FAQ{faqs.length !== 1 ? 's' : ''}</span>
                   </div>
                   <div className="space-y-4">
                     {faqs.length > 0 ? faqs.map((faq: any) => (
@@ -420,12 +450,12 @@ const ManageWorkshop: FC = () => {
                           <div className="space-y-3 flex-1">
                             {/* English */}
                             <div className="space-y-1">
-                              <h4 className="font-semibold text-foreground text-base flex items-start gap-2 leading-snug">
-                                <span className="text-[10px] font-bold text-indigo-500 bg-indigo-500/10 border border-indigo-500/20 w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">EN</span>
+                               <h4 className="font-semibold text-foreground text-base flex items-start gap-2 leading-snug">
+                                <span className="text-[10px] font-bold text-indigo-500 bg-indigo-500/10 border border-indigo-500/20 w-5 h-5 rounded-full flex-shrink-0 mt-0.5 inline-flex items-center justify-center">EN</span>
                                 {faq.question?.en}
                                 {faq.isBlocked && <Tag color="red" className="m-0 ml-2">Blocked</Tag>}
                               </h4>
-                              <div className="text-sm text-text-muted pl-7 leading-relaxed flex items-start gap-2">
+                              <div className="course-hero-description-wrapper text-sm text-text-muted pl-7 leading-relaxed flex items-start gap-2">
                                 <span className="flex-1 content-card-description">{faq.answer?.en}</span>
                               </div>
                             </div>
@@ -434,10 +464,10 @@ const ManageWorkshop: FC = () => {
                             {faq.question?.hi && (
                               <div className="space-y-1 pt-2 border-t border-border/50">
                                 <h4 className="font-medium text-foreground/90 text-sm flex items-start gap-2 leading-snug">
-                                  <span className="text-[10px] font-bold text-orange-500 bg-orange-500/10 border border-orange-500/20 w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">HI</span>
+                                  <span className="text-[10px] font-bold text-orange-500 bg-orange-500/10 border border-orange-500/20 w-5 h-5 rounded-full flex-shrink-0 mt-0.5 inline-flex items-center justify-center">HI</span>
                                   {faq.question.hi}
                                 </h4>
-                                <div className="text-sm text-text-muted pl-7 leading-relaxed flex items-start gap-2">
+                                <div className="course-hero-description-wrapper text-sm text-text-muted pl-7 leading-relaxed flex items-start gap-2">
                                   <span className="flex-1 content-card-description">{faq.answer?.hi}</span>
                                 </div>
                               </div>
@@ -447,16 +477,16 @@ const ManageWorkshop: FC = () => {
                             {faq.question?.gu && (
                               <div className="space-y-1 pt-2 border-t border-border/50">
                                 <h4 className="font-medium text-foreground/90 text-sm flex items-start gap-2 leading-snug">
-                                  <span className="text-[10px] font-bold text-teal-600 bg-teal-500/10 border border-teal-500/20 w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">GU</span>
+                                  <span className="text-[10px] font-bold text-teal-600 bg-teal-500/10 border border-teal-500/20 w-5 h-5 rounded-full flex-shrink-0 mt-0.5 inline-flex items-center justify-center">GU</span>
                                   {faq.question.gu}
                                 </h4>
-                                <div className="text-sm text-text-muted pl-7 leading-relaxed flex items-start gap-2">
+                                <div className="course-hero-description-wrapper text-sm text-text-muted pl-7 leading-relaxed flex items-start gap-2">
                                   <span className="flex-1 content-card-description">{faq.answer?.gu}</span>
                                 </div>
                               </div>
                             )}
                           </div>
-                          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
+                          <div className="flex items-center gap-1.5 p-1 bg-surface border border-border rounded-xl opacity-50 group-hover:opacity-100 group-hover:border-indigo-500/30 transition-all flex-shrink-0">
                             <Button
                               type="text"
                               size="small"
@@ -467,7 +497,7 @@ const ManageWorkshop: FC = () => {
                               danger={!faq.isBlocked}
                               loading={editFAQMutation.isPending}
                             />
-                            <Button type="text" size="small" icon={<EditOutlined />} onClick={() => setActiveForm({ type: 'editFAQ', data: faq })} className="h-7 w-7 rounded-full flex items-center justify-center p-0" />
+                            <Button type="text" size="small" icon={<EditOutlined />} onClick={() => setActiveForm({ type: 'editFAQ', data: faq })} className="h-7 w-7 rounded-full flex items-center justify-center p-0 hover:bg-surface-muted" />
                             <Popconfirm title="Delete this FAQ?" description="This will remove it from the workshop." onConfirm={() => handleDeleteFAQ(faq._id)} okText="Delete" cancelText="Cancel" okButtonProps={{ danger: true }}>
                               <Button type="text" size="small" danger icon={<DeleteOutlined />} className="hover:bg-red-50 h-7 w-7 rounded-full flex items-center justify-center p-0" />
                             </Popconfirm>
