@@ -1,6 +1,6 @@
 import { useState, useMemo, type FC } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Spin, Popconfirm, Button, Segmented, Rate, Tag } from 'antd';
+import { Spin, Button, Segmented, Rate, Tag } from 'antd';
 import {
   FolderOutlined, PlusOutlined, EditOutlined, DeleteOutlined,
   ArrowLeftOutlined, ClockCircleOutlined, BookOutlined,
@@ -10,7 +10,7 @@ import {
 import { Queries, Mutations } from '@/Api';
 import { KEYS } from '@/Constants';
 import { useQueryClient } from '@tanstack/react-query';
-import { CommonBreadcrumbs, CommonPageWrapper, EmptyContentPanel, ContentItemCard, CommonReadMore } from '@/Components';
+import { CommonBreadcrumbs, CommonPageWrapper, EmptyContentPanel, ContentItemCard, CommonReadMore, CommonDeleteModal } from '@/Components';
 import {
   priorityBadge, durationBadge, dateBadge,
   videoResourceBadge, attachmentFileBadge, editAction, deleteAction, blockAction, blockedBadge
@@ -35,6 +35,8 @@ const ManageWorkshop: FC = () => {
 
   const [activeForm, setActiveForm] = useState<FormMode>({ type: 'view' });
   const [activeTab, setActiveTab] = useState<'schedule' | 'testimonials' | 'faqs'>('schedule');
+  const [deleteConfirmFaqId, setDeleteConfirmFaqId] = useState<string | null>(null);
+  const [deleteConfirmTestId, setDeleteConfirmTestId] = useState<string | null>(null);
 
   const { data: workshopRes, isLoading: wsLoading } = Queries.useGetWorkshopById(workshopId!);
   const { data: currRes, isLoading: currLoading } = Queries.useGetWorkshopCurriculums({ workshopFilter: workshopId });
@@ -370,10 +372,21 @@ const ManageWorkshop: FC = () => {
                               danger={!test.isBlocked}
                               loading={editTestimonialMutation.isPending}
                             />
-                            <Button type="text" size="small" icon={<EditOutlined />} onClick={() => setActiveForm({ type: 'editTestimonial', data: test })} className="h-7 w-7 rounded-full flex items-center justify-center p-0 hover:bg-surface-muted" />
-                            <Popconfirm title="Delete this testimonial?" description="This will remove it from the workshop." onConfirm={() => handleDeleteTestimonial(test._id)} okText="Delete" cancelText="Cancel" okButtonProps={{ danger: true }}>
-                              <Button type="text" size="small" danger icon={<DeleteOutlined />} className="hover:bg-red-50 h-7 w-7 rounded-full flex items-center justify-center p-0" />
-                            </Popconfirm>
+                            <Button 
+                              type="text" 
+                              size="small" 
+                              icon={<EditOutlined />} 
+                              onClick={() => setActiveForm({ type: 'editTestimonial', data: test })} 
+                              className="h-7 w-7 rounded-full flex items-center justify-center p-0 hover:bg-surface-muted" 
+                            />
+                            <Button 
+                              type="text" 
+                              size="small" 
+                              danger 
+                              icon={<DeleteOutlined />} 
+                              className="hover:bg-red-50 h-7 w-7 rounded-full flex items-center justify-center p-0" 
+                              onClick={() => setDeleteConfirmTestId(test._id)}
+                            />
                           </div>
                         </div>
                         <div className="course-hero-description-wrapper text-sm text-text-muted italic leading-relaxed mb-6">
@@ -459,10 +472,21 @@ const ManageWorkshop: FC = () => {
                               danger={!faq.isBlocked}
                               loading={editFAQMutation.isPending}
                             />
-                            <Button type="text" size="small" icon={<EditOutlined />} onClick={() => setActiveForm({ type: 'editFAQ', data: faq })} className="h-7 w-7 rounded-full flex items-center justify-center p-0 hover:bg-surface-muted" />
-                            <Popconfirm title="Delete this FAQ?" description="This will remove it from the workshop." onConfirm={() => handleDeleteFAQ(faq._id)} okText="Delete" cancelText="Cancel" okButtonProps={{ danger: true }}>
-                              <Button type="text" size="small" danger icon={<DeleteOutlined />} className="hover:bg-red-50 h-7 w-7 rounded-full flex items-center justify-center p-0" />
-                            </Popconfirm>
+                            <Button 
+                              type="text" 
+                              size="small" 
+                              icon={<EditOutlined />} 
+                              onClick={() => setActiveForm({ type: 'editFAQ', data: faq })} 
+                              className="h-7 w-7 rounded-full flex items-center justify-center p-0 hover:bg-surface-muted" 
+                            />
+                            <Button 
+                              type="text" 
+                              size="small" 
+                              danger 
+                              icon={<DeleteOutlined />} 
+                              className="hover:bg-red-50 h-7 w-7 rounded-full flex items-center justify-center p-0" 
+                              onClick={() => setDeleteConfirmFaqId(faq._id)}
+                            />
                           </div>
                         </div>
                       </div>
@@ -476,6 +500,30 @@ const ManageWorkshop: FC = () => {
           )}
         </div>
       </CommonPageWrapper>
+      {deleteConfirmFaqId && (
+        <CommonDeleteModal
+          open={!!deleteConfirmFaqId}
+          title="Delete FAQ"
+          description="Are you sure you want to delete this FAQ? This will remove it from the workshop."
+          onClose={() => setDeleteConfirmFaqId(null)}
+          onConfirm={() => {
+            handleDeleteFAQ(deleteConfirmFaqId);
+            setDeleteConfirmFaqId(null);
+          }}
+        />
+      )}
+      {deleteConfirmTestId && (
+        <CommonDeleteModal
+          open={!!deleteConfirmTestId}
+          title="Delete Testimonial"
+          description="Are you sure you want to delete this testimonial? This will remove it from the workshop."
+          onClose={() => setDeleteConfirmTestId(null)}
+          onConfirm={() => {
+            handleDeleteTestimonial(deleteConfirmTestId);
+            setDeleteConfirmTestId(null);
+          }}
+        />
+      )}
     </>
   );
 };

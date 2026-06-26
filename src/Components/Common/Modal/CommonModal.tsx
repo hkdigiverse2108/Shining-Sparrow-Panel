@@ -52,7 +52,7 @@ const CommonModal: FC<CommonModalProps> = ({ isOpen, onClose, children, classNam
               {subTitle && <p className="text-xs sm:text-sm text-muted">{subTitle}</p>}
             </div>
           )}
-          <div className="max-h-155! overflow-y-auto custom-scrollbar">{children}</div>
+          <div className="max-h-[75vh] overflow-y-auto overflow-x-hidden custom-scrollbar">{children}</div>
         </div>
       </div>
     </div>

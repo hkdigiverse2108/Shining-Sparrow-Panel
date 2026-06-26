@@ -1,4 +1,4 @@
-﻿import { type FC, useMemo } from 'react';
+import { type FC, useMemo } from 'react';
 import { Formik, Form } from 'formik';
 import { CommonFormSection, CommonFormShell } from '@/Components';
 import { CommonButton, CommonValidationTextField } from '@/Attribute';
@@ -13,8 +13,18 @@ interface ExamFormProps {
 
 const ExamSchema = Yup.object({
   title: Yup.string().required('Exam title is required'),
-  passingMarks: Yup.number().required('Required').min(0),
-  totalMarks: Yup.number().required('Required').min(1),
+  totalMarks: Yup.number().required('Required').min(1, 'Total marks must be at least 1'),
+  passingMarks: Yup.number()
+    .required('Required')
+    .min(0, 'Passing marks cannot be negative')
+    .test(
+      'passing-less-than-total',
+      'Warning: Passing marks cannot be greater than total marks',
+      function (value) {
+        const { totalMarks } = this.parent;
+        return value === undefined || totalMarks === undefined || value <= totalMarks;
+      }
+    ),
   timeLimit: Yup.number().required('Required in minutes').min(1),
 });
 
@@ -44,7 +54,7 @@ export const ExamForm: FC<ExamFormProps> = ({ editing, onSave, loading, lessonId
 
   return (
     <Formik enableReinitialize initialValues={initialValues} validationSchema={ExamSchema} onSubmit={handleSubmit}>
-      {() => (
+      {({ values }) => (
         <CommonFormShell
           title={editing ? 'Edit Exam' : 'Add Exam'}
           description="Set the timing, total marks, and passing threshold for the lesson assessment."
@@ -57,6 +67,14 @@ export const ExamForm: FC<ExamFormProps> = ({ editing, onSave, loading, lessonId
               <CommonValidationTextField name="totalMarks" label="Total Marks" type="number" required />
               <CommonValidationTextField name="passingMarks" label="Passing Marks" type="number" required />
             </CommonFormSection>
+
+            {values.passingMarks !== undefined && values.totalMarks !== undefined && Number(values.passingMarks) > Number(values.totalMarks) && (
+              <div className="mb-4 p-3.5 bg-amber-500/10 border border-amber-500/25 rounded-lg flex items-start gap-2.5 text-amber-600 dark:text-amber-400">
+                <span className="text-sm font-semibold leading-relaxed">
+                  ⚠️ Warning: Passing marks ({values.passingMarks}) cannot be greater than total marks ({values.totalMarks}). Please check this configuration before saving.
+                </span>
+              </div>
+            )}
 
             <div className="course-form-actions">
               <CommonButton htmlType="submit" type="primary" title={editing ? 'Update Exam' : 'Create Exam'} loading={loading} block className="course-button course-button--primary" />

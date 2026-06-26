@@ -1,6 +1,6 @@
 import { useMemo, useState, type FC } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Spin, Button, Segmented, Popconfirm, Tag } from 'antd';
+import { Spin, Button, Segmented, Tag } from 'antd';
 import {
   BookOutlined, BarsOutlined, LockOutlined, UnlockOutlined,
   AppstoreOutlined, FolderOutlined, FileTextOutlined, PlusOutlined,
@@ -11,7 +11,7 @@ import {
 import { Queries, Mutations } from '@/Api';
 import { KEYS } from '@/Constants';
 import { useQueryClient } from '@tanstack/react-query';
-import { CommonBreadcrumbs, CommonPageWrapper, ContentItemCard, EmptyContentPanel, CommonReadMore } from '@/Components';
+import { CommonBreadcrumbs, CommonPageWrapper, ContentItemCard, EmptyContentPanel, CommonReadMore, CommonDeleteModal } from '@/Components';
 import { FAQForm } from '@/Components/Workshop/FAQForm';
 import {
   priorityBadge, durationBadge, videoBadge, attachmentBadge,
@@ -72,6 +72,7 @@ const ManageContentPage: FC = () => {
     | { type: 'addFAQ' }
     | { type: 'editFAQ'; data: any }
   >({ type: 'view' });
+  const [deleteConfirmFaqId, setDeleteConfirmFaqId] = useState<string | null>(null);
 
   const { data: courseRes, isLoading: courseLoading } = Queries.useGetCourses({ page: 1, limit: 1000 });
   const { data: lessRes, isLoading: lessLoading } = Queries.useGetLessons();
@@ -514,10 +515,21 @@ const ManageContentPage: FC = () => {
                                     danger={!faq.isBlocked}
                                     loading={editFAQMutation.isPending}
                                   />
-                                  <Button type="text" size="small" icon={<EditOutlined />} onClick={() => setActiveForm({ type: 'editFAQ', data: faq })} className="h-7 w-7 rounded-full flex items-center justify-center p-0" />
-                                  <Popconfirm title="Delete this FAQ?" description="This will remove it from the course." onConfirm={() => handleDeleteFAQ(faq._id)} okText="Delete" cancelText="Cancel" okButtonProps={{ danger: true }}>
-                                    <Button type="text" size="small" danger icon={<DeleteOutlined />} className="hover:bg-red-50 h-7 w-7 rounded-full flex items-center justify-center p-0" />
-                                  </Popconfirm>
+                                  <Button 
+                                    type="text" 
+                                    size="small" 
+                                    icon={<EditOutlined />} 
+                                    onClick={() => setActiveForm({ type: 'editFAQ', data: faq })} 
+                                    className="h-7 w-7 rounded-full flex items-center justify-center p-0 hover:bg-surface-muted" 
+                                  />
+                                  <Button 
+                                    type="text" 
+                                    size="small" 
+                                    danger 
+                                    icon={<DeleteOutlined />} 
+                                    className="hover:bg-red-50 h-7 w-7 rounded-full flex items-center justify-center p-0" 
+                                    onClick={() => setDeleteConfirmFaqId(faq._id)}
+                                  />
                                 </div>
                               </div>
                             </div>
@@ -618,6 +630,18 @@ const ManageContentPage: FC = () => {
           )}
         </div>
       </CommonPageWrapper>
+      {deleteConfirmFaqId && (
+        <CommonDeleteModal
+          open={!!deleteConfirmFaqId}
+          title="Delete FAQ"
+          description="Are you sure you want to delete this FAQ? This will remove it from the course."
+          onClose={() => setDeleteConfirmFaqId(null)}
+          onConfirm={() => {
+            handleDeleteFAQ(deleteConfirmFaqId);
+            setDeleteConfirmFaqId(null);
+          }}
+        />
+      )}
     </>
   );
 };

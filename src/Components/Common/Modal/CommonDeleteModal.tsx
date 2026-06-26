@@ -11,7 +11,7 @@ const CommonDeleteModal: FC<CommonDeleteModalProps> = ({ open, title, descriptio
         {itemName && <span className="font-medium"> "{itemName}"</span>}?
       </p>
 
-      <div className="flex justify-end gap-2">
+      <div className="flex justify-end gap-2 pb-1">
         <CommonButton variant="outlined" onClick={onClose}>
           Cancel
         </CommonButton>

@@ -384,7 +384,7 @@ const ExamManagerPage: FC = () => {
             <main className="course-main">
               {/* ── Marks Mismatch Warning Bar ── */}
               {lessonExam && totalScore !== Number(lessonExam.totalMarks) && (
-                <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-4 rounded-r-xl shadow-sm flex items-start justify-between gap-4 animate-fade-in">
+                <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-4 rounded-r-xl shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 animate-fade-in">
                   <div className="flex items-start gap-3">
                     <div className="text-red-500 mt-0.5"><CalculatorOutlined className="text-lg" /></div>
                     <div>
@@ -392,6 +392,11 @@ const ExamManagerPage: FC = () => {
                       <p className="text-red-700 text-xs mt-1 leading-relaxed">
                         The sum of individual question scores (<strong>{totalScore}</strong> points) does not match the configured Exam Total Marks (<strong>{lessonExam.totalMarks}</strong> marks). Students will see a mismatch. Please adjust question scores or edit the assessment marks.
                       </p>
+                      {Number(lessonExam.passingMarks) > totalScore && (
+                        <p className="text-amber-700 text-xs mt-1.5 font-semibold flex items-center gap-1.5">
+                          ⚠️ Warning: If you sync total marks to {totalScore}, the passing marks threshold ({lessonExam.passingMarks}) will exceed the new total. You will need to lower your passing marks.
+                        </p>
+                      )}
                     </div>
                   </div>
                   <Button 
@@ -404,6 +409,19 @@ const ExamManagerPage: FC = () => {
                   >
                     Sync Exam Marks to {totalScore}
                   </Button>
+                </div>
+              )}
+
+              {/* ── Passing Marks Exceeds Total Marks Warning ── */}
+              {lessonExam && Number(lessonExam.passingMarks) > Number(lessonExam.totalMarks) && (
+                <div className="bg-amber-50 border-l-4 border-amber-500 p-4 mb-4 rounded-r-xl shadow-sm flex items-start gap-3 animate-fade-in">
+                  <div className="text-amber-500 mt-0.5">⚠️</div>
+                  <div>
+                    <h4 className="font-bold text-amber-800 text-sm">Passing Marks Exceeds Total Marks</h4>
+                    <p className="text-amber-700 text-xs mt-1 leading-relaxed">
+                      Configured Passing Marks (<strong>{lessonExam.passingMarks}</strong> marks) is currently larger than the Exam Total Marks (<strong>{lessonExam.totalMarks}</strong> marks). Students cannot pass this exam. Please edit the exam settings to lower passing marks.
+                    </p>
+                  </div>
                 </div>
               )}
 

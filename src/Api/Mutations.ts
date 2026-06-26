@@ -115,7 +115,7 @@ export const Mutations = {
   // ************ Contact / Get In Touch ***********
   useDeleteContactMessage: () => useMutations<string, void>([KEYS.GET_IN_TOUCH.DELETE, KEYS.GET_IN_TOUCH.BASE], (id) => Delete(`${URL_KEYS.GET_IN_TOUCH.DELETE}/${id}`)),
 
-  useMarkContactRead: () => useMutations<{ getInTouchId: string; isRead: boolean }, any>([KEYS.GET_IN_TOUCH.BASE, "mark-read"], (input) => Post(URL_KEYS.GET_IN_TOUCH.EDIT, input)),
+  useMarkContactRead: () => useMutations<any, any>([KEYS.GET_IN_TOUCH.BASE, "mark-read"], (input) => Post(URL_KEYS.GET_IN_TOUCH.EDIT, input)),
 
   // ************ Coupon Code ***********
   useAddCouponCode: () => useMutations<any, MessageStatus>([KEYS.COUPON_CODE.BASE, "ADD"], (input) => Post(URL_KEYS.COUPON_CODE.ADD, input)),

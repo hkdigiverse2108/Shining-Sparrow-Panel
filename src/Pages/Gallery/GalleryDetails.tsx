@@ -44,9 +44,10 @@ const GalleryDetails: FC = () => {
   });
 
   const record = useMemo(() => {
-    if (stateRecord) return stateRecord;
     const list = responseData?.data?.gallery_data || [];
-    return list.find((item: any) => item._id === id);
+    const found = list.find((item: any) => item._id === id);
+    if (found) return found;
+    return stateRecord;
   }, [stateRecord, responseData, id]);
 
   const deleteGalleryMutation = Mutations.useDeleteGallery();

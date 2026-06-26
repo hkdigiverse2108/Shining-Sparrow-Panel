@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
-import { Button, Popconfirm, Tooltip } from 'antd';
+import { useState } from 'react';
+import { Button, Tooltip } from 'antd';
 import {
   EditOutlined,
   DeleteOutlined,
@@ -13,6 +14,7 @@ import {
   VideoCameraOutlined,
   FileTextOutlined,
 } from '@ant-design/icons';
+import CommonDeleteModal from './Modal/CommonDeleteModal';
 
 // ─── Badge definition ───────────────────────────────────────────────────────
 
@@ -80,6 +82,12 @@ const ContentItemCard: React.FC<ContentItemCardProps> = ({
   actions = [],
   className = '',
 }) => {
+  const [activeConfirm, setActiveConfirm] = useState<{
+    title: string;
+    desc?: string;
+    onConfirm: () => void;
+  } | null>(null);
+
   return (
     <div
       className={`flex flex-col md:flex-row md:items-center justify-between p-5 md:p-6 bg-surface border border-border rounded-2xl hover:shadow-md transition-all gap-5 ${className}`}
@@ -147,7 +155,13 @@ const ContentItemCard: React.FC<ContentItemCardProps> = ({
                   icon={isExam ? <FileTextOutlined /> : action.icon}
                   danger={action.danger}
                   loading={action.loading}
-                  onClick={action.onClick}
+                  onClick={action.confirm ? () => {
+                    setActiveConfirm({
+                      title: action.confirmTitle ?? 'Delete this item?',
+                      desc: action.confirmDesc,
+                      onConfirm: action.onConfirm || (() => {}),
+                    });
+                  } : action.onClick}
                   disabled={action.disabled}
                   className={`text-xs px-4 py-2 h-9 rounded-lg font-bold inline-flex items-center gap-1.5 transition-all duration-200 ${
                     isExam
@@ -160,19 +174,7 @@ const ContentItemCard: React.FC<ContentItemCardProps> = ({
                 </Button>
               );
 
-              return action.confirm ? (
-                <Popconfirm
-                  key={i}
-                  title={action.confirmTitle ?? 'Are you sure?'}
-                  description={action.confirmDesc}
-                  onConfirm={action.onConfirm}
-                  okText="Delete"
-                  cancelText="Cancel"
-                  okButtonProps={{ danger: true }}
-                >
-                  {btnInner}
-                </Popconfirm>
-              ) : (
+              return (
                 <span key={i}>{btnInner}</span>
               );
             })}
@@ -189,7 +191,13 @@ const ContentItemCard: React.FC<ContentItemCardProps> = ({
                       icon={action.icon}
                       danger={action.danger}
                       loading={action.loading}
-                      onClick={action.onClick}
+                      onClick={action.confirm ? () => {
+                        setActiveConfirm({
+                          title: action.confirmTitle ?? 'Delete this item?',
+                          desc: action.confirmDesc,
+                          onConfirm: action.onConfirm || (() => {}),
+                        });
+                      } : action.onClick}
                       disabled={action.disabled}
                       className={`rounded-lg h-8 w-8 flex items-center justify-center p-0 hover:scale-[1.05] transition-all border border-transparent ${
                         action.danger 
@@ -201,25 +209,12 @@ const ContentItemCard: React.FC<ContentItemCardProps> = ({
                     />
                   );
 
-                  const btnConfirm = action.confirm ? (
-                    <Popconfirm
-                      title={action.confirmTitle ?? 'Are you sure?'}
-                      description={action.confirmDesc}
-                      onConfirm={action.onConfirm}
-                      okText="Delete"
-                      cancelText="Cancel"
-                      okButtonProps={{ danger: true }}
-                    >
-                      {btnInner}
-                    </Popconfirm>
-                  ) : btnInner;
-
                   const element = action.tooltip ? (
                     <Tooltip title={action.tooltip} key={i}>
-                      <span>{btnConfirm}</span>
+                      <span>{btnInner}</span>
                     </Tooltip>
                   ) : (
-                    <span key={i}>{btnConfirm}</span>
+                    <span key={i}>{btnInner}</span>
                   );
 
                   return (
@@ -234,6 +229,20 @@ const ContentItemCard: React.FC<ContentItemCardProps> = ({
             </div>
           )}
         </div>
+      )}
+
+      {activeConfirm && (
+        <CommonDeleteModal
+          open={!!activeConfirm}
+          title={activeConfirm.title}
+          description={activeConfirm.desc}
+          itemName=""
+          onClose={() => setActiveConfirm(null)}
+          onConfirm={() => {
+            activeConfirm.onConfirm();
+            setActiveConfirm(null);
+          }}
+        />
       )}
     </div>
   );

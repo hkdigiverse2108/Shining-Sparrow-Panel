@@ -4,12 +4,12 @@ import {
   UserOutlined, MailOutlined, PhoneOutlined,
   DeleteOutlined, EyeOutlined, ClockCircleOutlined,
   CheckCircleOutlined, InboxOutlined, SaveOutlined,
-  SettingOutlined,
+  SettingOutlined, SendOutlined,
 } from '@ant-design/icons';
 import { motion } from 'motion/react';
 import { useQueryClient } from '@tanstack/react-query';
 import { CommonBreadcrumbs, CommonPageWrapper, CommonTable, CommonDeleteModal, CommonDrawer, CommonFormSection, AdvancedSearch } from '@/Components';
-import { CommonButton, CommonValidationTextField } from '@/Attribute';
+import { CommonButton, CommonValidationTextField, showNotification, CommonRichTextEditor } from '@/Attribute';
 import { blurRevealUp, staggerContainer } from '@/Utils/animations';
 import { BREADCRUMBS } from '@/Data';
 import { Queries, Mutations, Get } from '@/Api';
@@ -95,14 +95,25 @@ const getColumns = ({
     title: 'Status',
     dataIndex: 'isRead',
     width: 100,
-    render: (v: boolean) => (
-      <Tag
-        icon={v ? <CheckCircleOutlined /> : <InboxOutlined />}
-        color={v ? 'green' : 'orange'}
-        className="capitalize m-0"
-      >
-        {v ? 'Read' : 'Unread'}
-      </Tag>
+    render: (v: boolean, r: any) => (
+      <div className="flex flex-col gap-1">
+        <Tag
+          icon={v ? <CheckCircleOutlined /> : <InboxOutlined />}
+          color={v ? 'green' : 'orange'}
+          className="capitalize m-0 w-max"
+        >
+          {v ? 'Read' : 'Unread'}
+        </Tag>
+        {r.isReplied && (
+          <Tag
+            icon={<CheckCircleOutlined />}
+            color="success"
+            className="capitalize m-0 w-max text-[10px]"
+          >
+            Replied
+          </Tag>
+        )}
+      </div>
     ),
   },
   {
@@ -255,6 +266,11 @@ const ContactDetailsTab: FC = () => {
   );
 };
 
+const ReplySchema = Yup.object({
+  subject: Yup.string().required('Subject is required'),
+  message: Yup.string().required('Message is required'),
+});
+
 // ─── Contact Page Main Component ─────────────────────────────────────────────
 const ContactPage: FC = () => {
   const queryClient = useQueryClient();
@@ -265,6 +281,7 @@ const ContactPage: FC = () => {
   const [pageSize, setPageSize] = useState(10);
   const [selectedMessage, setSelectedMessage] = useState<any>(null);
   const [isViewDrawerOpen, setIsViewDrawerOpen] = useState(false);
+  const [isReplyDrawerOpen, setIsReplyDrawerOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [msgToDelete, setMsgToDelete] = useState<any>(null);
 
@@ -288,6 +305,13 @@ const ContactPage: FC = () => {
 
   const deleteMutation = Mutations.useDeleteContactMessage();
   const markReadMutation = Mutations.useMarkContactRead();
+  const sendNewsletterMutation = Mutations.useSendNewsletter();
+
+  // Selected message detail synchronizes to have updated replied states
+  const messageDetail = useMemo(() => {
+    if (!selectedMessage) return null;
+    return messages.find((m: any) => m._id === selectedMessage._id) || selectedMessage;
+  }, [messages, selectedMessage]);
 
   const unreadCount = useMemo(() => messages.filter((m: any) => !m.isRead).length, [messages]);
   const readCount = useMemo(() => messages.filter((m: any) => m.isRead).length, [messages]);
@@ -340,7 +364,7 @@ const ContactPage: FC = () => {
 
   const columns = useMemo(
     () => getColumns({ onView: handleView, onDelete: handleDeleteClick, current, pageSize }),
-    [current, pageSize]
+    [messages, current, pageSize]
   );
 
   const tabItems = [
@@ -486,42 +510,53 @@ const ContactPage: FC = () => {
         onClose={() => setIsViewDrawerOpen(false)}
         size={500}
       >
-        {selectedMessage && (
+        {messageDetail && (
           <div className="flex flex-col gap-5">
             {/* Sender Card */}
             <div className="flex items-start gap-4 p-4 rounded-xl border border-border bg-surface-muted">
               <Avatar size={52} icon={<UserOutlined />} className="border border-border shadow-sm shrink-0" />
               <div className="min-w-0 flex-1">
-                <div className="font-bold text-foreground text-base truncate">{selectedMessage.name}</div>
+                <div className="font-bold text-foreground text-base truncate">{messageDetail.name}</div>
                 <div className="text-xs text-muted flex items-center gap-1 mt-0.5">
-                  <MailOutlined /> {selectedMessage.email}
+                  <MailOutlined /> {messageDetail.email}
                 </div>
-                {selectedMessage.phoneNumber && (
+                {messageDetail.phoneNumber && (
                   <div className="text-xs text-muted flex items-center gap-1 mt-0.5">
-                    <PhoneOutlined /> {selectedMessage.phoneNumber}
+                    <PhoneOutlined /> {messageDetail.phoneNumber}
                   </div>
                 )}
               </div>
-              <Tag
-                icon={selectedMessage.isRead ? <CheckCircleOutlined /> : <InboxOutlined />}
-                color={selectedMessage.isRead ? 'green' : 'orange'}
-                className="shrink-0 m-0"
-              >
-                {selectedMessage.isRead ? 'Read' : 'Unread'}
-              </Tag>
+              <div className="flex flex-col gap-1 shrink-0">
+                <Tag
+                  icon={messageDetail.isRead ? <CheckCircleOutlined /> : <InboxOutlined />}
+                  color={messageDetail.isRead ? 'green' : 'orange'}
+                  className="m-0 w-max"
+                >
+                  {messageDetail.isRead ? 'Read' : 'Unread'}
+                </Tag>
+                {messageDetail.isReplied && (
+                  <Tag
+                    icon={<CheckCircleOutlined />}
+                    color="success"
+                    className="m-0 w-max"
+                  >
+                    Replied
+                  </Tag>
+                )}
+              </div>
             </div>
 
             {/* Subject & Date */}
             <div className="grid grid-cols-2 gap-3">
               <div className="p-3 rounded-lg border border-border bg-surface">
                 <div className="text-[10px] font-semibold uppercase tracking-wider text-muted mb-1">Subject</div>
-                <div className="text-sm font-medium text-foreground">{selectedMessage.subject || <span className="text-muted italic">No subject</span>}</div>
+                <div className="text-sm font-medium text-foreground">{messageDetail.subject || <span className="text-muted italic">No subject</span>}</div>
               </div>
               <div className="p-3 rounded-lg border border-border bg-surface">
                 <div className="text-[10px] font-semibold uppercase tracking-wider text-muted mb-1">Received</div>
                 <div className="text-sm font-medium text-foreground flex items-center gap-1">
                   <ClockCircleOutlined className="text-muted" />
-                  {selectedMessage.createdAt ? dayjs(selectedMessage.createdAt).format('DD MMM YYYY, hh:mm A') : '—'}
+                  {messageDetail.createdAt ? dayjs(messageDetail.createdAt).format('DD MMM YYYY, hh:mm A') : '—'}
                 </div>
               </div>
             </div>
@@ -529,26 +564,50 @@ const ContactPage: FC = () => {
             {/* Message */}
             <div className="p-4 rounded-xl border border-border bg-surface">
               <div className="text-[10px] font-semibold uppercase tracking-wider text-muted mb-2">Message</div>
-              <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap m-0">{selectedMessage.message}</p>
+              <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap m-0">{messageDetail.message}</p>
             </div>
+
+            {/* Sent Reply Block */}
+            {messageDetail.isReplied && messageDetail.replyMessage && (
+              <div className="p-4 rounded-xl border border-emerald-500/15 bg-emerald-500/5">
+                <div className="flex items-center justify-between border-b border-emerald-500/10 pb-2 mb-3">
+                  <div className="text-xs font-bold uppercase tracking-wider text-emerald-600 flex items-center gap-1.5 m-0">
+                    <CheckCircleOutlined /> Sent Reply
+                  </div>
+                  {messageDetail.repliedAt && (
+                    <span className="text-[11px] text-muted">
+                      {dayjs(messageDetail.repliedAt).format('DD MMM YYYY, hh:mm A')}
+                    </span>
+                  )}
+                </div>
+                {messageDetail.replySubject && (
+                  <div className="mb-2 text-xs text-foreground/80">
+                    <strong>Subject:</strong> {messageDetail.replySubject}
+                  </div>
+                )}
+                <div
+                  className="text-sm text-foreground/90 ql-editor p-0 m-0"
+                  dangerouslySetInnerHTML={{ __html: messageDetail.replyMessage }}
+                />
+              </div>
+            )}
 
             {/* Actions */}
             <div className="flex gap-3 pt-2 border-t border-border">
               <CommonButton
-                type="primary"
+                type={messageDetail.isReplied ? "default" : "primary"}
                 icon={<MailOutlined />}
-                href={`mailto:${selectedMessage.email}?subject=Re: ${selectedMessage.subject || 'Your message'}`}
-                target="_blank"
+                onClick={() => setIsReplyDrawerOpen(true)}
                 className="flex-1"
               >
-                Reply via Email
+                {messageDetail.isReplied ? 'Send Another Reply' : 'Reply via Email'}
               </CommonButton>
               <Button
                 danger
                 icon={<DeleteOutlined />}
                 onClick={() => {
                   setIsViewDrawerOpen(false);
-                  handleDeleteClick(selectedMessage);
+                  handleDeleteClick(messageDetail);
                 }}
               >
                 Delete
@@ -557,6 +616,105 @@ const ContactPage: FC = () => {
           </div>
         )}
       </CommonDrawer>
+
+      {/* Reply Drawer */}
+      {messageDetail && (
+        <CommonDrawer
+          title={`Reply to ${messageDetail.name}`}
+          open={isReplyDrawerOpen}
+          onClose={() => setIsReplyDrawerOpen(false)}
+          size={520}
+        >
+          <Formik
+            initialValues={{
+              email: messageDetail.email || '',
+              subject: `Re: ${messageDetail.subject || 'Inquiry'}`,
+              message: ''
+            }}
+            validationSchema={ReplySchema}
+            onSubmit={(values, { resetForm, setSubmitting }) => {
+              sendNewsletterMutation.mutate(
+                {
+                  emails: [values.email],
+                  subject: values.subject,
+                  message: values.message,
+                },
+                {
+                  onSuccess: () => {
+                    markReadMutation.mutate(
+                      {
+                        getInTouchId: messageDetail._id,
+                        isRead: true,
+                        isReplied: true,
+                        replySubject: values.subject,
+                        replyMessage: values.message,
+                        repliedAt: new Date().toISOString()
+                      },
+                      {
+                        onSuccess: () => {
+                          queryClient.invalidateQueries({ queryKey: [KEYS.GET_IN_TOUCH.BASE] });
+                          showNotification('success', 'Reply email sent and response saved successfully');
+                          setIsReplyDrawerOpen(false);
+                          resetForm();
+                        },
+                        onError: () => {
+                          showNotification('warning', 'Email sent, but failed to save reply log in database');
+                          setIsReplyDrawerOpen(false);
+                          resetForm();
+                        }
+                      }
+                    );
+                  },
+                  onSettled: () => {
+                    setSubmitting(false);
+                  }
+                }
+              );
+            }}
+          >
+            {({ isSubmitting, isValid, dirty }) => (
+              <Form className="space-y-4 mt-2">
+                <CommonValidationTextField
+                  name="email"
+                  label="To"
+                  disabled
+                />
+
+                <CommonValidationTextField
+                  name="subject"
+                  label="Subject"
+                  placeholder="Enter email subject..."
+                  required
+                />
+
+                <div className="rounded-lg overflow-hidden">
+                  <CommonRichTextEditor
+                    name="message"
+                    label="Message Content"
+                    placeholder="Write your reply message here..."
+                    required
+                  />
+                </div>
+
+                <div className="flex justify-end gap-2 pt-4 border-t border-border mt-6">
+                  <Button onClick={() => setIsReplyDrawerOpen(false)} disabled={isSubmitting}>
+                    Cancel
+                  </Button>
+                  <Button
+                    type="primary"
+                    htmlType="submit"
+                    icon={<SendOutlined />}
+                    loading={isSubmitting || sendNewsletterMutation.isPending}
+                    disabled={!isValid || !dirty}
+                  >
+                    Send Reply
+                  </Button>
+                </div>
+              </Form>
+            )}
+          </Formik>
+        </CommonDrawer>
+      )}
 
       {/* Delete Confirmation Modal */}
       <CommonDeleteModal
