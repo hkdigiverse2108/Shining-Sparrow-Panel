@@ -4,14 +4,14 @@ import {
   DeleteOutlined, EditOutlined, LockOutlined, UnlockOutlined, CalendarOutlined,
 } from '@ant-design/icons';
 import dayjs from 'dayjs';
-import { KEYS } from '@/Constants';
+import { KEYS, URL_KEYS } from '@/Constants';
 import { BREADCRUMBS } from '@/Data';
 import { CommonPageWrapper, CommonBreadcrumbs, CommonDeleteModal, AdvancedSearch, CommonTable, CommonSummaryCards } from '@/Components';
 import { TestimonialForm } from '@/Components/Workshop/TestimonialForm';
 import { motion } from 'motion/react';
 import { blurRevealUp, staggerContainer } from '@/Utils/animations';
 import { useQueryClient } from '@tanstack/react-query';
-import { Mutations, Queries } from '@/Api';
+import { Mutations, Queries, Get } from '@/Api';
 import { useDebounce } from '@/Utils';
 
 const TestimonialPage: FC = () => {
@@ -118,6 +118,19 @@ const TestimonialPage: FC = () => {
   const handleTableChange = (pagination: any) => {
     setCurrent(pagination.current);
     setPageSize(pagination.pageSize);
+  };
+
+  const handleExportAll = async () => {
+    const p: Record<string, any> = { page: 1, limit: 10000 };
+    if (debouncedSearchQuery) p.search = debouncedSearchQuery;
+    if (selectedType !== 'all') p.type = selectedType;
+    if (selectedCatalogId) p.learningCatalogId = selectedCatalogId;
+    if (isBlockedFilter !== 'all') p.isBlocked = isBlockedFilter;
+    if (ratingFilter !== 'all') p.rate = ratingFilter;
+    if (dateRange?.[0]) p.startDate = dateRange[0].startOf('day').toISOString();
+    if (dateRange?.[1]) p.endDate = dateRange[1].endOf('day').toISOString();
+    const res = await Get<any>(URL_KEYS.TESTIMONIAL.GET, p);
+    return res?.data?.testimonial_data || res?.data || [];
   };
 
   const columns = useMemo(() => [
@@ -408,6 +421,7 @@ const TestimonialPage: FC = () => {
                 pageSize={pageSize}
                 total={totalTestimonials}
                 onTableChange={handleTableChange}
+                onExportAll={handleExportAll}
               />
             </motion.div>
           </motion.div>

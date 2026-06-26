@@ -23,4 +23,4 @@ const LMSDashboard: FC = () => (
   </>
 );
 
-export default LMSDashboard;
+export default LMSDashboard;

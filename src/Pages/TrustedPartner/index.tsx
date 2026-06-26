@@ -7,8 +7,8 @@ import { useQueryClient } from '@tanstack/react-query';
 import { CommonBreadcrumbs, CommonPageWrapper, CommonTable, CommonDeleteModal, CommonSummaryCards, CommonTag, AdvancedSearch } from '@/Components';
 import { blurRevealUp, staggerContainer } from '@/Utils/animations';
 import { BREADCRUMBS } from '@/Data';
-import { Queries, Mutations } from '@/Api';
-import { KEYS } from '@/Constants';
+import { Queries, Mutations, Get } from '@/Api';
+import { KEYS, URL_KEYS } from '@/Constants';
 import { useDebounce } from '@/Utils';
 import type { ColumnType } from 'antd/es/table';
 import { TrustedPartnerForm } from '@/Components/TrustedPartner/TrustedPartnerForm';
@@ -182,6 +182,18 @@ const TrustedPartnerPage: FC = () => {
     setPageSize(pagination.pageSize);
   };
 
+  const handleExportAll = async () => {
+    const res = await Get<any>(URL_KEYS.TRUSTED_PARTNER.GET, {
+      page: 1,
+      limit: 10000,
+      search: debouncedSearchQuery || undefined,
+      isBlocked: isBlockedFilter === "all" ? undefined : isBlockedFilter,
+      startDate: dateRange?.[0] ? dateRange[0].startOf('day').toISOString() : undefined,
+      endDate: dateRange?.[1] ? dateRange[1].endOf('day').toISOString() : undefined,
+    });
+    return res?.data?.trusted_partner_data || [];
+  };
+
   return (
     <>
       <CommonBreadcrumbs title="Trusted Partners" breadcrumbs={BREADCRUMBS.TRUSTED_PARTNER.BASE} />
@@ -251,6 +263,7 @@ const TrustedPartnerPage: FC = () => {
                 onSearch={handleSearch} 
                 onAdd={() => { setEditingPartner(null); setIsFormOpen(true); }} 
                 fileName="TrustedPartners" 
+                onExportAll={handleExportAll}
                 title="Trusted Partner Management" 
                 current={current} 
                 pageSize={pageSize} 

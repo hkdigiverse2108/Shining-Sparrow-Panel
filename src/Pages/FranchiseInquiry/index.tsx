@@ -7,8 +7,8 @@ import { CommonBreadcrumbs, CommonPageWrapper, CommonTable, CommonDeleteModal, A
 
 import { blurRevealUp, staggerContainer } from '@/Utils/animations';
 import { BREADCRUMBS } from '@/Data';
-import { Queries, Mutations } from '@/Api';
-import { KEYS, ROUTES } from '@/Constants';
+import { Queries, Mutations, Get } from '@/Api';
+import { KEYS, ROUTES, URL_KEYS } from '@/Constants';
 import { useDebounce } from '@/Utils';
 import type { ColumnType } from 'antd/es/table';
 import { useNavigate } from 'react-router-dom';
@@ -50,11 +50,17 @@ const getColumns = ({
               <span className="inline-block w-2 h-2 rounded-full bg-primary shrink-0" title="Unread" />
             )}
           </div>
-          <div className="text-xs text-muted flex items-center gap-1 mt-0.5">
-            <MailOutlined className="text-[10px]" />
-            {r.email}
-          </div>
         </div>
+      </div>
+    ),
+  },
+  {
+    title: 'Email',
+    dataIndex: 'email',
+    render: (v: string) => (
+      <div className="flex items-center gap-1.5 text-sm text-muted">
+        <MailOutlined className="text-[10px]" />
+        <span>{v || '—'}</span>
       </div>
     ),
   },
@@ -72,6 +78,7 @@ const getColumns = ({
   },
   {
     title: 'Location',
+    key: 'location',
     width: 150,
     align: 'center' as const,
     render: (_: any, r: any) => (
@@ -216,6 +223,19 @@ const FranchiseInquiryPage: FC = () => {
     setPageSize(pagination.pageSize);
   };
 
+  const handleExportAll = async () => {
+    const res = await Get<any>(URL_KEYS.FRANCHISE_INQUIRY.GET, {
+      page: 1,
+      limit: 10000,
+      search: debouncedSearch || undefined,
+      isRead: isReadFilter === "all" ? undefined : isReadFilter,
+      isBlocked: isBlockedFilter === "all" ? undefined : isBlockedFilter,
+      startDate: dateRange?.[0] ? dateRange[0].startOf('day').toISOString() : undefined,
+      endDate: dateRange?.[1] ? dateRange[1].endOf('day').toISOString() : undefined,
+    });
+    return res?.data?.franchise_inquiries_data || res?.data?.franchise_inquiry_data || [];
+  };
+
   const columns = useMemo(
     () => getColumns({ onView: handleView, onDelete: handleDeleteClick, current, pageSize }),
     [current, pageSize]
@@ -319,6 +339,7 @@ const FranchiseInquiryPage: FC = () => {
               pageSize={pageSize}
               total={totalInquiries}
               onTableChange={handleTableChange}
+              onExportAll={handleExportAll}
               fileName="franchise-inquiries"
               title="Franchise Inquiries"
             />

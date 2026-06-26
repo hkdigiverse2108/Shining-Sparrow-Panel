@@ -16,8 +16,8 @@ import { CommonBreadcrumbs, CommonPageWrapper, AdvancedSearch } from '@/Componen
 import CommonTable from '@/Components/Common/CommonTable';
 import { blurRevealUp, staggerContainer } from '@/Utils/animations';
 import { BREADCRUMBS } from '@/Data';
-import { Queries } from '@/Api';
-import { ROUTES } from '@/Constants';
+import { Queries, Get } from '@/Api';
+import { ROUTES, URL_KEYS } from '@/Constants';
 import type { ColumnType } from 'antd/es/table';
 import dayjs from 'dayjs';
 
@@ -106,6 +106,32 @@ const PaymentsPage: FC = () => {
     navigate(`${ROUTES.PAYMENTS}/${type}/${record._id}`, { state: { record } });
   };
 
+  // Export all course purchases
+  const handleExportCoursesAll = async () => {
+    const res = await Get<any>(URL_KEYS.COURSE.MY_COURSES, {
+      page: 1,
+      limit: 10000,
+      search: courseSearch || undefined,
+      courseId: courseFilter === "all" ? undefined : courseFilter,
+      minAmount: amountRange[0] === 0 ? undefined : amountRange[0].toString(),
+      maxAmount: amountRange[1] === 100000 ? undefined : amountRange[1].toString(),
+    });
+    return res?.data?.purchased_course_data || [];
+  };
+
+  // Export all workshop purchases
+  const handleExportWorkshopsAll = async () => {
+    const res = await Get<any>(URL_KEYS.WORKSHOP.MY_WORKSHOPS, {
+      page: 1,
+      limit: 10000,
+      search: workshopSearch || undefined,
+      workshopId: workshopFilter === "all" ? undefined : workshopFilter,
+      minAmount: amountRange[0] === 0 ? undefined : amountRange[0].toString(),
+      maxAmount: amountRange[1] === 100000 ? undefined : amountRange[1].toString(),
+    });
+    return res?.data?.purchased_workshop_data || [];
+  };
+
   // Status tag renderer
   const renderStatus = (status: string) => {
     const s = String(status).toLowerCase();
@@ -150,7 +176,6 @@ const PaymentsPage: FC = () => {
       align: 'left',
       render: (user: any) => {
         const name = user?.fullName || 'Unknown User';
-        const email = user?.email || 'N/A';
         return (
           <div className="user-cell-profile">
             <Avatar 
@@ -161,11 +186,18 @@ const PaymentsPage: FC = () => {
             />
             <div className="user-cell-info">
               <div className="font-semibold text-foreground text-sm truncate max-w-[150px]">{name}</div>
-              <div className="text-xs text-text-muted truncate max-w-[150px]">{email}</div>
             </div>
           </div>
         );
       },
+    },
+    {
+      title: 'Email',
+      dataIndex: 'userId',
+      align: 'left',
+      render: (user: any) => (
+        <span className="text-sm text-text-muted">{user?.email || '—'}</span>
+      ),
     },
     {
       title: 'Course Name',
@@ -244,7 +276,6 @@ const PaymentsPage: FC = () => {
       align: 'left',
       render: (user: any) => {
         const name = user?.fullName || 'Unknown User';
-        const email = user?.email || 'N/A';
         return (
           <div className="user-cell-profile">
             <Avatar 
@@ -255,11 +286,18 @@ const PaymentsPage: FC = () => {
             />
             <div className="user-cell-info">
               <div className="font-semibold text-foreground text-sm truncate max-w-[150px]">{name}</div>
-              <div className="text-xs text-text-muted truncate max-w-[150px]">{email}</div>
             </div>
           </div>
         );
       },
+    },
+    {
+      title: 'Email',
+      dataIndex: 'userId',
+      align: 'left',
+      render: (user: any) => (
+        <span className="text-sm text-text-muted">{user?.email || '—'}</span>
+      ),
     },
     {
       title: 'Workshop Name',
@@ -467,6 +505,7 @@ const PaymentsPage: FC = () => {
                 fileName="Course_Purchases"
                 title="Course Purchases"
                 toolbarExtra={toolbarTabs}
+                onExportAll={handleExportCoursesAll}
               />
             ) : (
               <CommonTable
@@ -483,6 +522,7 @@ const PaymentsPage: FC = () => {
                 fileName="Workshop_Payments"
                 title="Workshop Payments"
                 toolbarExtra={toolbarTabs}
+                onExportAll={handleExportWorkshopsAll}
               />
             )}
           </motion.div>

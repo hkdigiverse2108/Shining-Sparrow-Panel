@@ -154,6 +154,9 @@ export interface CommonTableToolbarProps {
 
   onExportExcel: () => void;
   onExportPDF: () => void;
+  onExportExcelAll?: () => void;
+  onExportPDFAll?: () => void;
+  onExportAll?: any;
   toolbarExtra?: React.ReactNode;
 }
 

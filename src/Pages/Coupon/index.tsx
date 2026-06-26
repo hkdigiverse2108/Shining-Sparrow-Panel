@@ -10,8 +10,8 @@ import { useQueryClient } from '@tanstack/react-query';
 import { CommonBreadcrumbs, CommonPageWrapper, CommonTable, CommonDeleteModal, CommonSummaryCards, AdvancedSearch } from '@/Components';
 import { blurRevealUp, staggerContainer } from '@/Utils/animations';
 import { BREADCRUMBS } from '@/Data';
-import { Queries, Mutations } from '@/Api';
-import { KEYS } from '@/Constants';
+import { Queries, Mutations, Get } from '@/Api';
+import { KEYS, URL_KEYS } from '@/Constants';
 import { useDebounce } from '@/Utils';
 import type { ColumnType } from 'antd/es/table';
 import dayjs from 'dayjs';
@@ -236,6 +236,20 @@ const CouponPage: FC = () => {
     setPageSize(pagination.pageSize);
   };
 
+  const handleExportAll = async () => {
+    const res = await Get<any>(URL_KEYS.COUPON_CODE.GET, {
+      page: 1,
+      limit: 10000,
+      search: debouncedSearchQuery || undefined,
+      discountType: discountTypeFilter === "all" ? undefined : discountTypeFilter,
+      appliesTo: appliesToFilter === "all" ? undefined : appliesToFilter,
+      validStartDate: validityDateRange?.[0] ? validityDateRange[0].startOf('day').toISOString() : undefined,
+      validEndDate: validityDateRange?.[1] ? validityDateRange[1].endOf('day').toISOString() : undefined,
+      usageStatus: usageStatusFilter === "all" ? undefined : usageStatusFilter,
+    });
+    return res?.data?.coupon_code_data || [];
+  };
+
   return (
     <>
       <CommonBreadcrumbs title="Coupon Codes" breadcrumbs={BREADCRUMBS.COUPON_CODE.BASE} />
@@ -333,6 +347,7 @@ const CouponPage: FC = () => {
                 onSearch={handleSearch} 
                 onAdd={() => { setEditingCoupon(null); setIsFormOpen(true); }} 
                 fileName="Coupon_Codes" 
+                onExportAll={handleExportAll} 
                 title="Coupon Codes" 
                 current={current} 
                 pageSize={pageSize} 

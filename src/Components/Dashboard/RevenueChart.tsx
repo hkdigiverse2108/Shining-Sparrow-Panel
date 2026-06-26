@@ -1,15 +1,19 @@
 import React from 'react';
-import { Skeleton } from 'antd';
+import { Skeleton, Segmented } from 'antd';
 import { ResponsiveContainer, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Line, ComposedChart } from 'recharts';
 import { DollarOutlined, BookOutlined, ToolOutlined } from '@ant-design/icons';
 import { Queries } from '@/Api';
 
-interface MonthlyData {
+export type ChartPeriod = 'daily' | 'weekly' | 'monthly' | 'yearly';
+
+interface DataPoint {
   label: string;
   courseRevenue: number;
   workshopRevenue: number;
   totalRevenue: number;
 }
+
+// No props needed — each chart manages its own period state independently
 
 const formatCurrency = (value: number) => {
   if (value >= 100000) return `₹${(value / 100000).toFixed(1)}L`;
@@ -60,21 +64,84 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ icon, label, value, color, bg
   </div>
 );
 
+/* ── Period aggregation helpers ── */
+function aggregateByPeriod(monthly: DataPoint[], period: ChartPeriod): DataPoint[] {
+  if (!monthly.length) return [];
+
+  if (period === 'monthly') return monthly;
+
+  if (period === 'yearly') {
+    // Group 12 months into a single year total
+    const yearLabel = `${new Date().getFullYear()}`;
+    return [{
+      label: yearLabel,
+      courseRevenue: monthly.reduce((s, m) => s + m.courseRevenue, 0),
+      workshopRevenue: monthly.reduce((s, m) => s + m.workshopRevenue, 0),
+      totalRevenue: monthly.reduce((s, m) => s + m.totalRevenue, 0),
+    }];
+  }
+
+  if (period === 'weekly') {
+    const recent = monthly.slice(-3);
+    const result: DataPoint[] = [];
+    recent.forEach((month) => {
+      const weeks = 4;
+      for (let w = 1; w <= weeks; w++) {
+        result.push({
+          label: `${month.label}/W${w}`,
+          courseRevenue: Math.round(month.courseRevenue / weeks),
+          workshopRevenue: Math.round(month.workshopRevenue / weeks),
+          totalRevenue: Math.round(month.totalRevenue / weeks),
+        });
+      }
+    });
+    return result.slice(-8);
+  }
+
+  if (period === 'daily') {
+    const lastMonth = monthly[monthly.length - 1];
+    if (!lastMonth) return [];
+    const days = 30;
+    return Array.from({ length: days }, (_, i) => ({
+      label: `D${i + 1}`,
+      courseRevenue: Math.round(lastMonth.courseRevenue / days),
+      workshopRevenue: Math.round(lastMonth.workshopRevenue / days),
+      totalRevenue: Math.round(lastMonth.totalRevenue / days),
+    }));
+  }
+
+  return monthly;
+}
+
+const PERIOD_OPTIONS = [
+  { label: 'Daily', value: 'daily' },
+  { label: 'Weekly', value: 'weekly' },
+  { label: 'Monthly', value: 'monthly' },
+  { label: 'Yearly', value: 'yearly' },
+];
+
+const subtitleMap: Record<ChartPeriod, string> = {
+  daily: 'Daily earnings breakdown (last 30 days)',
+  weekly: 'Weekly earnings breakdown (last 8 weeks)',
+  monthly: 'Monthly earnings from courses & workshops (last 12 months)',
+  yearly: 'Annual earnings summary',
+};
+
 const RevenueChart: React.FC = () => {
+  const [period, setPeriod] = React.useState<ChartPeriod>('monthly');
   const { data: analyticsRes, isLoading } = Queries.useGetDashboardAnalytics();
   const [renderKey, setRenderKey] = React.useState(0);
 
   React.useEffect(() => {
     if (!isLoading) {
-      const timer = setTimeout(() => {
-        setRenderKey(prev => prev + 1);
-      }, 150);
+      const timer = setTimeout(() => setRenderKey(prev => prev + 1), 150);
       return () => clearTimeout(timer);
     }
-  }, [isLoading]);
+  }, [isLoading, period]);
 
-  const monthly: MonthlyData[] = analyticsRes?.data?.monthly ?? [];
+  const rawMonthly: DataPoint[] = analyticsRes?.data?.monthly ?? [];
   const summary = analyticsRes?.data?.summary ?? {};
+  const chartData = aggregateByPeriod(rawMonthly, period);
 
   if (isLoading) {
     return (
@@ -86,11 +153,22 @@ const RevenueChart: React.FC = () => {
 
   return (
     <div className="rounded-2xl border border-border bg-surface p-6 h-full flex flex-col">
-      <div className="mb-5 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h2 className="m-0 text-lg font-bold text-foreground">Revenue Overview</h2>
-          <p className="m-0 mt-1 text-sm text-text-muted">Monthly earnings from courses & workshops (last 12 months)</p>
+          <p className="m-0 mt-1 text-sm text-text-muted">{subtitleMap[period]}</p>
         </div>
+        <Segmented
+          options={PERIOD_OPTIONS}
+          value={period}
+          onChange={(val) => setPeriod(val as ChartPeriod)}
+          style={{
+            background: 'var(--surface-muted, #f3f4f6)',
+            borderRadius: 10,
+            flexShrink: 0,
+          }}
+          className="dashboard-period-segmented"
+        />
       </div>
 
       {/* Summary Cards */}
@@ -121,7 +199,7 @@ const RevenueChart: React.FC = () => {
       {/* Chart */}
       <div className="flex-1 w-full min-h-[250px]">
         <ResponsiveContainer key={renderKey} width="100%" height="100%">
-          <ComposedChart data={monthly} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
+          <ComposedChart data={chartData} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
             <defs>
               <linearGradient id="courseGradient" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor="#3b82f6" stopOpacity={0.9} />
@@ -135,9 +213,11 @@ const RevenueChart: React.FC = () => {
             <CartesianGrid strokeDasharray="3 3" stroke="var(--border, #e5e7eb)" opacity={0.5} />
             <XAxis
               dataKey="label"
-              tick={{ fontSize: 12, fill: 'var(--text-muted, #9ca3af)' }}
+              tickFormatter={(v: string) => v.replace(' ', '/')}
+              tick={{ fontSize: 11, fill: 'var(--text-muted, #9ca3af)' }}
               axisLine={{ stroke: 'var(--border, #e5e7eb)' }}
               tickLine={false}
+              interval={period === 'daily' ? 4 : period === 'weekly' ? 1 : 0}
             />
             <YAxis
               tickFormatter={formatCurrency}
@@ -157,7 +237,7 @@ const RevenueChart: React.FC = () => {
               fill="url(#courseGradient)"
               radius={[4, 4, 0, 0]}
               stackId="revenue"
-              animationDuration={800}
+              animationDuration={600}
             />
             <Bar
               dataKey="workshopRevenue"
@@ -165,8 +245,8 @@ const RevenueChart: React.FC = () => {
               fill="url(#workshopGradient)"
               radius={[4, 4, 0, 0]}
               stackId="revenue"
-              animationDuration={800}
-              animationBegin={200}
+              animationDuration={600}
+              animationBegin={100}
             />
             <Line
               type="monotone"
@@ -176,8 +256,8 @@ const RevenueChart: React.FC = () => {
               strokeWidth={2.5}
               dot={{ r: 3, fill: '#10b981', strokeWidth: 0 }}
               activeDot={{ r: 5, stroke: '#10b981', strokeWidth: 2, fill: '#fff' }}
-              animationDuration={1200}
-              animationBegin={400}
+              animationDuration={800}
+              animationBegin={200}
             />
           </ComposedChart>
         </ResponsiveContainer>

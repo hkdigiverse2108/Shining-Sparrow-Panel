@@ -4,7 +4,7 @@ import { SearchOutlined, PlusOutlined, DownloadOutlined, SettingOutlined, } from
 import { CommonButton, CommonCheckbox } from "@/Attribute";
 import type { CommonTableToolbarProps } from "@/Types";
 
-const CommonTableToolbar: FC<CommonTableToolbarProps> = ({ searchText, setSearchText, searchPlaceholder, onSearch, isActive, onActiveChange, onAdd, columns, visibleCols, setVisibleCols, onExportExcel, onExportPDF, toolbarExtra }) => {
+const CommonTableToolbar: FC<CommonTableToolbarProps> = ({ searchText, setSearchText, searchPlaceholder, onSearch, isActive, onActiveChange, onAdd, columns, visibleCols, setVisibleCols, onExportExcel, onExportPDF, onExportExcelAll, onExportPDFAll, onExportAll, toolbarExtra }) => {
   const columnSelector = (
     <div className="common-table-column-menu">
       <Checkbox.Group
@@ -12,11 +12,14 @@ const CommonTableToolbar: FC<CommonTableToolbarProps> = ({ searchText, setSearch
         onChange={(val) => setVisibleCols(val as string[])}
       >
         <Space direction="vertical">
-          {columns.map((col) => (
-            <CommonCheckbox key={String(col.dataIndex)} value={String(col.dataIndex)}>
-              {col.title}
-            </CommonCheckbox>
-          ))}
+          {columns.map((col) => {
+            const key = String(col.key || col.dataIndex || col.title || "");
+            return (
+              <CommonCheckbox key={key} value={key}>
+                {col.title}
+              </CommonCheckbox>
+            );
+          })}
         </Space>
       </Checkbox.Group>
     </div>
@@ -36,14 +39,37 @@ const CommonTableToolbar: FC<CommonTableToolbarProps> = ({ searchText, setSearch
         <Dropdown menu={{
             items: [
               {
-                key: "excel",
-                label: "Export Excel",
-                onClick: onExportExcel,
+                key: "current",
+                label: "Current Page",
+                children: [
+                  {
+                    key: "current-excel",
+                    label: "Export Excel",
+                    onClick: onExportExcel,
+                  },
+                  {
+                    key: "current-pdf",
+                    label: "Export PDF",
+                    onClick: onExportPDF,
+                  },
+                ],
               },
               {
-                key: "pdf",
-                label: "Export PDF",
-                onClick: onExportPDF,
+                key: "all",
+                label: "All Data",
+                disabled: !onExportAll,
+                children: [
+                  {
+                    key: "all-excel",
+                    label: "Export Excel",
+                    onClick: onExportExcelAll,
+                  },
+                  {
+                    key: "all-pdf",
+                    label: "Export PDF",
+                    onClick: onExportPDFAll,
+                  },
+                ],
               },
             ],
           }}

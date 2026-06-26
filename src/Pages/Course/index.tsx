@@ -2,14 +2,14 @@ import { useState, useMemo, type FC } from 'react';
 import { Button, Tag, Avatar, Col, Slider } from 'antd';
 import { DeleteOutlined, EditOutlined, FolderOpenOutlined, LockOutlined, UnlockOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-import { KEYS } from '@/Constants';
+import { KEYS, URL_KEYS } from '@/Constants';
 import { BREADCRUMBS } from '@/Data';
 import { CommonPageWrapper, CommonBreadcrumbs, CommonTable, CommonSummaryCards, CommonDeleteModal, CourseForm, CommonTag, AdvancedSearch } from '@/Components'; // Added CommonDeleteModal
 import { motion } from 'motion/react';
 import { blurRevealUp, staggerContainer } from '@/Utils/animations';
 import { useQueryClient } from '@tanstack/react-query';
 import { useDebounce } from '@/Utils';
-import { Mutations, Queries } from '@/Api';
+import { Mutations, Queries, Get } from '@/Api';
 import type { ColumnType } from 'antd/es/table';
 import type { CourseBase, CourseColumnProps } from '@/Types';
 
@@ -222,6 +222,21 @@ const Courses: FC = () => {
     setPageSize(pagination.pageSize);
   };
 
+  const handleExportAll = async () => {
+    const res = await Get<any>(URL_KEYS.COURSE.GET, {
+      page: 1,
+      limit: 10000,
+      search: debouncedSearchQuery || undefined,
+      minPrice: priceRange[0] === 0 ? undefined : priceRange[0],
+      maxPrice: priceRange[1] === 50000 ? undefined : priceRange[1],
+      language: languageFilter === "all" ? undefined : languageFilter,
+      isBlocked: isBlockedFilter === "all" ? undefined : isBlockedFilter,
+      minAccessDurationDays: accessDaysRange[0] === 0 ? undefined : accessDaysRange[0],
+      maxAccessDurationDays: accessDaysRange[1] === 365 ? undefined : accessDaysRange[1],
+    });
+    return res?.data?.course_data || [];
+  };
+
   return (
     <>
       <CommonBreadcrumbs title="Courses" breadcrumbs={BREADCRUMBS.COURSE.BASE} />
@@ -309,7 +324,7 @@ const Courses: FC = () => {
                   </Col>
                 )}
               </AdvancedSearch>
-              <CommonTable columns={columns} data={courses} loading={isLoading || isFetching || addCourseMutation.isPending || editCourseMutation.isPending} searchPlaceholder="Search courses..." onSearch={handleSearch} onAdd={() => { setEditingCourse(null); setIsFormOpen(true); }} fileName="Courses" title="Course Management" current={current} pageSize={pageSize} total={totalCourses} onTableChange={handleTableChange} scroll={{ x: 1000 }} />
+              <CommonTable columns={columns} data={courses} loading={isLoading || isFetching || addCourseMutation.isPending || editCourseMutation.isPending} searchPlaceholder="Search courses..." onSearch={handleSearch} onAdd={() => { setEditingCourse(null); setIsFormOpen(true); }} fileName="Courses" title="Course Management" current={current} pageSize={pageSize} total={totalCourses} onTableChange={handleTableChange} scroll={{ x: 1000 }} onExportAll={handleExportAll} />
             </motion.div>
           </motion.div>
         )}

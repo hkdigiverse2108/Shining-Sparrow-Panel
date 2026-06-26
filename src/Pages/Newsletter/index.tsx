@@ -9,8 +9,8 @@ import { CommonBreadcrumbs, CommonPageWrapper, CommonTable, CommonDeleteModal, C
 import { CommonValidationTextField, CommonRichTextEditor, showNotification } from '@/Attribute';
 import { blurRevealUp, staggerContainer } from '@/Utils/animations';
 import { BREADCRUMBS } from '@/Data';
-import { Queries, Mutations } from '@/Api';
-import { KEYS } from '@/Constants';
+import { Queries, Mutations, Get } from '@/Api';
+import { KEYS, URL_KEYS } from '@/Constants';
 import { useDebounce } from '@/Utils';
 import type { ColumnType } from 'antd/es/table';
 import dayjs from 'dayjs';
@@ -220,6 +220,18 @@ const NewsletterPage: FC = () => {
     setPageSize(pagination.pageSize);
   };
 
+  const handleExportAll = async () => {
+    const res = await Get<any>(URL_KEYS.NEWSLETTER.GET, {
+      page: 1,
+      limit: 10000,
+      search: debouncedSearchQuery || undefined,
+      isBlocked: isBlockedFilter === "all" ? undefined : isBlockedFilter,
+      startDate: dateRange?.[0] ? dateRange[0].startOf('day').toISOString() : undefined,
+      endDate: dateRange?.[1] ? dateRange[1].endOf('day').toISOString() : undefined,
+    });
+    return res?.data?.newsletter_data || [];
+  };
+
   return (
     <>
       <CommonBreadcrumbs title="Newsletter Subscribers" breadcrumbs={BREADCRUMBS.NEWSLETTER.BASE} />
@@ -295,6 +307,7 @@ const NewsletterPage: FC = () => {
               onSearch={handleSearch} 
               onAdd={() => setIsAddModalOpen(true)} 
               fileName="Subscribers" 
+              onExportAll={handleExportAll} 
               title="Subscriber Management" 
               current={current} 
               pageSize={pageSize} 

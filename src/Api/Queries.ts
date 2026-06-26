@@ -53,7 +53,7 @@ export const Queries = {
 
   // ************ Dashboard ***********
   useGetDashboard: () => useQueries<any>([KEYS.DASHBOARD.BASE], () => Get(URL_KEYS.DASHBOARD.GET)),
-  useGetDashboardAnalytics: () => useQueries<any>([KEYS.DASHBOARD.ANALYTICS], () => Get(URL_KEYS.DASHBOARD.ANALYTICS)),
+  useGetDashboardAnalytics: (params?: Params) => useQueries<any>([KEYS.DASHBOARD.ANALYTICS, params], () => Get(URL_KEYS.DASHBOARD.ANALYTICS, params)),
 
   // ************ Chat ***********
   useGetRooms: (params?: Params) => useQueries<ChatRoomsApiResponse>([KEYS.CHAT.ROOMS, params], () => Get(URL_KEYS.CHAT.ROOMS, params)),

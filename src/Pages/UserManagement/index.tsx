@@ -8,8 +8,8 @@ import { CommonBreadcrumbs, CommonPageWrapper, CommonTable, AdvancedSearch, Comm
 import { staggerContainer, blurRevealUp } from "@/Utils/animations";
 import { getUserColumns } from "./columns";
 import { BREADCRUMBS } from "@/Data";
-import { Queries, Mutations } from "@/Api";
-import { KEYS, ROUTES } from "@/Constants";
+import { Queries, Mutations, Get } from "@/Api";
+import { KEYS, ROUTES, URL_KEYS } from "@/Constants";
 import { useDebounce } from "@/Utils";
 import { UserForm } from "./UserForm";
 
@@ -143,6 +143,20 @@ const UserManagement: FC = () => {
     pageSize
   }), [navigate, current, pageSize]);
 
+  const handleExportAll = async () => {
+    const res = await Get<any>(URL_KEYS.USER.GET, {
+      page: 1,
+      limit: 10000,
+      search: debouncedSearchQuery || undefined,
+      isBlocked: isBlockedFilter === "all" ? undefined : isBlockedFilter,
+      courseIds: courseIdFilter === "all" ? undefined : courseIdFilter,
+      workshopIds: workshopIdFilter === "all" ? undefined : workshopIdFilter,
+      startDate: signupDateRange?.[0] ? signupDateRange[0].startOf('day').toISOString() : undefined,
+      endDate: signupDateRange?.[1] ? signupDateRange[1].endOf('day').toISOString() : undefined,
+    });
+    return res?.data?.user_data || [];
+  };
+
   return (
     <>
       <CommonBreadcrumbs title="User Management" breadcrumbs={BREADCRUMBS.USERS.BASE || []} />
@@ -218,7 +232,7 @@ const UserManagement: FC = () => {
                   </Col>
                 )}
               </AdvancedSearch>
-              <CommonTable columns={columns} data={users} loading={isLoading || isFetching || addUserMutation.isPending || editUserMutation.isPending} searchPlaceholder="Search users by name, email, phone..." onSearch={handleSearch} onAdd={() => { setEditingUser(null); setDrawerOpen(true); }} fileName="Users" title="User Management" current={current} pageSize={pageSize} total={totalUsers} onTableChange={handleTableChange} />
+              <CommonTable columns={columns} data={users} loading={isLoading || isFetching || addUserMutation.isPending || editUserMutation.isPending} searchPlaceholder="Search users by name, email, phone..." onSearch={handleSearch} onAdd={() => { setEditingUser(null); setDrawerOpen(true); }} fileName="Users" title="User Management" current={current} pageSize={pageSize} total={totalUsers} onTableChange={handleTableChange} onExportAll={handleExportAll} />
             </motion.div>       
           </motion.div>
         )}

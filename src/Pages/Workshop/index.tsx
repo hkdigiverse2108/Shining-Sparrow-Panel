@@ -2,14 +2,14 @@ import { useState, useMemo, type FC } from 'react';
 import { Button, Tag, Image } from 'antd';
 import { DeleteOutlined, EditOutlined, FolderOpenOutlined, LockOutlined, UnlockOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-import { KEYS } from '@/Constants';
+import { KEYS, URL_KEYS } from '@/Constants';
 import { BREADCRUMBS } from '@/Data';
 import { CommonPageWrapper, CommonBreadcrumbs, CommonTable, CommonSummaryCards, CommonDeleteModal, CommonTag } from '@/Components'; 
 import { motion } from 'motion/react';
 import { blurRevealUp, staggerContainer } from '@/Utils/animations';
 import { useQueryClient } from '@tanstack/react-query';
 import { useDebounce } from '@/Utils';
-import { Mutations, Queries } from '@/Api';
+import { Mutations, Queries, Get } from '@/Api';
 import type { ColumnType } from 'antd/es/table';
 import { WorkshopForm } from '../../Components/Workshop/WorkshopForm';
 
@@ -177,6 +177,15 @@ const Workshops: FC = () => {
     onDelete: handleDeleteClick,
   }), []);  
 
+  const handleExportAll = async () => {
+    const res = await Get<any>(URL_KEYS.WORKSHOP.GET, {
+      page: 1,
+      limit: 10000,
+      search: debouncedSearchQuery || undefined,
+    });
+    return res?.data?.workshop_data || [];
+  };
+
   return (
     <>
       <CommonBreadcrumbs title="Workshops" breadcrumbs={BREADCRUMBS.WORKSHOP.BASE} />
@@ -190,7 +199,7 @@ const Workshops: FC = () => {
             <CommonSummaryCards total={totalWorkshops} active={workshops.filter((w: any) => !w.isBlocked).length} blocked={workshops.filter((w: any) => w.isBlocked).length} subject="Workshops" />
             <motion.div variants={blurRevealUp}>
               <div className="">
-                <CommonTable columns={columns} data={workshops} loading={isLoading || isFetching || addMutation.isPending || editMutation.isPending} searchPlaceholder="Search workshops..." onSearch={handleSearch} onAdd={() => { setEditingWorkshop(null); setIsFormOpen(true); }} fileName="Workshops" title="Workshop Management" current={current} pageSize={pageSize} total={totalWorkshops} onTableChange={(p: any) => { setCurrent(p.current); setPageSize(p.pageSize); }} scroll={{ x: 1000 }} />
+                <CommonTable columns={columns} data={workshops} loading={isLoading || isFetching || addMutation.isPending || editMutation.isPending} searchPlaceholder="Search workshops..." onSearch={handleSearch} onAdd={() => { setEditingWorkshop(null); setIsFormOpen(true); }} fileName="Workshops" title="Workshop Management" current={current} pageSize={pageSize} total={totalWorkshops} onTableChange={(p: any) => { setCurrent(p.current); setPageSize(p.pageSize); }} scroll={{ x: 1000 }} onExportAll={handleExportAll} />
               </div>
             </motion.div>
           </motion.div>
