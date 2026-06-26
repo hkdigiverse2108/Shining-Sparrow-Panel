@@ -448,7 +448,7 @@ export function generateInvoiceHTML(params: InvoiceParams): string {
     <!-- Header -->
     <div class="header">
       <div class="header-left">
-        <div class="brand-logo"><img src="/mascot.png" alt="Shining Sparrow" /></div>
+        <div class="brand-logo"><img src="/public/assets/images/Logo_icon.png" alt="Shining Sparrow" /></div>
         <div class="brand-info">
           <div class="brand-name">Shining Sparrow</div>
           <div class="brand-address">Online Learning Platform</div>

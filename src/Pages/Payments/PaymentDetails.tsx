@@ -18,7 +18,7 @@ import {
   PrinterOutlined
 } from '@ant-design/icons';
 import { motion } from 'motion/react';
-import { CommonBreadcrumbs, CommonPageWrapper } from '@/Components';
+import { CommonBreadcrumbs, CommonPageWrapper, CommonReadMore } from '@/Components';
 import { blurRevealUp, staggerContainer } from '@/Utils/animations';
 import { BREADCRUMBS } from '@/Data';
 import { Queries } from '@/Api';
@@ -273,18 +273,19 @@ const PaymentDetails: FC = () => {
                           {isCourse ? "Course" : "Workshop"}
                         </Tag>
                       </div>
-                      
-                      <p className="text-xs text-text-muted leading-relaxed line-clamp-3">
-                        {isCourse ? product?.description : (product?.subTitle || 'No sub-title available')}
-                      </p>
+                      <div className="text-xs text-text-muted leading-relaxed">
+                        <CommonReadMore
+                          htmlContent={isCourse ? (product?.description || 'No description available.') : (product?.subTitle || 'No sub-title available.')} 
+                          maxHeight={60} 
+                          className="mt-1"
+                        />
+                      </div>
                     </div>
                   </div>
                 </Card>
               </motion.div>
 
             </Col>
-
-            {/* Right Column - Gateway Details */}
             <Col xs={24} lg={8}>
               <motion.div variants={blurRevealUp} className="h-full">
                 <Card className="rounded-2xl border-border bg-surface shadow-sm h-full flex flex-col justify-between relative overflow-hidden">
