@@ -128,17 +128,19 @@ export const UserForm: FC<UserFormProps> = ({ open, onClose, onSave, editingUser
                 name="std" 
                 label="Standard (Std)" 
                 options={[
-                  { label: "Standard 1", value: "standard 1" },
-                  { label: "Standard 2", value: "standard 2" },
-                  { label: "Standard 3", value: "standard 3" },
-                  { label: "Standard 4", value: "standard 4" },
-                  { label: "Standard 5", value: "standard 5" },
-                  { label: "Standard 6", value: "standard 6" },
-                  { label: "Standard 7", value: "standard 7" },
-                  { label: "Standard 8", value: "standard 8" },
-                  { label: "Standard 9", value: "standard 9" },
-                  { label: "Standard 10", value: "standard 10" },
-                  { label: "Adult Learner", value: "adult learner" }
+                  { label: "1st Std", value: "1st Std" },
+                  { label: "2nd Std", value: "2nd Std" },
+                  { label: "3rd Std", value: "3rd Std" },
+                  { label: "4th Std", value: "4th Std" },
+                  { label: "5th Std", value: "5th Std" },
+                  { label: "6th Std", value: "6th Std" },
+                  { label: "7th Std", value: "7th Std" },
+                  { label: "8th Std", value: "8th Std" },
+                  { label: "9th Std", value: "9th Std" },
+                  { label: "10th Std", value: "10th Std" },
+                  { label: "11th Std", value: "11th Std" },
+                  { label: "12th Std", value: "12th Std" },
+                  { label: "Adult Learner", value: "Adult Learner" }
                 ]}
               />
               <CommonValidationSelect 
@@ -158,8 +160,15 @@ export const UserForm: FC<UserFormProps> = ({ open, onClose, onSave, editingUser
                 name="reachFrom" 
                 label="Referral Source (Reach From)" 
                 options={[
-                  { label: "Website", value: "website" },
-                  { label: "Friend/Relative", value: "friend/relative" }
+                  { label: "Instagram", value: "Instagram" },
+                  { label: "Facebook", value: "Facebook" },
+                  { label: "LinkedIn", value: "LinkedIn" },
+                  { label: "Friends/relatives", value: "Friends/relatives" },
+                  { label: "Webinars", value: "Webinars" },
+                  { label: "Offline branch visit", value: "Offline branch visit" },
+                  { label: "Web search", value: "Web search" },
+                  { label: "Schools", value: "Schools" },
+                  { label: "Others", value: "Others" }
                 ]} 
               />
             </CommonFormSection>
