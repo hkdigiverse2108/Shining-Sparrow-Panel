@@ -23,6 +23,7 @@ import { blurRevealUp, staggerContainer } from '@/Utils/animations';
 import { BREADCRUMBS } from '@/Data';
 import { Queries } from '@/Api';
 import { ROUTES } from '@/Constants';
+import { generateInvoiceHTML } from '@/Utils/invoiceTemplate';
 import dayjs from 'dayjs';
 
 const PaymentDetails: FC = () => {
@@ -85,7 +86,28 @@ const PaymentDetails: FC = () => {
   };
 
   const handlePrint = () => {
-    window.print();
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) {
+      return;
+    }
+
+    const htmlContent = generateInvoiceHTML({
+      type: isCourse ? 'course' : 'workshop',
+      productName: isCourse ? (product?.name || 'Unknown Course') : (product?.title || 'Unknown Workshop'),
+      studentName: user?.fullName || 'Unknown User',
+      studentEmail: user?.email || 'N/A',
+      studentPhone: user?.phoneNumber || 'N/A',
+      orderId: isCourse ? (record.razorpayOrderId || 'N/A') : (record.receiptNumber || 'N/A'),
+      paymentId: isCourse ? (record.razorpayPaymentId || 'N/A') : (record.paymentId || 'N/A'),
+      originalPrice: product?.price || finalAmount,
+      discountAmount: discountAmount,
+      finalAmount: finalAmount,
+      status: record.paymentStatus || 'pending',
+      date: transactionDate || new Date().toISOString(),
+    });
+
+    printWindow.document.write(htmlContent);
+    printWindow.document.close();
   };
 
   if (isLoading) {
@@ -131,12 +153,12 @@ const PaymentDetails: FC = () => {
       <div className="print:hidden">
         <CommonBreadcrumbs title="Payment Details" breadcrumbs={BREADCRUMBS.PAYMENTS?.DETAILS || []} />
       </div>
-      <CommonPageWrapper noPadding className="h-full bg-transparent print:bg-white print:p-0">
+      <CommonPageWrapper noPadding className="h-full bg-transparent">
         <motion.div 
           variants={staggerContainer} 
           initial="hidden" 
           animate="visible" 
-          className="flex flex-col gap-6 p-4 md:p-6 max-w-6xl mx-auto print:p-0"
+          className="flex flex-col gap-6 p-4 md:p-6 max-w-6xl mx-auto"
         >
           {/* Action Header */}
           <div className="flex items-center justify-between border-b border-border/65 pb-4 print:hidden">
