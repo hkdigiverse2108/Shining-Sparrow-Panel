@@ -31,10 +31,14 @@ import Setting from "@/Pages/Profile";
 import Coupon from "@/Pages/Coupon";
 import Legality from "@/Pages/Legality";
 import Gallery from "@/Pages/Gallery";
+import GalleryDetails from "@/Pages/Gallery/GalleryDetails";
 import Newsletter from "@/Pages/Newsletter";
 import TrustedPartner from "@/Pages/TrustedPartner";
 import Payments from "@/Pages/Payments";
 import PaymentDetails from "@/Pages/Payments/PaymentDetails";
+import FranchiseInquiry from "@/Pages/FranchiseInquiry";
+import FranchiseInquiryDetails from "@/Pages/FranchiseInquiry/FranchiseInquiryDetails";
+import TestimonialPage from "@/Pages/Testimonial";
 
 export const PageRoutes = [
   { path: ROUTES.DASHBOARD, name: PAGE_TITLE.DASHBOARD, element: <Dashboard /> },
@@ -74,10 +78,14 @@ export const PageRoutes = [
   { path: ROUTES.COUPON_CODE, name: PAGE_TITLE.COUPON_CODE, element: <Coupon /> },
   { path: ROUTES.LEGALITY, name: PAGE_TITLE.LEGALITY, element: <Legality /> },
   { path: ROUTES.GALLERY, name: PAGE_TITLE.GALLERY, element: <Gallery /> },
+  { path: ROUTES.GALLERY_DETAILS, name: "Gallery Details", element: <GalleryDetails /> },
   { path: ROUTES.NEWSLETTER, name: PAGE_TITLE.NEWSLETTER, element: <Newsletter /> },
   { path: ROUTES.TRUSTED_PARTNER, name: PAGE_TITLE.TRUSTED_PARTNER, element: <TrustedPartner /> },
   { path: ROUTES.PAYMENTS, name: PAGE_TITLE.PAYMENTS, element: <Payments /> },
   { path: ROUTES.PAYMENT_DETAILS, name: PAGE_TITLE.PAYMENT_DETAILS, element: <PaymentDetails /> },
+  { path: ROUTES.FRANCHISE_INQUIRY, name: PAGE_TITLE.FRANCHISE_INQUIRY, element: <FranchiseInquiry /> },
+  { path: ROUTES.FRANCHISE_INQUIRY_DETAILS, name: "Franchise Inquiry Details", element: <FranchiseInquiryDetails /> },
+  { path: ROUTES.TESTIMONIAL, name: PAGE_TITLE.TESTIMONIAL, element: <TestimonialPage /> },
 ];
 
 export const AuthRoutes = [

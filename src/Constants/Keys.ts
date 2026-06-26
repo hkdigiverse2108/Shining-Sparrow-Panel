@@ -137,4 +137,8 @@ export const KEYS = {
     BASE: "trusted-partner",
     DELETE: "delete-trusted-partner",
   },
+  FRANCHISE_INQUIRY: {
+    BASE: "franchise-inquiry",
+    DELETE: "delete-franchise-inquiry",
+  },
 };

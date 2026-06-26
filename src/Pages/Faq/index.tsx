@@ -1,39 +1,56 @@
 import { useState, useMemo, type FC } from 'react';
-import { Button, Tag, Spin, Select, Tooltip } from 'antd';
-import { DeleteOutlined, PlusOutlined, QuestionCircleOutlined, EditOutlined, StarFilled, LockOutlined, UnlockOutlined } from '@ant-design/icons';
+import { Button, Tag, Spin, Select, Tooltip, DatePicker, Col, Input, Pagination } from 'antd';
+import { DeleteOutlined, PlusOutlined, QuestionCircleOutlined, EditOutlined, StarFilled, LockOutlined, UnlockOutlined, SearchOutlined } from '@ant-design/icons';
+import dayjs from 'dayjs';
 import { KEYS } from '@/Constants';
 import { BREADCRUMBS } from '@/Data';
-import { CommonPageWrapper, CommonBreadcrumbs, CommonDeleteModal } from '@/Components';
+import { CommonPageWrapper, CommonBreadcrumbs, CommonDeleteModal, AdvancedSearch } from '@/Components';
 import { FAQForm } from '@/Components/Workshop/FAQForm';
 import { motion } from 'motion/react';
 import { blurRevealUp, staggerContainer } from '@/Utils/animations';
 import { useQueryClient } from '@tanstack/react-query';
 import { Mutations, Queries } from '@/Api';
 import { CommonButton } from '@/Attribute';
-
-const FAQ_TYPES = [
-  { value: 'home', label: 'Global (Home Page)' },
-  { value: 'course', label: 'Course Specific' },
-  { value: 'workshop', label: 'Workshop Specific' },
-];
+import { useDebounce } from '@/Utils';
 
 const Faq: FC = () => {
   const queryClient = useQueryClient();
-  const [selectedType, setSelectedType] = useState<string>('home');
-  const [selectedCatalogId, setSelectedCatalogId] = useState<string | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingFaq, setEditingFaq] = useState<any | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [faqToDelete, setFaqToDelete] = useState<any | null>(null);
 
+  // Search & Pagination states
+  const [searchQuery, setSearchQuery] = useState("");
+  const debouncedSearchQuery = useDebounce(searchQuery, 500);
+  const [current, setCurrent] = useState(1);
+  const [pageSize, setPageSize] = useState(12);
+
+  // Advanced filters state
+  const [selectedType, setSelectedType] = useState<string | undefined>("all");
+  const [selectedCatalogId, setSelectedCatalogId] = useState<string | undefined>(undefined);
+  const [isFeaturedFilter, setIsFeaturedFilter] = useState<string | undefined>("all");
+  const [isBlockedFilter, setIsBlockedFilter] = useState<string | undefined>("all");
+  const [dateRange, setDateRange] = useState<[dayjs.Dayjs | null, dayjs.Dayjs | null] | null>(null);
+
   const params = useMemo(() => {
-    const p: Record<string, string> = { type: selectedType };
+    const p: Record<string, any> = {
+      page: current,
+      limit: pageSize,
+    };
+    if (debouncedSearchQuery) p.search = debouncedSearchQuery;
+    if (selectedType && selectedType !== "all") p.type = selectedType;
     if (selectedCatalogId) p.learningCatalogFilter = selectedCatalogId;
+    if (isFeaturedFilter !== undefined && isFeaturedFilter !== "all") p.isFeatured = isFeaturedFilter;
+    if (isBlockedFilter !== undefined && isBlockedFilter !== "all") p.isBlocked = isBlockedFilter;
+    if (dateRange?.[0]) p.startDate = dateRange[0].startOf('day').toISOString();
+    if (dateRange?.[1]) p.endDate = dateRange[1].endOf('day').toISOString();
     return p;
-  }, [selectedType, selectedCatalogId]);
+  }, [current, pageSize, debouncedSearchQuery, selectedType, selectedCatalogId, isFeaturedFilter, isBlockedFilter, dateRange]);
 
   const { data: responseData, isLoading } = Queries.useGetFAQs(params);
   const faqs = useMemo(() => responseData?.data?.faq_data || [], [responseData]);
+  const totalFaq = Number(responseData?.data?.totalData) || faqs.length;
 
   const { data: coursesRes } = Queries.useGetCourses({ page: 1, limit: 1000 });
   const courses = useMemo(() => coursesRes?.data?.course_data || [], [coursesRes]);
@@ -138,53 +155,122 @@ const Faq: FC = () => {
         ) : (
           <motion.div variants={staggerContainer} initial="hidden" animate="visible">
             <motion.div variants={blurRevealUp}>
-              <div className="flex items-end justify-between mb-6">
+              <div className="flex items-end justify-between mb-8">
                 <div>
                   <h1 className="text-3xl font-extrabold text-foreground tracking-tight">FAQ Management</h1>
-                  <p className="text-text-muted mt-1">{faqs.length} FAQ(s) for this category.</p>
+                  <p className="text-text-muted mt-1">{totalFaq} FAQ(s) matching filters.</p>
                 </div>
-                <CommonButton
-                  type="primary"
-                  size="large"
-                  icon={<PlusOutlined />}
-                  onClick={() => { setEditingFaq(null); setIsFormOpen(true); }}
-                  className="shadow-md"
-                >
-                  Add FAQ
-                </CommonButton>
-              </div>
-
-              {/* Type & Catalog Filter */}
-              <div className="flex flex-wrap gap-4 mb-8 p-4 bg-surface-muted rounded-2xl border border-border">
-                <div className="flex-1 min-w-[200px]">
-                  <label className="block text-xs font-semibold text-text-muted mb-1.5">FAQ Type</label>
-                  <Select
-                    value={selectedType}
-                    onChange={(val) => { setSelectedType(val); setSelectedCatalogId(null); }}
-                    options={FAQ_TYPES}
-                    className="w-full"
-                    size="large"
-                  />
-                </div>
-                {selectedType !== 'home' && (
-                  <div className="flex-1 min-w-[200px]">
-                    <label className="block text-xs font-semibold text-text-muted mb-1.5">
-                      Select {selectedType === 'course' ? 'Course' : 'Workshop'}
-                    </label>
-                    <Select
-                      value={selectedCatalogId}
-                      onChange={(val) => setSelectedCatalogId(val)}
-                      options={allCatalogOptions.filter((o) => o.type === selectedType)}
-                      className="w-full"
-                      size="large"
-                      placeholder={`Choose a ${selectedType}`}
-                      showSearch
-                      filterOption={(input, option) =>
-                        (option?.label as string)?.toLowerCase().includes(input.toLowerCase())
-                      }
+                <div className="flex items-center gap-4">
+                  <div className="w-72">
+                    <Input
+                      placeholder="Search FAQs..."
+                      value={searchQuery}
+                      onChange={(e) => { setSearchQuery(e.target.value); setCurrent(1); }}
+                      className="h-11 rounded-xl border-border bg-surface hover:border-primary-hover focus:border-primary transition-colors duration-200"
+                      prefix={<SearchOutlined className="text-text-muted/70 mr-1.5" />}
+                      allowClear
                     />
                   </div>
-                )}
+                  <CommonButton
+                    type="primary"
+                    size="large"
+                    icon={<PlusOutlined />}
+                    onClick={() => { setEditingFaq(null); setIsFormOpen(true); }}
+                    className="shadow-md"
+                  >
+                    Add FAQ
+                  </CommonButton>
+                </div>
+              </div>
+
+              {/* Advanced Search */}
+              <div className="mb-8">
+                <AdvancedSearch filter={[
+                  {
+                    label: "FAQ Placement",
+                    value: selectedType,
+                    options: [
+                      { value: "all", label: "All" },
+                      { value: "home", label: "Global (Home Page)" },
+                      { value: "course", label: "Course Specific" },
+                      { value: "workshop", label: "Workshop Specific" }
+                    ],
+                    onChange: (val: any) => { setSelectedType(val); setSelectedCatalogId(undefined); setCurrent(1); },
+                    grid: { xs: 24, sm: 12, md: selectedType && selectedType !== 'home' && selectedType !== 'all' ? 4 : 5 }
+                  },
+                  {
+                    label: "Featured Display",
+                    value: isFeaturedFilter,
+                    options: [
+                      { label: "All", value: "all" },
+                      { label: "Featured Only", value: "true" },
+                      { label: "Standard Only", value: "false" }
+                    ],
+                    onChange: (val: any) => { setIsFeaturedFilter(val); setCurrent(1); },
+                    grid: { xs: 24, sm: 12, md: selectedType && selectedType !== 'home' && selectedType !== 'all' ? 4 : 5 }
+                  },
+                  {
+                    label: "Status",
+                    value: isBlockedFilter,
+                    options: [
+                      { label: "All", value: "all" },
+                      { label: "Active", value: "false" },
+                      { label: "Blocked", value: "true" }
+                    ],
+                    onChange: (val: any) => { setIsBlockedFilter(val); setCurrent(1); },
+                    grid: { xs: 24, sm: 12, md: selectedType && selectedType !== 'home' && selectedType !== 'all' ? 4 : 5 }
+                  }
+                ]}>
+                  {selectedType && selectedType !== 'home' && selectedType !== 'all' && (
+                    <Col xs={24} sm={12} md={4} style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                      <span className="text-xs font-semibold uppercase tracking-wider text-muted">
+                        Select {selectedType === 'course' ? 'Course' : 'Workshop'}
+                      </span>
+                      <Select
+                        value={selectedCatalogId || null}
+                        onChange={(val) => { setSelectedCatalogId(val || undefined); setCurrent(1); }}
+                        options={allCatalogOptions.filter((o) => o.type === selectedType)}
+                        className="w-full"
+                        size="large"
+                        placeholder={`Choose a ${selectedType}`}
+                        showSearch
+                        allowClear
+                        filterOption={(input, option) =>
+                          (option?.label as string)?.toLowerCase().includes(input.toLowerCase())
+                        }
+                        style={{ height: "40px" }}
+                      />
+                    </Col>
+                  )}
+                  <Col xs={24} sm={12} md={selectedType && selectedType !== 'home' && selectedType !== 'all' ? 4 : 5} style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                    <span className="text-xs font-semibold uppercase tracking-wider text-muted">Created Date Range</span>
+                    <DatePicker.RangePicker
+                      value={dateRange}
+                      onChange={(dates) => {
+                        setDateRange(dates as any);
+                        setCurrent(1);
+                      }}
+                      className="rounded-lg h-[40px] w-full"
+                    />
+                  </Col>
+                  {(selectedType !== "all" || selectedCatalogId || isFeaturedFilter !== "all" || isBlockedFilter !== "all" || dateRange) && (
+                    <Col xs={24} sm={24} md={4}>
+                      <Button
+                        onClick={() => {
+                          setSelectedType("all");
+                          setSelectedCatalogId(undefined);
+                          setIsFeaturedFilter("all");
+                          setIsBlockedFilter("all");
+                          setDateRange(null);
+                          setCurrent(1);
+                        }}
+                        className="h-[40px] px-6 rounded-lg font-semibold hover:border-primary hover:text-primary transition-all duration-200 text-foreground"
+                      >
+                        Clear Filters
+                      </Button>
+                    </Col>
+                  )}
+                </AdvancedSearch>
               </div>
 
               {/* Loading / Empty / List */}
@@ -294,6 +380,21 @@ const Faq: FC = () => {
                       </div>
                     </div>
                   ))}
+                  {totalFaq > pageSize && (
+                    <div className="flex justify-end mt-6">
+                      <Pagination
+                        current={current}
+                        pageSize={pageSize}
+                        total={totalFaq}
+                        onChange={(page, size) => {
+                          setCurrent(page);
+                          setPageSize(size);
+                        }}
+                        showSizeChanger
+                        showTotal={(total, range) => `${range[0]}-${range[1]} of ${total} FAQs`}
+                      />
+                    </div>
+                  )}
                 </div>
               )}
             </motion.div>

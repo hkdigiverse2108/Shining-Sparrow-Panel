@@ -1,9 +1,10 @@
 import { useState, useMemo, type FC } from 'react';
-import { Button, Tooltip, Input, Pagination, Spin } from 'antd'; 
+import { Button, Tooltip, Input, Pagination, Spin, DatePicker, Col } from 'antd'; 
 import { DeleteOutlined, EditOutlined, StarOutlined, LockOutlined, UnlockOutlined, SearchOutlined, PictureOutlined, PlusOutlined } from '@ant-design/icons';
+import dayjs from 'dayjs';
 import { KEYS } from '@/Constants';
 import { BREADCRUMBS } from '@/Data';
-import { CommonPageWrapper, CommonBreadcrumbs, BlogForm, CommonDeleteModal } from '@/Components';
+import { CommonPageWrapper, CommonBreadcrumbs, BlogForm, CommonDeleteModal, AdvancedSearch } from '@/Components';
 import { motion } from 'motion/react';
 import { blurRevealUp, staggerContainer } from '@/Utils/animations';
 import { useQueryClient } from '@tanstack/react-query';
@@ -127,6 +128,11 @@ const Blog: FC = () => {
   const [current, setCurrent] = useState(1);
   const [pageSize, setPageSize] = useState(12);
 
+  // Advanced Search states
+  const [isFeaturedFilter, setIsFeaturedFilter] = useState<string | undefined>("all");
+  const [isBlockedFilter, setIsBlockedFilter] = useState<string | undefined>("all");
+  const [publishDateRange, setPublishDateRange] = useState<[dayjs.Dayjs | null, dayjs.Dayjs | null] | null>(null);
+
   // State for Delete Modal
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [blogToDelete, setBlogToDelete] = useState<any | null>(null);
@@ -134,7 +140,11 @@ const Blog: FC = () => {
   const { data: responseData, isLoading, isFetching } = Queries.useGetBlog({
     page: current,
     limit: pageSize,
-    search: debouncedSearchQuery
+    search: debouncedSearchQuery,
+    isFeatured: isFeaturedFilter === "all" ? undefined : isFeaturedFilter,
+    isBlocked: isBlockedFilter === "all" ? undefined : isBlockedFilter,
+    startDate: publishDateRange?.[0] ? publishDateRange[0].startOf('day').toISOString() : undefined,
+    endDate: publishDateRange?.[1] ? publishDateRange[1].endOf('day').toISOString() : undefined,
   });
 
   const blogs = useMemo(() => responseData?.data?.blog_data || [], [responseData]);
@@ -279,6 +289,58 @@ const Blog: FC = () => {
               {/* Decorative Vector Orb */}
               <div className="absolute right-0 bottom-0 top-0 w-80 bg-gradient-to-l from-primary/5 to-transparent blur-2xl rounded-full pointer-events-none transform translate-x-10 translate-y-10" />
             </div>
+
+            <AdvancedSearch filter={[
+              {
+                label: "Homepage Featured",
+                value: isFeaturedFilter,
+                options: [
+                  { label: "All", value: "all" },
+                  { label: "Featured Only", value: "true" },
+                  { label: "Standard Only", value: "false" }
+                ],
+                onChange: (val: any) => { setIsFeaturedFilter(val); setCurrent(1); },
+                grid: { xs: 24, sm: 12, md: 6 }
+              },
+              {
+                label: "Publication Status",
+                value: isBlockedFilter,
+                options: [
+                  { label: "All", value: "all" },
+                  { label: "Active", value: "false" },
+                  { label: "Blocked", value: "true" }
+                ],
+                onChange: (val: any) => { setIsBlockedFilter(val); setCurrent(1); },
+                grid: { xs: 24, sm: 12, md: 6 }
+              }
+            ]}>
+              <Col xs={24} sm={12} md={6} style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                <span className="text-xs font-semibold uppercase tracking-wider text-muted">Publish Date Range</span>
+                <DatePicker.RangePicker
+                  value={publishDateRange}
+                  onChange={(dates) => {
+                    setPublishDateRange(dates as any);
+                    setCurrent(1);
+                  }}
+                  className="rounded-lg h-[40px] w-full"
+                />
+              </Col>
+              {(isFeaturedFilter !== "all" || isBlockedFilter !== "all" || publishDateRange !== null) && (
+                <Col xs={24} sm={24} md={6}>
+                  <Button
+                    onClick={() => {
+                      setIsFeaturedFilter("all");
+                      setIsBlockedFilter("all");
+                      setPublishDateRange(null);
+                      setCurrent(1);
+                    }}
+                    className="h-[40px] px-6 rounded-lg font-semibold hover:border-primary hover:text-primary transition-all duration-200 text-foreground"
+                  >
+                    Clear Filters
+                  </Button>
+                </Col>
+              )}
+            </AdvancedSearch>
 
             {/* Articles Grid */}
             <Spin spinning={isLoading || isFetching} size="large">

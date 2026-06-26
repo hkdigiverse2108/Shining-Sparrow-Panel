@@ -1,10 +1,10 @@
 import { useState, useMemo, type FC } from 'react';
-import { Button, Tag, Avatar } from 'antd';
+import { Button, Tag, Avatar, Col, Slider } from 'antd';
 import { DeleteOutlined, EditOutlined, FolderOpenOutlined, LockOutlined, UnlockOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { KEYS } from '@/Constants';
 import { BREADCRUMBS } from '@/Data';
-import { CommonPageWrapper, CommonBreadcrumbs, CommonTable, CommonSummaryCards, CommonDeleteModal, CourseForm, CommonTag } from '@/Components'; // Added CommonDeleteModal
+import { CommonPageWrapper, CommonBreadcrumbs, CommonTable, CommonSummaryCards, CommonDeleteModal, CourseForm, CommonTag, AdvancedSearch } from '@/Components'; // Added CommonDeleteModal
 import { motion } from 'motion/react';
 import { blurRevealUp, staggerContainer } from '@/Utils/animations';
 import { useQueryClient } from '@tanstack/react-query';
@@ -13,13 +13,14 @@ import { Mutations, Queries } from '@/Api';
 import type { ColumnType } from 'antd/es/table';
 import type { CourseBase, CourseColumnProps } from '@/Types';
 
-const getCourseColumns = ({ onEdit, onManage, onToggleStatus, onDelete, current = 1, pageSize = 10 }: CourseColumnProps & { current?: number; pageSize?: number }): ColumnType<CourseBase>[] => [
+const getCourseColumns = ({ onEdit, onManage, onToggleStatus, onDelete }: CourseColumnProps): ColumnType<CourseBase>[] => [
   {
     title: "#",
-    key: "srNo",
+    dataIndex: "priority",
     width: 80,
     align: "center",
-    render: (_: any, __: any, index: number) => (current - 1) * pageSize + index + 1
+    sorter: (a: any, b: any) => (a.priority || 0) - (b.priority || 0),
+    render: (v: any) => <span className="font-semibold text-text-muted">{v ?? 0}</span>
   },
   {
     title: "Image", 
@@ -125,6 +126,12 @@ const Courses: FC = () => {
   const [current, setCurrent] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
+  // Advanced Search states
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 50000]);
+  const [languageFilter, setLanguageFilter] = useState<string | undefined>("all");
+  const [isBlockedFilter, setIsBlockedFilter] = useState<string | undefined>("all");
+  const [accessDaysRange, setAccessDaysRange] = useState<[number, number]>([0, 365]);
+
   // State for Delete Modal
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [courseToDelete, setCourseToDelete] = useState<any | null>(null);
@@ -132,7 +139,13 @@ const Courses: FC = () => {
   const { data: responseData, isLoading, isFetching } = Queries.useGetCourses({
     page: current,
     limit: pageSize,
-    search: debouncedSearchQuery
+    search: debouncedSearchQuery,
+    minPrice: priceRange[0] === 0 ? undefined : priceRange[0],
+    maxPrice: priceRange[1] === 50000 ? undefined : priceRange[1],
+    language: languageFilter === "all" ? undefined : languageFilter,
+    isBlocked: isBlockedFilter === "all" ? undefined : isBlockedFilter,
+    minAccessDurationDays: accessDaysRange[0] === 0 ? undefined : accessDaysRange[0],
+    maxAccessDurationDays: accessDaysRange[1] === 365 ? undefined : accessDaysRange[1],
   });
 
   const courses = useMemo(() => responseData?.data?.course_data || [], [responseData]);
@@ -202,9 +215,7 @@ const Courses: FC = () => {
     onManage: handleManageContent,
     onToggleStatus: handleToggleStatus,
     onDelete: handleDeleteClick, 
-    current,
-    pageSize
-  }), [current, pageSize]);  
+  }), []);  
 
   const handleTableChange = (pagination: any) => {
     setCurrent(pagination.current);
@@ -223,6 +234,81 @@ const Courses: FC = () => {
           <motion.div variants={staggerContainer} initial="hidden" animate="visible">
             <CommonSummaryCards total={totalCourses} active={courses.filter((c: any) => !c.isBlocked).length} blocked={courses.filter((c: any) => c.isBlocked).length} subject="Courses" />
             <motion.div variants={blurRevealUp}>
+              <AdvancedSearch filter={[
+                {
+                  label: "Language",
+                  value: languageFilter,
+                  options: [
+                    { label: "All", value: "all" },
+                    { label: "English", value: "English" },
+                    { label: "Hindi", value: "Hindi" }
+                  ],
+                  onChange: (val: any) => { setLanguageFilter(val); setCurrent(1); },
+                  grid: { xs: 24, sm: 12, md: 5 }
+                },
+                {
+                  label: "Status",
+                  value: isBlockedFilter,
+                  options: [
+                    { label: "All", value: "all" },
+                    { label: "Active", value: "false" },
+                    { label: "Blocked", value: "true" }
+                  ],
+                  onChange: (val: any) => { setIsBlockedFilter(val); setCurrent(1); },
+                  grid: { xs: 24, sm: 12, md: 5 }
+                }
+              ]}>
+                <Col xs={24} sm={12} md={5} style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                  <span className="text-xs font-semibold uppercase tracking-wider text-muted">
+                    Price: ₹{priceRange[0]} - ₹{priceRange[1] === 50000 ? "50,000+" : priceRange[1]}
+                  </span>
+                  <div className="ant-picker w-full h-[40px] flex items-center px-4 rounded-lg">
+                    <Slider
+                      range
+                      min={0}
+                      max={50000}
+                      step={100}
+                      value={priceRange}
+                      onChange={(val) => { setPriceRange(val as [number, number]); setCurrent(1); }}
+                      tooltip={{ formatter: (v) => `₹${v}` }}
+                      style={{ width: "100%", margin: 0, padding: 0 }}
+                    />
+                  </div>
+                </Col>
+                <Col xs={24} sm={12} md={5} style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                  <span className="text-xs font-semibold uppercase tracking-wider text-muted">
+                    Access Period: {accessDaysRange[0]} - {accessDaysRange[1] === 365 ? "365+ days" : `${accessDaysRange[1]} days`}
+                  </span>
+                  <div className="ant-picker w-full h-[40px] flex items-center px-4 rounded-lg">
+                    <Slider
+                      range
+                      min={0}
+                      max={365}
+                      step={5}
+                      value={accessDaysRange}
+                      onChange={(val) => { setAccessDaysRange(val as [number, number]); setCurrent(1); }}
+                      tooltip={{ formatter: (v) => `${v} days` }}
+                      style={{ width: "100%", margin: 0, padding: 0 }}
+                    />
+                  </div>
+                </Col>
+                {(priceRange[0] !== 0 || priceRange[1] !== 50000 || accessDaysRange[0] !== 0 || accessDaysRange[1] !== 365 || languageFilter !== "all" || isBlockedFilter !== "all") && (
+                  <Col xs={24} sm={24} md={4}>
+                    <Button
+                      onClick={() => {
+                        setPriceRange([0, 50000]);
+                        setAccessDaysRange([0, 365]);
+                        setLanguageFilter("all");
+                        setIsBlockedFilter("all");
+                        setCurrent(1);
+                      }}
+                      className="h-[40px] px-6 rounded-lg font-semibold hover:border-primary hover:text-primary transition-all duration-200 text-foreground"
+                    >
+                      Clear Filters
+                    </Button>
+                  </Col>
+                )}
+              </AdvancedSearch>
               <CommonTable columns={columns} data={courses} loading={isLoading || isFetching || addCourseMutation.isPending || editCourseMutation.isPending} searchPlaceholder="Search courses..." onSearch={handleSearch} onAdd={() => { setEditingCourse(null); setIsFormOpen(true); }} fileName="Courses" title="Course Management" current={current} pageSize={pageSize} total={totalCourses} onTableChange={handleTableChange} scroll={{ x: 1000 }} />
             </motion.div>
           </motion.div>

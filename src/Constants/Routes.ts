@@ -47,8 +47,12 @@ export const ROUTES = {
   COUPON_CODE: "/coupon-code",
   LEGALITY: "/legality",
   GALLERY: "/gallery",
+  GALLERY_DETAILS: "/gallery/:id",
   NEWSLETTER: "/newsletter",
   TRUSTED_PARTNER: "/trusted-partner",
   PAYMENTS: "/payments",
   PAYMENT_DETAILS: "/payments/:type/:id",
+  FRANCHISE_INQUIRY: "/franchise-inquiry",
+  FRANCHISE_INQUIRY_DETAILS: "/franchise-inquiry/:id",
+  TESTIMONIAL: "/testimonials",
 } as const;

@@ -32,11 +32,19 @@ export const BREADCRUMBS = {
   FAQ: { BASE: [{ label: PAGE_TITLE.FAQ }] },
   COUPON_CODE: { BASE: [{ label: PAGE_TITLE.COUPON_CODE }] },
   LEGALITY: { BASE: [{ label: PAGE_TITLE.LEGALITY }] },
-  GALLERY: { BASE: [{ label: PAGE_TITLE.GALLERY }] },
+  GALLERY: { 
+    BASE: [{ label: PAGE_TITLE.GALLERY }],
+    DETAILS: [{ label: PAGE_TITLE.GALLERY, href: ROUTES.GALLERY }, { label: "Details" }]
+  },
   NEWSLETTER: { BASE: [{ label: PAGE_TITLE.NEWSLETTER }] },
   TRUSTED_PARTNER: { BASE: [{ label: PAGE_TITLE.TRUSTED_PARTNER }] },
   PAYMENTS: { 
     BASE: [{ label: PAGE_TITLE.PAYMENTS }],
     DETAILS: [{ label: PAGE_TITLE.PAYMENTS, href: ROUTES.PAYMENTS }, { label: PAGE_TITLE.PAYMENT_DETAILS }]
   },
+  FRANCHISE_INQUIRY: { 
+    BASE: [{ label: PAGE_TITLE.FRANCHISE_INQUIRY }],
+    DETAILS: [{ label: PAGE_TITLE.FRANCHISE_INQUIRY, href: ROUTES.FRANCHISE_INQUIRY }, { label: "Details" }]
+  },
+  TESTIMONIAL: { BASE: [{ label: PAGE_TITLE.TESTIMONIAL }] },
 }

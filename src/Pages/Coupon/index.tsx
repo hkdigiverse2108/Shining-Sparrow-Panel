@@ -1,5 +1,5 @@
 import { useState, useMemo, type FC } from 'react';
-import { Button, Tag, Tooltip } from 'antd';
+import { Button, Tag, Tooltip, DatePicker, Col } from 'antd';
 import {
   DeleteOutlined,
   EditOutlined, CalendarOutlined,
@@ -7,7 +7,7 @@ import {
 } from '@ant-design/icons';
 import { motion } from 'motion/react';
 import { useQueryClient } from '@tanstack/react-query';
-import { CommonBreadcrumbs, CommonPageWrapper, CommonTable, CommonDeleteModal, CommonSummaryCards } from '@/Components';
+import { CommonBreadcrumbs, CommonPageWrapper, CommonTable, CommonDeleteModal, CommonSummaryCards, AdvancedSearch } from '@/Components';
 import { blurRevealUp, staggerContainer } from '@/Utils/animations';
 import { BREADCRUMBS } from '@/Data';
 import { Queries, Mutations } from '@/Api';
@@ -133,6 +133,12 @@ const CouponPage: FC = () => {
   const [current, setCurrent] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
+  // Advanced Search states
+  const [discountTypeFilter, setDiscountTypeFilter] = useState<string | undefined>("all");
+  const [appliesToFilter, setAppliesToFilter] = useState<string | undefined>("all");
+  const [validityDateRange, setValidityDateRange] = useState<[dayjs.Dayjs | null, dayjs.Dayjs | null] | null>(null);
+  const [usageStatusFilter, setUsageStatusFilter] = useState<string | undefined>("all");
+
   // State for Delete Modal
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [couponToDelete, setCouponToDelete] = useState<any | null>(null);
@@ -141,7 +147,12 @@ const CouponPage: FC = () => {
   const { data: responseData, isLoading, isFetching } = Queries.useGetCouponCodes({
     page: current,
     limit: pageSize,
-    search: debouncedSearchQuery
+    search: debouncedSearchQuery,
+    discountType: discountTypeFilter === "all" ? undefined : discountTypeFilter,
+    appliesTo: appliesToFilter === "all" ? undefined : appliesToFilter,
+    validStartDate: validityDateRange?.[0] ? validityDateRange[0].startOf('day').toISOString() : undefined,
+    validEndDate: validityDateRange?.[1] ? validityDateRange[1].endOf('day').toISOString() : undefined,
+    usageStatus: usageStatusFilter === "all" ? undefined : usageStatusFilter,
   });
 
   const coupons = useMemo(() => responseData?.data?.coupon_code_data || [], [responseData]);
@@ -250,19 +261,84 @@ const CouponPage: FC = () => {
               subject="Coupons" 
             />
             <motion.div variants={blurRevealUp}>
+            <AdvancedSearch filter={[
+              {
+                label: "Discount Format",
+                value: discountTypeFilter,
+                options: [
+                  { label: "All", value: "all" },
+                  { label: "Percentage (%)", value: "percentage" },
+                  { label: "Flat Amount (₹)", value: "flat" }
+                ],
+                onChange: (val: any) => { setDiscountTypeFilter(val); setCurrent(1); },
+                grid: { xs: 24, sm: 12, md: 5 }
+              },
+              {
+                label: "Product Applicability",
+                value: appliesToFilter,
+                options: [
+                  { label: "All", value: "all" },
+                  { label: "Default (Global)", value: "default" },
+                  { label: "Course Specific", value: "course" },
+                  { label: "Workshop Specific", value: "workshop" }
+                ],
+                onChange: (val: any) => { setAppliesToFilter(val); setCurrent(1); },
+                grid: { xs: 24, sm: 12, md: 5 }
+              },
+              {
+                label: "Usage Depletion",
+                value: usageStatusFilter,
+                options: [
+                  { label: "All", value: "all" },
+                  { label: "Valid Coupons", value: "valid" },
+                  { label: "Depleted Coupons", value: "depleted" }
+                ],
+                onChange: (val: any) => { setUsageStatusFilter(val); setCurrent(1); },
+                grid: { xs: 24, sm: 12, md: 5 }
+              }
+            ]}>
+              <Col xs={24} sm={12} md={5} style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                <span className="text-xs font-semibold uppercase tracking-wider text-muted">Validity Period</span>
+                <DatePicker.RangePicker
+                  value={validityDateRange}
+                  onChange={(dates) => {
+                    setValidityDateRange(dates as any);
+                    setCurrent(1);
+                  }}
+                  className="rounded-lg h-[40px] w-full"
+                />
+              </Col>
+              {(discountTypeFilter !== "all" || appliesToFilter !== "all" || usageStatusFilter !== "all" || validityDateRange) && (
+                <Col xs={24} sm={24} md={4}>
+                  <Button
+                    onClick={() => {
+                      setDiscountTypeFilter("all");
+                      setAppliesToFilter("all");
+                      setValidityDateRange(null);
+                      setUsageStatusFilter("all");
+                      setCurrent(1);
+                    }}
+                    className="h-[40px] px-6 rounded-lg font-semibold hover:border-primary hover:text-primary transition-all duration-200 text-foreground"
+                  >
+                    Clear Filters
+                  </Button>
+                </Col>
+              )}
+            </AdvancedSearch>
               <CommonTable 
                 columns={columns} 
                 data={coupons} 
-                loading={isLoading || isFetching} 
-                searchPlaceholder="Search coupon codes..." 
+                loading={isLoading || isFetching || addCouponMutation.isPending || editCouponMutation.isPending} 
+                searchPlaceholder="Search coupons..." 
                 onSearch={handleSearch} 
                 onAdd={() => { setEditingCoupon(null); setIsFormOpen(true); }} 
-                fileName="CouponCodes" 
-                title="Coupon Code Management" 
+                fileName="Coupon_Codes" 
+                title="Coupon Codes" 
                 current={current} 
                 pageSize={pageSize} 
                 total={totalCoupons} 
                 onTableChange={handleTableChange} 
+                scroll={{ x: 1000 }} 
               />
             </motion.div>
           </motion.div>

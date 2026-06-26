@@ -1,9 +1,11 @@
 import { useState, useMemo, type FC } from 'react';
-import { Button, Input, Pagination, Spin, Image } from 'antd';
+import { useNavigate } from 'react-router-dom';
+import { Button, Input, Pagination, Spin, DatePicker, Col } from 'antd';
 import { DeleteOutlined, EditOutlined, FolderOpenOutlined, PlusOutlined, EyeOutlined, SearchOutlined, PictureOutlined } from '@ant-design/icons';
 import { motion } from 'motion/react';
+import dayjs from 'dayjs';
 import { useQueryClient } from '@tanstack/react-query';
-import { CommonBreadcrumbs, CommonPageWrapper, CommonDeleteModal } from '@/Components';
+import { CommonBreadcrumbs, CommonPageWrapper, CommonDeleteModal, AdvancedSearch } from '@/Components';
 import { blurRevealUp, staggerContainer } from '@/Utils/animations';
 import { BREADCRUMBS } from '@/Data';
 import { Queries, Mutations } from '@/Api';
@@ -154,6 +156,7 @@ const FolderCard = ({ record, onEdit, onDelete, onClick }: any) => {
 
 const GalleryPage: FC = () => {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -161,7 +164,11 @@ const GalleryPage: FC = () => {
 
   const [current, setCurrent] = useState(1);
   const [pageSize, setPageSize] = useState(12);
-  const [previewFolder, setPreviewFolder] = useState<any | null>(null);
+
+  // Advanced Search states
+  const [hasImagesFilter, setHasImagesFilter] = useState<string | undefined>("all");
+  const [isBlockedFilter, setIsBlockedFilter] = useState<string | undefined>("all");
+  const [dateRange, setDateRange] = useState<[dayjs.Dayjs | null, dayjs.Dayjs | null] | null>(null);
 
   // State for Delete Modal
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -171,7 +178,11 @@ const GalleryPage: FC = () => {
   const { data: responseData, isLoading, isFetching } = Queries.useGetGalleries({
     page: current,
     limit: pageSize,
-    search: debouncedSearchQuery
+    search: debouncedSearchQuery,
+    hasImages: hasImagesFilter === "all" ? undefined : hasImagesFilter,
+    isBlocked: isBlockedFilter === "all" ? undefined : isBlockedFilter,
+    startDate: dateRange?.[0] ? dateRange[0].startOf('day').toISOString() : undefined,
+    endDate: dateRange?.[1] ? dateRange[1].endOf('day').toISOString() : undefined,
   });
 
   const galleries = useMemo(() => responseData?.data?.gallery_data || [], [responseData]);
@@ -292,6 +303,58 @@ const GalleryPage: FC = () => {
               <div className="absolute right-0 bottom-0 top-0 w-80 bg-gradient-to-l from-primary/5 to-transparent blur-2xl rounded-full pointer-events-none transform translate-x-10 translate-y-10" />
             </div>
 
+            <AdvancedSearch filter={[
+              {
+                label: "Folder Asset Volume",
+                value: hasImagesFilter,
+                options: [
+                  { label: "All", value: "all" },
+                  { label: "Populated Folders Only", value: "true" },
+                  { label: "Empty Folders Only", value: "false" }
+                ],
+                onChange: (val: any) => { setHasImagesFilter(val); setCurrent(1); },
+                grid: { xs: 24, sm: 12, md: 6 }
+              },
+              {
+                label: "Folder Status",
+                value: isBlockedFilter,
+                options: [
+                  { label: "All", value: "all" },
+                  { label: "Active Folders", value: "false" },
+                  { label: "Blocked Folders", value: "true" }
+                ],
+                onChange: (val: any) => { setIsBlockedFilter(val); setCurrent(1); },
+                grid: { xs: 24, sm: 12, md: 6 }
+              }
+            ]}>
+              <Col xs={24} sm={12} md={6} style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                <span className="text-xs font-semibold uppercase tracking-wider text-muted">Folder Creation Date Range</span>
+                <DatePicker.RangePicker
+                  value={dateRange}
+                  onChange={(dates) => {
+                    setDateRange(dates as any);
+                    setCurrent(1);
+                  }}
+                  className="rounded-lg h-[40px] w-full"
+                />
+              </Col>
+              {(hasImagesFilter !== "all" || isBlockedFilter !== "all" || dateRange) && (
+                <Col xs={24} sm={24} md={6}>
+                  <Button
+                    onClick={() => {
+                      setHasImagesFilter("all");
+                      setIsBlockedFilter("all");
+                      setDateRange(null);
+                      setCurrent(1);
+                    }}
+                    className="h-[40px] px-6 rounded-lg font-semibold hover:border-primary hover:text-primary transition-all duration-200 text-foreground"
+                  >
+                    Clear Filters
+                  </Button>
+                </Col>
+              )}
+            </AdvancedSearch>
+
             {/* Folder Grid */}
             <Spin spinning={isLoading || isFetching} size="large">
               {galleries.length > 0 ? (
@@ -306,7 +369,7 @@ const GalleryPage: FC = () => {
                       <FolderCard 
                         key={gallery._id} 
                         record={gallery} 
-                        onClick={() => setPreviewFolder(gallery)}
+                        onClick={() => navigate(`/gallery/${gallery._id}`, { state: { record: gallery } })}
                         onEdit={(g: any) => { setEditingGallery(g); setIsFormOpen(true); }}
                         onDelete={handleDeleteClick}
                       />
@@ -356,23 +419,7 @@ const GalleryPage: FC = () => {
         )}
       </CommonPageWrapper>
 
-      {/* Hidden image previewer lightbox for folder view */}
-      {previewFolder && (
-        <div style={{ display: 'none' }}>
-          <Image.PreviewGroup 
-            preview={{ 
-              visible: !!previewFolder, 
-              onVisibleChange: (visible) => {
-                if (!visible) setPreviewFolder(null);
-              }
-            }}
-          >
-            {(previewFolder.images || []).map((img: string, i: number) => (
-              <Image key={i} src={img} />
-            ))}
-          </Image.PreviewGroup>
-        </div>
-      )}
+
 
       <CommonDeleteModal 
         open={isDeleteModalOpen} 

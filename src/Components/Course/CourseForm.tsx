@@ -6,21 +6,32 @@ import { Queries } from "@/Api";
 import * as Yup from "yup";
 import type { CourseHandlerProps } from "@/Types";
 
-const CourseSchema = Yup.object({
-  name: Yup.string().required("Course Name is required"),
-  description: Yup.string().optional(),
-  price: Yup.number().required("Main Price is required").min(0),
-  mrpPrice: Yup.number().required("Price after Discount is required").min(0),
-  duration: Yup.number().optional().min(0, "Duration must be positive"),
-  accessDurationDays: Yup.number().optional().nullable().min(0, "Access duration must be positive"),
-  language: Yup.string().optional().nullable(),
-  pdf: Yup.string().optional().nullable(),
-  courseCurriculumIds: Yup.array(Yup.string()).optional(),
-  trailerUrl: Yup.string().url("Must be a valid URL").nullable().optional(),
-  isBlocked: Yup.boolean().optional(),
-});
-
 export const CourseForm: FC<CourseHandlerProps> = ({ open, onClose, onSave, editing }) => {
+  const { data: courseResponse } = Queries.useGetCourses({ page: 1, limit: 1000 });
+  const allCourses = courseResponse?.data?.course_data || [];
+
+  const CourseSchema = useMemo(() => {
+    return Yup.object({
+      name: Yup.string().required("Course Name is required"),
+      description: Yup.string().optional(),
+      price: Yup.number().required("Main Price is required").min(0),
+      mrpPrice: Yup.number().required("Price after Discount is required").min(0),
+      duration: Yup.number().optional().min(0, "Duration must be positive"),
+      accessDurationDays: Yup.number().optional().nullable().min(0, "Access duration must be positive"),
+      language: Yup.string().optional().nullable(),
+      pdf: Yup.string().optional().nullable(),
+      courseCurriculumIds: Yup.array(Yup.string()).optional(),
+      trailerUrl: Yup.string().url("Must be a valid URL").nullable().optional(),
+      isBlocked: Yup.boolean().optional(),
+      priority: Yup.number()
+        .optional()
+        .min(0, "Priority must be at least 0")
+        .test("unique-priority", "This priority is already assigned to another course", (val) => {
+          if (val === undefined || val === null || val === 0) return true;
+          return !allCourses.some((c: any) => c._id !== editing?._id && Number(c.priority) === Number(val));
+        }),
+    });
+  }, [allCourses, editing]);
   const defaults = {
     name: "",
     description: "",
@@ -34,6 +45,7 @@ export const CourseForm: FC<CourseHandlerProps> = ({ open, onClose, onSave, edit
     accessDurationDays: "",
     trailerUrl: "",
     pdf: "",
+    priority: 0,
   };
 
   const initialValues = useMemo(() => (editing ? {
@@ -43,10 +55,8 @@ export const CourseForm: FC<CourseHandlerProps> = ({ open, onClose, onSave, edit
     accessDurationDays: editing.accessDurationDays ?? "",
     trailerUrl: editing.trailerUrl ?? "",
     pdf: editing.pdf ?? "",
+    priority: editing.priority ?? 0,
   } : defaults), [editing]);
-
-  const { data: courseResponse } = Queries.useGetCourses({ page: 1, limit: 1000 });
-  const allCourses = courseResponse?.data?.course_data || [];
 
   const courseOptions = useMemo(() => {
     return allCourses
@@ -68,6 +78,7 @@ export const CourseForm: FC<CourseHandlerProps> = ({ open, onClose, onSave, edit
       accessDurationDays: v.accessDurationDays ? Number(v.accessDurationDays) : null,
       trailerUrl: v.trailerUrl || null,
       pdf: v.pdf || null,
+      priority: Number(v.priority || 0),
     };
 
     if (editing) {
@@ -97,6 +108,7 @@ export const CourseForm: FC<CourseHandlerProps> = ({ open, onClose, onSave, edit
               <CommonValidationTextField name="language" label="Course Language" placeholder="e.g. English, Hindi" />
               <CommonValidationTextField name="duration" label="Course Duration (in Hours)" type="number" placeholder="e.g. 40" />
               <CommonValidationTextField name="accessDurationDays" label="Access Duration (in Days)" type="number" placeholder="e.g. 365" />
+              <CommonValidationTextField name="priority" label="Priority / Order" type="number" placeholder="e.g. 1" />
               
               <CommonImageUpload name="image" label="Course Thumbnail Image" shape="square" size={160} className="col-span-full" />
               

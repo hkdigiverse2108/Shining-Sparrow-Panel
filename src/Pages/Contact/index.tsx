@@ -1,5 +1,5 @@
 import { useState, useMemo, type FC } from 'react';
-import { Avatar, Button, Tag, Tooltip, Tabs, Spin } from 'antd';
+import { Avatar, Button, Tag, Tooltip, Tabs, Spin, DatePicker, Col } from 'antd';
 import {
   UserOutlined, MailOutlined, PhoneOutlined,
   DeleteOutlined, EyeOutlined, ClockCircleOutlined,
@@ -8,7 +8,7 @@ import {
 } from '@ant-design/icons';
 import { motion } from 'motion/react';
 import { useQueryClient } from '@tanstack/react-query';
-import { CommonBreadcrumbs, CommonPageWrapper, CommonTable, CommonDeleteModal, CommonDrawer, CommonFormSection } from '@/Components';
+import { CommonBreadcrumbs, CommonPageWrapper, CommonTable, CommonDeleteModal, CommonDrawer, CommonFormSection, AdvancedSearch } from '@/Components';
 import { CommonButton, CommonValidationTextField } from '@/Attribute';
 import { blurRevealUp, staggerContainer } from '@/Utils/animations';
 import { BREADCRUMBS } from '@/Data';
@@ -268,10 +268,19 @@ const ContactPage: FC = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [msgToDelete, setMsgToDelete] = useState<any>(null);
 
-  const { data: responseData, isLoading } = Queries.useGetContactMessages({
+  // Advanced Search states
+  const [isReadFilter, setIsReadFilter] = useState<string | undefined>("all");
+  const [isBlockedFilter, setIsBlockedFilter] = useState<string | undefined>("all");
+  const [dateRange, setDateRange] = useState<[dayjs.Dayjs | null, dayjs.Dayjs | null] | null>(null);
+
+  const { data: responseData, isLoading, isFetching } = Queries.useGetContactMessages({
     page: current,
     limit: pageSize,
-    search: debouncedSearch,
+    search: debouncedSearch || undefined,
+    isRead: isReadFilter === "all" ? undefined : isReadFilter,
+    isBlocked: isBlockedFilter === "all" ? undefined : isBlockedFilter,
+    startDate: dateRange?.[0] ? dateRange[0].startOf('day').toISOString() : undefined,
+    endDate: dateRange?.[1] ? dateRange[1].endOf('day').toISOString() : undefined,
   });
 
   const messages = useMemo(() => responseData?.data?.contact_messages_data || [], [responseData]);
@@ -364,10 +373,61 @@ const ContactPage: FC = () => {
 
           {/* Table */}
           <motion.div variants={blurRevealUp}>
+            <AdvancedSearch filter={[
+              {
+                label: "Read State",
+                value: isReadFilter,
+                options: [
+                  { label: "All", value: "all" },
+                  { label: "Unread Messages", value: "false" },
+                  { label: "Read Messages", value: "true" }
+                ],
+                onChange: (val: any) => { setIsReadFilter(val); setCurrent(1); },
+                grid: { xs: 24, sm: 12, md: 6 }
+              },
+              {
+                label: "Status",
+                value: isBlockedFilter,
+                options: [
+                  { label: "All", value: "all" },
+                  { label: "Active Messages", value: "false" },
+                  { label: "Blocked Messages", value: "true" }
+                ],
+                onChange: (val: any) => { setIsBlockedFilter(val); setCurrent(1); },
+                grid: { xs: 24, sm: 12, md: 6 }
+              }
+            ]}>
+              <Col xs={24} sm={12} md={6} style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                <span className="text-xs font-semibold uppercase tracking-wider text-muted">Date Received Range</span>
+                <DatePicker.RangePicker
+                  value={dateRange}
+                  onChange={(dates) => {
+                    setDateRange(dates as any);
+                    setCurrent(1);
+                  }}
+                  className="rounded-lg h-[40px] w-full"
+                />
+              </Col>
+              {(isReadFilter !== "all" || isBlockedFilter !== "all" || dateRange) && (
+                <Col xs={24} sm={24} md={6}>
+                  <Button
+                    onClick={() => {
+                      setIsReadFilter("all");
+                      setIsBlockedFilter("all");
+                      setDateRange(null);
+                      setCurrent(1);
+                    }}
+                    className="h-[40px] px-6 rounded-lg font-semibold hover:border-primary hover:text-primary transition-all duration-200 text-foreground"
+                  >
+                    Clear Filters
+                  </Button>
+                </Col>
+              )}
+            </AdvancedSearch>
             <CommonTable
               columns={columns}
               data={messages}
-              loading={isLoading || deleteMutation.isPending}
+              loading={isLoading || isFetching || deleteMutation.isPending}
               searchPlaceholder="Search by name, email, subject..."
               onSearch={(q) => { setSearchQuery(q); setCurrent(1); }}
               current={current}

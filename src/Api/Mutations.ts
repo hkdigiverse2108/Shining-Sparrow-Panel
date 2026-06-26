@@ -147,6 +147,11 @@ export const Mutations = {
   // ************ Notifications ***********
   useMarkNotificationRead: () => useMutations<{ id: string }, any>([KEYS.NOTIFICATION.READ, KEYS.NOTIFICATION.BASE], (payload) => Post(URL_KEYS.NOTIFICATION.READ, payload, true, false)),
   useDeleteNotification: () => useMutations<{ id: string }, any>([KEYS.NOTIFICATION.DELETE, KEYS.NOTIFICATION.BASE], (payload) => Post(URL_KEYS.NOTIFICATION.DELETE, payload, true, false)),
+
+  // ************ Franchise Inquiry ***********
+  useDeleteFranchiseInquiry: () => useMutations<string, void>([KEYS.FRANCHISE_INQUIRY.DELETE, KEYS.FRANCHISE_INQUIRY.BASE], (id) => Delete(`${URL_KEYS.FRANCHISE_INQUIRY.DELETE}/${id}`)),
+  useMarkFranchiseRead: () => useMutations<{ franchiseInquiryId: string; isRead: boolean }, any>([KEYS.FRANCHISE_INQUIRY.BASE, "mark-read"], (input) => Post(URL_KEYS.FRANCHISE_INQUIRY.EDIT, input)),
+  useUpdateFranchiseInquiry: () => useMutations<any, any>([KEYS.FRANCHISE_INQUIRY.BASE, "update"], (input) => Post(URL_KEYS.FRANCHISE_INQUIRY.EDIT, input)),
 };
 
 

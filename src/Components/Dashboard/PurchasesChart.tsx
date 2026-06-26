@@ -1,19 +1,8 @@
 import React from 'react';
 import { Skeleton } from 'antd';
-import { motion } from 'motion/react';
-import {
-  ResponsiveContainer,
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-} from 'recharts';
+import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 
 import { Queries } from '@/Api';
-import { fadeInUp } from '@/Utils/animations';
 
 interface MonthlyData {
   label: string;
@@ -43,26 +32,36 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 
 const PurchasesChart: React.FC = () => {
   const { data: analyticsRes, isLoading } = Queries.useGetDashboardAnalytics();
+  const [renderKey, setRenderKey] = React.useState(0);
+
+  React.useEffect(() => {
+    if (!isLoading) {
+      const timer = setTimeout(() => {
+        setRenderKey(prev => prev + 1);
+      }, 150);
+      return () => clearTimeout(timer);
+    }
+  }, [isLoading]);
 
   const monthly: MonthlyData[] = analyticsRes?.data?.monthly ?? [];
 
   if (isLoading) {
     return (
-      <div className="rounded-2xl border border-border bg-surface p-6">
+      <div className="rounded-2xl border border-border bg-surface p-6 h-full">
         <Skeleton active paragraph={{ rows: 8 }} />
       </div>
     );
   }
 
   return (
-    <motion.div variants={fadeInUp} className="rounded-2xl border border-border bg-surface p-6">
+    <div className="rounded-2xl border border-border bg-surface p-6 h-full flex flex-col">
       <div className="mb-5">
         <h2 className="m-0 text-lg font-bold text-foreground">Purchase Trends</h2>
         <p className="m-0 mt-1 text-sm text-text-muted">Monthly course & workshop purchases (last 12 months)</p>
       </div>
 
-      <div className="h-[300px] w-full">
-        <ResponsiveContainer width="100%" height="100%">
+      <div className="flex-1 w-full min-h-[300px]">
+        <ResponsiveContainer key={renderKey} width="100%" height="100%">
           <AreaChart data={monthly} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
             <defs>
               <linearGradient id="coursePurchaseGradient" x1="0" y1="0" x2="0" y2="1">
@@ -119,7 +118,7 @@ const PurchasesChart: React.FC = () => {
           </AreaChart>
         </ResponsiveContainer>
       </div>
-    </motion.div>
+    </div>
   );
 };
 

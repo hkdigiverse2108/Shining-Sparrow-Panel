@@ -1,11 +1,11 @@
 import { useState, useMemo, type FC } from 'react';
-import { Button, Tag, Modal, Segmented } from 'antd';
+import { Button, Tag, Modal, Segmented, DatePicker, Col } from 'antd';
 import { DeleteOutlined, MailOutlined, SendOutlined } from '@ant-design/icons';
 import { motion } from 'motion/react';
 import { useQueryClient } from '@tanstack/react-query';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
-import { CommonBreadcrumbs, CommonPageWrapper, CommonTable, CommonDeleteModal, CommonSummaryCards } from '@/Components';
+import { CommonBreadcrumbs, CommonPageWrapper, CommonTable, CommonDeleteModal, CommonSummaryCards, AdvancedSearch } from '@/Components';
 import { CommonValidationTextField, CommonRichTextEditor, showNotification } from '@/Attribute';
 import { blurRevealUp, staggerContainer } from '@/Utils/animations';
 import { BREADCRUMBS } from '@/Data';
@@ -96,6 +96,10 @@ const NewsletterPage: FC = () => {
   const [current, setCurrent] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
+  // Advanced Search states
+  const [isBlockedFilter, setIsBlockedFilter] = useState<string | undefined>("all");
+  const [dateRange, setDateRange] = useState<[dayjs.Dayjs | null, dayjs.Dayjs | null] | null>(null);
+
   // Modals state
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isBroadcastModalOpen, setIsBroadcastModalOpen] = useState(false);
@@ -106,7 +110,10 @@ const NewsletterPage: FC = () => {
   const { data: responseData, isLoading } = Queries.useGetNewsletters({
     page: current,
     limit: pageSize,
-    search: debouncedSearchQuery
+    search: debouncedSearchQuery,
+    isBlocked: isBlockedFilter === "all" ? undefined : isBlockedFilter,
+    startDate: dateRange?.[0] ? dateRange[0].startOf('day').toISOString() : undefined,
+    endDate: dateRange?.[1] ? dateRange[1].endOf('day').toISOString() : undefined,
   });
 
   const subscribers = useMemo(() => responseData?.data?.newsletter_data || [], [responseData]);
@@ -236,11 +243,50 @@ const NewsletterPage: FC = () => {
         <motion.div variants={staggerContainer} initial="hidden" animate="visible">
           <CommonSummaryCards 
             total={totalSubscribers} 
-            active={totalSubscribers} 
-            blocked={0} 
+            active={subscribers.filter((s: any) => !s.isBlocked).length} 
+            blocked={subscribers.filter((s: any) => s.isBlocked).length} 
             subject="Subscribers" 
           />
           <motion.div variants={blurRevealUp}>
+            <AdvancedSearch filter={[
+              {
+                label: "Status",
+                value: isBlockedFilter,
+                options: [
+                  { label: "All", value: "all" },
+                  { label: "Active (Unblocked)", value: "false" },
+                  { label: "Blocked Only", value: "true" }
+                ],
+                onChange: (val: any) => { setIsBlockedFilter(val); setCurrent(1); },
+                grid: { xs: 24, sm: 12, md: 8 }
+              }
+            ]}>
+              <Col xs={24} sm={12} md={8} style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                <span className="text-xs font-semibold uppercase tracking-wider text-muted">Subscription Date Range</span>
+                <DatePicker.RangePicker
+                  value={dateRange}
+                  onChange={(dates) => {
+                    setDateRange(dates as any);
+                    setCurrent(1);
+                  }}
+                  className="rounded-lg h-[40px] w-full"
+                />
+              </Col>
+              {(isBlockedFilter !== "all" || dateRange) && (
+                <Col xs={24} sm={24} md={8}>
+                  <Button
+                    onClick={() => {
+                      setIsBlockedFilter("all");
+                      setDateRange(null);
+                      setCurrent(1);
+                    }}
+                    className="h-[40px] px-6 rounded-lg font-semibold hover:border-primary hover:text-primary transition-all duration-200 text-foreground"
+                  >
+                    Clear Filters
+                  </Button>
+                </Col>
+              )}
+            </AdvancedSearch>
             <CommonTable 
               columns={columns} 
               data={subscribers} 

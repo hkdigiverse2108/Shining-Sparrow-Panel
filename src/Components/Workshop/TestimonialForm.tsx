@@ -26,7 +26,7 @@ export const TestimonialForm: FC<TestimonialFormProps> = ({ editing, onSave, loa
         <Form className="space-y-6">
           <h2 className="text-xl font-bold mb-4">{editing ? 'Edit Testimonial' : 'Add Testimonial'}</h2>
           <CommonFormSection title="Testimonial Details">
-            <CommonImageUpload name="image" label="Customer Photo" shape="circle" size={80} className="col-span-full mb-4" />
+            <CommonImageUpload name="image" label="Customer Photo" shape="circle" size={140} className="col-span-full mb-4" />
             <CommonValidationTextField name="name" label="Name" required />
             <CommonValidationTextField name="designation" label="Designation / Title" placeholder="e.g. Student, CEO" />
             <CommonValidationTextField name="rate" label="Rating (1-5)" type="number" required />

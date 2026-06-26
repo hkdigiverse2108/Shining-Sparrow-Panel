@@ -1,22 +1,8 @@
 import React from 'react';
 import { Skeleton } from 'antd';
-import { motion } from 'motion/react';
-import {
-  ResponsiveContainer,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  Line,
-  ComposedChart,
-} from 'recharts';
+import { ResponsiveContainer, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Line, ComposedChart } from 'recharts';
 import { DollarOutlined, BookOutlined, ToolOutlined } from '@ant-design/icons';
-
 import { Queries } from '@/Api';
-import { fadeInUp } from '@/Utils/animations';
 
 interface MonthlyData {
   label: string;
@@ -59,33 +45,47 @@ interface SummaryCardProps {
 }
 
 const SummaryCard: React.FC<SummaryCardProps> = ({ icon, label, value, color, bgColor }) => (
-  <div className="flex items-center gap-3 rounded-xl bg-surface border border-border p-4">
-    <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${bgColor} ${color}`}>
+  <div className="flex items-center gap-2.5 rounded-xl bg-surface border border-border p-3 flex-1 min-w-0">
+    <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-base ${bgColor} ${color}`}>
       {icon}
     </div>
-    <div>
-      <div className="text-[11px] font-bold uppercase tracking-wider text-text-muted">{label}</div>
-      <div className="text-xl font-extrabold text-foreground">{value}</div>
+    <div className="min-w-0 flex-1">
+      <div className="text-[10px] font-bold uppercase tracking-wider text-text-muted truncate mb-0.5" title={label}>
+        {label}
+      </div>
+      <div className="text-base font-black text-foreground truncate" title={value}>
+        {value}
+      </div>
     </div>
   </div>
 );
 
 const RevenueChart: React.FC = () => {
   const { data: analyticsRes, isLoading } = Queries.useGetDashboardAnalytics();
+  const [renderKey, setRenderKey] = React.useState(0);
+
+  React.useEffect(() => {
+    if (!isLoading) {
+      const timer = setTimeout(() => {
+        setRenderKey(prev => prev + 1);
+      }, 150);
+      return () => clearTimeout(timer);
+    }
+  }, [isLoading]);
 
   const monthly: MonthlyData[] = analyticsRes?.data?.monthly ?? [];
   const summary = analyticsRes?.data?.summary ?? {};
 
   if (isLoading) {
     return (
-      <div className="rounded-2xl border border-border bg-surface p-6">
+      <div className="rounded-2xl border border-border bg-surface p-6 h-full">
         <Skeleton active paragraph={{ rows: 8 }} />
       </div>
     );
   }
 
   return (
-    <motion.div variants={fadeInUp} className="rounded-2xl border border-border bg-surface p-6">
+    <div className="rounded-2xl border border-border bg-surface p-6 h-full flex flex-col">
       <div className="mb-5 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div>
           <h2 className="m-0 text-lg font-bold text-foreground">Revenue Overview</h2>
@@ -94,7 +94,7 @@ const RevenueChart: React.FC = () => {
       </div>
 
       {/* Summary Cards */}
-      <div className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-3">
+      <div className="mb-6 grid grid-cols-1 gap-2.5 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
         <SummaryCard
           icon={<BookOutlined />}
           label="Course Revenue"
@@ -119,8 +119,8 @@ const RevenueChart: React.FC = () => {
       </div>
 
       {/* Chart */}
-      <div className="h-[350px] w-full">
-        <ResponsiveContainer width="100%" height="100%">
+      <div className="flex-1 w-full min-h-[250px]">
+        <ResponsiveContainer key={renderKey} width="100%" height="100%">
           <ComposedChart data={monthly} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
             <defs>
               <linearGradient id="courseGradient" x1="0" y1="0" x2="0" y2="1">
@@ -182,7 +182,7 @@ const RevenueChart: React.FC = () => {
           </ComposedChart>
         </ResponsiveContainer>
       </div>
-    </motion.div>
+    </div>
   );
 };
 

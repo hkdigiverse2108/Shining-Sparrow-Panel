@@ -93,7 +93,7 @@ const ManageWorkshop: FC = () => {
       designation: values.designation || '',
       rate: Number(values.rate),
       description: values.description || '',
-      image: values.image || '',
+      image: values.image || '/assets/images/Logo_icon.png',
       learningCatalogId: workshopId,
       type: 'workshop',
     };

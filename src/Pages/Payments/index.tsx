@@ -1,5 +1,5 @@
 import { useState, useMemo, type FC } from 'react';
-import { Avatar, Tag, Segmented, Button, Tooltip, Input, Row, Col } from 'antd';
+import { Avatar, Tag, Segmented, Button, Tooltip, Col, Slider } from 'antd';
 import { 
   BookOutlined, 
   CalendarOutlined, 
@@ -36,27 +36,28 @@ const PaymentsPage: FC = () => {
   const [workshopSearch, setWorkshopSearch] = useState("");
 
   // Advanced Filter states
-  const [courseFilter, setCourseFilter] = useState<string | undefined>(undefined);
-  const [workshopFilter, setWorkshopFilter] = useState<string | undefined>(undefined);
-  const [minAmount, setMinAmount] = useState<string>("");
-  const [maxAmount, setMaxAmount] = useState<string>("");
+  const [courseFilter, setCourseFilter] = useState<string | undefined>("all");
+  const [workshopFilter, setWorkshopFilter] = useState<string | undefined>("all");
+  const [amountRange, setAmountRange] = useState<[number, number]>([0, 100000]);
 
   // Fetch courses list and workshops list for filters
   const { data: allCoursesRes, isLoading: coursesListLoading } = Queries.useGetCourses({ page: 1, limit: 1000 });
   const { data: allWorkshopsRes, isLoading: workshopsListLoading } = Queries.useGetWorkshops({ page: 1, limit: 1000 });
 
   const courseOptions = useMemo(() => {
-    return (allCoursesRes?.data?.course_data || []).map((c: any) => ({
+    const list = (allCoursesRes?.data?.course_data || []).map((c: any) => ({
       label: c.name,
       value: c._id,
     }));
+    return [{ label: "All", value: "all" }, ...list];
   }, [allCoursesRes]);
 
   const workshopOptions = useMemo(() => {
-    return (allWorkshopsRes?.data?.workshop_data || []).map((w: any) => ({
+    const list = (allWorkshopsRes?.data?.workshop_data || []).map((w: any) => ({
       label: w.title,
       value: w._id,
     }));
+    return [{ label: "All", value: "all" }, ...list];
   }, [allWorkshopsRes]);
 
   // Fetch course purchases
@@ -64,9 +65,9 @@ const PaymentsPage: FC = () => {
     page: coursePage,
     limit: coursePageSize,
     search: courseSearch || undefined,
-    courseId: courseFilter || undefined,
-    minAmount: minAmount || undefined,
-    maxAmount: maxAmount || undefined,
+    courseId: courseFilter === "all" ? undefined : courseFilter,
+    minAmount: amountRange[0] === 0 ? undefined : amountRange[0].toString(),
+    maxAmount: amountRange[1] === 100000 ? undefined : amountRange[1].toString(),
   });
 
   // Fetch workshop purchases
@@ -74,9 +75,9 @@ const PaymentsPage: FC = () => {
     page: workshopPage,
     limit: workshopPageSize,
     search: workshopSearch || undefined,
-    workshopId: workshopFilter || undefined,
-    minAmount: minAmount || undefined,
-    maxAmount: maxAmount || undefined,
+    workshopId: workshopFilter === "all" ? undefined : workshopFilter,
+    minAmount: amountRange[0] === 0 ? undefined : amountRange[0].toString(),
+    maxAmount: amountRange[1] === 100000 ? undefined : amountRange[1].toString(),
   });
 
   const coursesData = coursesRes?.data?.purchased_course_data || [];
@@ -395,7 +396,8 @@ const PaymentsPage: FC = () => {
                     setCourseFilter(val);
                     setCoursePage(1);
                   },
-                  isLoading: coursesListLoading
+                  isLoading: coursesListLoading,
+                  grid: { xs: 24, sm: 12, md: 8 }
                 }
               ] : [
                 { 
@@ -406,59 +408,48 @@ const PaymentsPage: FC = () => {
                     setWorkshopFilter(val);
                     setWorkshopPage(1);
                   },
-                  isLoading: workshopsListLoading
+                  isLoading: workshopsListLoading,
+                  grid: { xs: 24, sm: 12, md: 8 }
                 }
               ]}
             >
-              <Row gutter={[24, 16]} align="bottom">
-                <Col xs={24} sm={12} md={6} style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-                  <span className="text-xs font-semibold uppercase tracking-wider text-muted">Min Amount</span>
-                  <Input
-                    type="number"
-                    placeholder="Min amount (e.g. 500)"
-                    value={minAmount}
-                    onChange={(e) => {
-                      setMinAmount(e.target.value);
+              <Col xs={24} sm={12} md={8} style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                <span className="text-xs font-semibold uppercase tracking-wider text-muted">
+                  Amount: ₹{amountRange[0]} - ₹{amountRange[1] === 100000 ? "100,000+" : amountRange[1]}
+                </span>
+                <div className="ant-picker w-full h-[40px] flex items-center px-4 rounded-lg">
+                  <Slider
+                    range
+                    min={0}
+                    max={100000}
+                    step={500}
+                    value={amountRange}
+                    onChange={(val) => {
+                      setAmountRange(val as [number, number]);
                       setCoursePage(1);
                       setWorkshopPage(1);
                     }}
-                    className="rounded-lg h-[40px]"
-                    style={{ width: '100%' }}
+                    tooltip={{ formatter: (v) => `₹${v}` }}
+                    style={{ width: "100%", margin: 0, padding: 0 }}
                   />
-                </Col>
-                <Col xs={24} sm={12} md={6} style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-                  <span className="text-xs font-semibold uppercase tracking-wider text-muted">Max Amount</span>
-                  <Input
-                    type="number"
-                    placeholder="Max amount (e.g. 5000)"
-                    value={maxAmount}
-                    onChange={(e) => {
-                      setMaxAmount(e.target.value);
+                </div>
+              </Col>
+              {(courseFilter !== "all" || workshopFilter !== "all" || amountRange[0] !== 0 || amountRange[1] !== 100000) && (
+                <Col xs={24} sm={24} md={8}>
+                  <Button 
+                    onClick={() => {
+                      setCourseFilter("all");
+                      setWorkshopFilter("all");
+                      setAmountRange([0, 100000]);
                       setCoursePage(1);
                       setWorkshopPage(1);
                     }}
-                    className="rounded-lg h-[40px]"
-                    style={{ width: '100%' }}
-                  />
+                    className="h-[40px] px-6 rounded-lg font-semibold hover:border-primary hover:text-primary transition-all duration-200 text-foreground"
+                  >
+                    Clear Filters
+                  </Button>
                 </Col>
-                {(courseFilter || workshopFilter || minAmount || maxAmount) && (
-                  <Col xs={24} sm={24} md={6}>
-                    <Button 
-                      onClick={() => {
-                        setCourseFilter(undefined);
-                        setWorkshopFilter(undefined);
-                        setMinAmount("");
-                        setMaxAmount("");
-                        setCoursePage(1);
-                        setWorkshopPage(1);
-                      }}
-                      className="h-[40px] px-6 rounded-lg font-semibold hover:border-primary hover:text-primary transition-all duration-200 text-foreground"
-                    >
-                      Clear Filters
-                    </Button>
-                  </Col>
-                )}
-              </Row>
+              )}
             </AdvancedSearch>
 
             {activeTab === 'courses' ? (

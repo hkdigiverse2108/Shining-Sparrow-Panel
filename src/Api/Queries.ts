@@ -90,5 +90,8 @@ export const Queries = {
 
   // ************ Notifications ***********
   useGetNotifications: (params?: Params, options?: any) => useQueries<any>([KEYS.NOTIFICATION.BASE, params], () => Get(URL_KEYS.NOTIFICATION.GET, params), options),
+
+  // ************ Franchise Inquiry ***********
+  useGetFranchiseInquiries: (params?: Params) => useQueries<any>([KEYS.FRANCHISE_INQUIRY.BASE, params], () => Get(URL_KEYS.FRANCHISE_INQUIRY.GET, params)),
 };
 

@@ -170,4 +170,10 @@ export const URL_KEYS = {
     DELETE: "/trusted-partner/delete",
     GET: "/trusted-partner/all",
   },
+  FRANCHISE_INQUIRY: {
+    BASE: "/franchise-inquiry",
+    DELETE: "/franchise-inquiry/delete",
+    EDIT: "/franchise-inquiry/edit",
+    GET: "/franchise-inquiry/all",
+  },
 } as const;

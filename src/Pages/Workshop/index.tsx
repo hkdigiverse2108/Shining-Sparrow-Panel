@@ -13,15 +13,14 @@ import { Mutations, Queries } from '@/Api';
 import type { ColumnType } from 'antd/es/table';
 import { WorkshopForm } from '../../Components/Workshop/WorkshopForm';
 
-const getWorkshopColumns = ({ onEdit, onManage, onToggleStatus, onDelete, current, pageSize }: any): ColumnType<any>[] => [
+const getWorkshopColumns = ({ onEdit, onManage, onToggleStatus, onDelete }: any): ColumnType<any>[] => [
   {
     title: "#",
-    width: 50,
+    dataIndex: "priority",
+    width: 60,
     align: "center",
-    render: (_: any, __: any, index: number) => {
-      // Calculate global index across pagination
-      return (current - 1) * pageSize + index + 1;
-    }
+    sorter: (a: any, b: any) => (a.priority || 0) - (b.priority || 0),
+    render: (v: any) => <span className="font-semibold text-text-muted">{v ?? 0}</span>
   },
   {
     title: "Image", 
@@ -176,9 +175,7 @@ const Workshops: FC = () => {
     onManage: handleManageContent,
     onToggleStatus: handleToggleStatus,
     onDelete: handleDeleteClick,
-    current,
-    pageSize
-  }), [current, pageSize]);  
+  }), []);  
 
   return (
     <>

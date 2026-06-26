@@ -30,4 +30,6 @@ export const PAGE_TITLE = {
   TRUSTED_PARTNER: "Trusted Partners",
   PAYMENTS: "Payments",
   PAYMENT_DETAILS: "Payment Details",
+  FRANCHISE_INQUIRY: "Franchise Inquiries",
+  TESTIMONIAL: "Testimonials",
 } as const;
