@@ -107,6 +107,7 @@ export const URL_KEYS = {
   DASHBOARD: {
     BASE: "/dashboard",
     GET: "/dashboard",
+    ANALYTICS: "/dashboard/analytics",
   },
   CHAT: {
     SEND: "/chat/send",

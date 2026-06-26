@@ -1,6 +1,6 @@
 import { type FC } from 'react';
 import { motion } from 'motion/react';
-import { CommonPageWrapper, CourseStatusOverview, DashboardBanner, WorkshopSummary, DashboardCoursesTable, DashboardUsersTable } from '@/Components';
+import { CommonPageWrapper, CourseStatusOverview, DashboardBanner, WorkshopSummary, DashboardCoursesTable, DashboardUsersTable, RevenueChart, PurchasesChart } from '@/Components';
 import { staggerContainer } from '@/Utils/animations';
 
 const LMSDashboard: FC = () => (
@@ -8,6 +8,12 @@ const LMSDashboard: FC = () => (
     <CommonPageWrapper noPadding>
       <motion.div className="dashboard-page" variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.1 }} >
         <DashboardBanner />
+        <div className="mb-5">
+          <RevenueChart />
+        </div>
+        <div className="mb-5">
+          <PurchasesChart />
+        </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-5">
           <DashboardCoursesTable />
           <DashboardUsersTable />
@@ -21,4 +27,4 @@ const LMSDashboard: FC = () => (
   </>
 );
 
-export default LMSDashboard;
+export default LMSDashboard;
