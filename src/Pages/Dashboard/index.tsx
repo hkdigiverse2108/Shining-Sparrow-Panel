@@ -1,5 +1,5 @@
 import { type FC } from 'react';
-import { CommonPageWrapper, CourseStatusOverview, DashboardBanner, WorkshopSummary, DashboardCoursesTable, DashboardUsersTable, RevenueChart, PurchasesChart } from '@/Components';
+import { CommonPageWrapper, CourseStatusOverview, DashboardBanner, WorkshopSummary, DashboardCoursesTable, DashboardUsersTable, DashboardLoginHistoryTable, RevenueChart, PurchasesChart } from '@/Components';
 
 const LMSDashboard: FC = () => (
   <>
@@ -17,7 +17,10 @@ const LMSDashboard: FC = () => (
         <div className="mb-5">
           <CourseStatusOverview />
         </div>
-        <WorkshopSummary />
+        <div className="mb-5">
+          <WorkshopSummary />
+        </div>
+        <DashboardLoginHistoryTable />
       </div>
     </CommonPageWrapper>
   </>

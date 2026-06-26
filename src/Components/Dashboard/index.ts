@@ -8,5 +8,6 @@ export { default as CategoryPerformanceChart } from "./CategoryPerformanceChart"
 export { default as WorkshopSummary } from './WorkshopSummary';
 export { default as DashboardCoursesTable } from './DashboardCoursesTable';
 export { default as DashboardUsersTable } from './DashboardUsersTable';
+export { default as DashboardLoginHistoryTable } from './DashboardLoginHistoryTable';
 export { default as RevenueChart } from './RevenueChart';
 export { default as PurchasesChart } from './PurchasesChart';
