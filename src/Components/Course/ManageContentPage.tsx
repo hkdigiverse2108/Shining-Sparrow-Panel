@@ -272,8 +272,8 @@ const ManageContentPage: FC = () => {
                 <span className="font-semibold text-foreground text-sm">Back to Course Builder</span>
               </div>
 
-              {activeForm.type === 'addFAQ' && <FAQForm editing={null} onSave={handleSaveFAQ} loading={isMutationLoading} />}
-              {activeForm.type === 'editFAQ' && <FAQForm editing={activeForm.data} onSave={handleSaveFAQ} loading={isMutationLoading} />}
+              {activeForm.type === 'addFAQ' && <FAQForm editing={null} onSave={handleSaveFAQ} onClose={() => setActiveForm({ type: 'view' })} loading={isMutationLoading} />}
+              {activeForm.type === 'editFAQ' && <FAQForm editing={activeForm.data} onSave={handleSaveFAQ} onClose={() => setActiveForm({ type: 'view' })} loading={isMutationLoading} />}
             </div>
           ) : (
             <>

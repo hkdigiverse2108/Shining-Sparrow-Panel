@@ -42,11 +42,7 @@ export const AdvancedSearch: FC<AdvancedSearchProps> = ({ children, filter = [] 
                     </div>
                   </Col>
                 ))}
-                {children && (
-                  <Col span={24} style={{ marginTop: "4px" }} >
-                    {children}
-                  </Col>
-                )}
+                {children}
               </Row>
             </div>
           ),

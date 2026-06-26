@@ -220,7 +220,8 @@
   padding: 0 20px 20px 20px !important;
   background-color: transparent !important;
 }
-.advanced-search .ant-select-selector {
+.advanced-search .ant-select,
+.advanced-search .ant-picker {
   border-radius: 8px !important;
   border: 1px solid var(--border) !important;
   background-color: var(--surface-muted) !important;
@@ -228,16 +229,27 @@
   transition: all 0.2s ease !important;
   display: flex !important;
   align-items: center !important;
+  box-sizing: border-box !important;
 }
-.advanced-search .ant-select-selector:hover {
+.advanced-search .ant-select-selector {
+  border: none !important;
+  background: transparent !important;
+  height: 100% !important;
+  width: 100% !important;
+  box-shadow: none !important;
+}
+.advanced-search .ant-select:hover,
+.advanced-search .ant-picker:hover {
   border-color: var(--border-hover) !important;
 }
-.advanced-search .ant-select-focused .ant-select-selector {
+.advanced-search .ant-select-focused,
+.advanced-search .ant-picker-focused {
   border-color: var(--primary) !important;
   background-color: var(--surface) !important;
   box-shadow: 0 0 0 3px var(--primary-ring) !important;
 }
-.advanced-search span.text-xs {
+.advanced-search span.text-xs,
+.advanced-search .text-xs {
   font-size: 11px !important;
   font-weight: 700 !important;
   text-transform: uppercase !important;
@@ -245,6 +257,11 @@
   color: var(--text-muted) !important;
   margin-bottom: 6px !important;
   display: block !important;
+  line-height: 16px !important;
+  height: 16px !important;
+}
+.advanced-search .ant-form-item {
+  margin-bottom: 0 !important;
 }
 .advanced-search-panel {
   background: transparent !important;

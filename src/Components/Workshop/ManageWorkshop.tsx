@@ -214,10 +214,10 @@ const ManageWorkshop: FC = () => {
                 <span className="font-semibold text-foreground text-sm">Back to Workshop Builder</span>
               </div>
 
-              {activeForm.type === 'addTestimonial' && <TestimonialForm editing={null} onSave={handleSaveTestimonial} loading={isMutationLoading} />}
-              {activeForm.type === 'editTestimonial' && <TestimonialForm editing={activeForm.data} onSave={handleSaveTestimonial} loading={isMutationLoading} />}
-              {activeForm.type === 'addFAQ' && <FAQForm editing={null} onSave={handleSaveFAQ} loading={isMutationLoading} />}
-              {activeForm.type === 'editFAQ' && <FAQForm editing={activeForm.data} onSave={handleSaveFAQ} loading={isMutationLoading} />}
+              {activeForm.type === 'addTestimonial' && <TestimonialForm editing={null} onSave={handleSaveTestimonial} onClose={() => setActiveForm({ type: 'view' })} loading={isMutationLoading} />}
+              {activeForm.type === 'editTestimonial' && <TestimonialForm editing={activeForm.data} onSave={handleSaveTestimonial} onClose={() => setActiveForm({ type: 'view' })} loading={isMutationLoading} />}
+              {activeForm.type === 'addFAQ' && <FAQForm editing={null} onSave={handleSaveFAQ} onClose={() => setActiveForm({ type: 'view' })} loading={isMutationLoading} />}
+              {activeForm.type === 'editFAQ' && <FAQForm editing={activeForm.data} onSave={handleSaveFAQ} onClose={() => setActiveForm({ type: 'view' })} loading={isMutationLoading} />}
             </div>
           ) : (
             <>

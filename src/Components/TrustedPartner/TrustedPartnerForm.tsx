@@ -2,7 +2,7 @@ import { type FC } from 'react';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import { CommonFormShell, CommonFormSection, CommonImageUpload } from '@/Components';
-import { CommonValidationTextField } from '@/Attribute';
+import { CommonValidationTextField, CommonButton } from '@/Attribute';
 
 interface TrustedPartnerFormProps {
   onClose: () => void;
@@ -44,7 +44,7 @@ export const TrustedPartnerForm: FC<TrustedPartnerFormProps> = ({ onClose, onSav
           onClose={onClose}
           closeLabel="Cancel"
         >
-          <Form className="space-y-6">
+          <Form className="course-form-shell">
             <CommonFormSection title="Partner Information">
               <CommonValidationTextField
                 name="name"
@@ -74,22 +74,16 @@ export const TrustedPartnerForm: FC<TrustedPartnerFormProps> = ({ onClose, onSav
               />
             </CommonFormSection>
 
-            <div className="flex justify-end gap-3 pt-4 border-t border-border">
-              <button
-                type="button"
-                onClick={onClose}
-                className="course-button course-button--ghost"
-                disabled={loading}
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="course-button course-button--primary"
+            <div className="course-form-actions">
+              <CommonButton
+                htmlType="submit"
+                type="primary"
+                title={editing ? 'Update Partner' : 'Create Partner'}
+                loading={loading}
                 disabled={!isValid || !dirty || loading}
-              >
-                {loading ? 'Saving...' : editing ? 'Update Partner' : 'Create Partner'}
-              </button>
+                block
+                className="course-button course-button--primary"
+              />
             </div>
           </Form>
         </CommonFormShell>

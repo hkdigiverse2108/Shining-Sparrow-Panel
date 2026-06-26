@@ -63,6 +63,13 @@ const TestimonialPage: FC = () => {
     return [];
   }, [selectedType, courses, workshops]);
 
+  const formCatalogOptions = useMemo(() => {
+    return [
+      ...courses.map((c: any) => ({ value: c._id, label: `Course: ${c.name}`, type: 'course' })),
+      ...workshops.map((w: any) => ({ value: w._id, label: `Workshop: ${w.title}`, type: 'workshop' }))
+    ];
+  }, [courses, workshops]);
+
   const addTestimonialMutation = Mutations.useAddTestimonial();
   const editTestimonialMutation = Mutations.useUpdateTestimonial();
   const deleteTestimonialMutation = Mutations.useDeleteTestimonial();
@@ -75,6 +82,8 @@ const TestimonialPage: FC = () => {
       rate: Number(values.rate),
       description: values.description || '',
       image: values.image || '/assets/images/Logo_icon.png',
+      type: values.type || 'home',
+      learningCatalogId: values.learningCatalogId || undefined,
     };
     if (isEdit) payload.testimonialId = editingTestimonial._id;
 
@@ -290,13 +299,11 @@ const TestimonialPage: FC = () => {
             <TestimonialForm
               editing={editingTestimonial}
               onSave={handleSave}
+              onClose={() => { setIsFormOpen(false); setEditingTestimonial(null); }}
               loading={addTestimonialMutation.isPending || editTestimonialMutation.isPending}
+              showTypeSelector
+              catalogOptions={formCatalogOptions}
             />
-            <div className="mt-4 flex justify-end">
-              <Button onClick={() => { setIsFormOpen(false); setEditingTestimonial(null); }}>
-                Cancel
-              </Button>
-            </div>
           </div>
         ) : (
           <motion.div variants={staggerContainer} initial="hidden" animate="visible">

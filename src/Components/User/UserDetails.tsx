@@ -1,5 +1,5 @@
 import { useMemo, type FC } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { motion } from "motion/react";
 import { Avatar, Spin } from "antd";
 import { 
@@ -8,7 +8,8 @@ import {
   CalendarOutlined, 
   UserOutlined,
   BookOutlined,
-  CalendarOutlined as WorkshopIcon
+  CalendarOutlined as WorkshopIcon,
+  CommentOutlined
 } from '@ant-design/icons';
 import { CommonBreadcrumbs, CommonPageWrapper, CommonCard, CommonTag } from "@/Components";
 import { blurRevealUp, staggerContainer } from "@/Utils/animations";
@@ -28,6 +29,7 @@ const wsStatusColors: Record<string, string> = {
 };
 
 const UserDetails: FC = () => {
+  const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   
   // Fetch user by ID
@@ -129,6 +131,16 @@ const UserDetails: FC = () => {
                       Joined {user.createdAt ? new Date(user.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : "N/A"}
                     </span>
                   </div>
+                </div>
+                <div className="shrink-0 flex items-center justify-center">
+                  <CommonButton
+                    type="primary"
+                    icon={<CommentOutlined />}
+                    onClick={() => navigate(ROUTES.CHAT, { state: { userId: user._id } })}
+                    className="flex items-center gap-2"
+                  >
+                    Start Chat
+                  </CommonButton>
                 </div>
               </div>
             </CommonCard>

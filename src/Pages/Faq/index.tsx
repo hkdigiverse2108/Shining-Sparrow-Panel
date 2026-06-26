@@ -84,8 +84,10 @@ const Faq: FC = () => {
       isBlocked: values.isBlocked || false,
     };
 
-    if (values.type !== 'home' && values.learningCatalogId) {
-      payload.learningCatalogId = values.learningCatalogId;
+    if (values.type !== 'home') {
+      payload.learningCatalogId = values.learningCatalogId || null;
+    } else {
+      payload.learningCatalogId = null;
     }
 
     const isEdit = !!editingFaq;
@@ -142,15 +144,11 @@ const Faq: FC = () => {
             <FAQForm
               editing={editingFaq}
               onSave={handleSave}
+              onClose={() => { setIsFormOpen(false); setEditingFaq(null); }}
               loading={addFAQMutation.isPending || editFAQMutation.isPending}
               showTypeSelector
               catalogOptions={allCatalogOptions}
             />
-            <div className="mt-4 flex justify-end">
-              <Button onClick={() => { setIsFormOpen(false); setEditingFaq(null); }}>
-                Cancel
-              </Button>
-            </div>
           </div>
         ) : (
           <motion.div variants={staggerContainer} initial="hidden" animate="visible">
@@ -196,7 +194,7 @@ const Faq: FC = () => {
                       { value: "workshop", label: "Workshop Specific" }
                     ],
                     onChange: (val: any) => { setSelectedType(val); setSelectedCatalogId(undefined); setCurrent(1); },
-                    grid: { xs: 24, sm: 12, md: selectedType && selectedType !== 'home' && selectedType !== 'all' ? 4 : 5 }
+                    grid: { xs: 24, sm: 12, md: selectedType && selectedType !== 'home' && selectedType !== 'all' ? 4 : 6 }
                   },
                   {
                     label: "Featured Display",
@@ -207,7 +205,7 @@ const Faq: FC = () => {
                       { label: "Standard Only", value: "false" }
                     ],
                     onChange: (val: any) => { setIsFeaturedFilter(val); setCurrent(1); },
-                    grid: { xs: 24, sm: 12, md: selectedType && selectedType !== 'home' && selectedType !== 'all' ? 4 : 5 }
+                    grid: { xs: 24, sm: 12, md: selectedType && selectedType !== 'home' && selectedType !== 'all' ? 4 : 6 }
                   },
                   {
                     label: "Status",
@@ -218,7 +216,7 @@ const Faq: FC = () => {
                       { label: "Blocked", value: "true" }
                     ],
                     onChange: (val: any) => { setIsBlockedFilter(val); setCurrent(1); },
-                    grid: { xs: 24, sm: 12, md: selectedType && selectedType !== 'home' && selectedType !== 'all' ? 4 : 5 }
+                    grid: { xs: 24, sm: 12, md: selectedType && selectedType !== 'home' && selectedType !== 'all' ? 4 : 6 }
                   }
                 ]}>
                   {selectedType && selectedType !== 'home' && selectedType !== 'all' && (
@@ -242,7 +240,7 @@ const Faq: FC = () => {
                       />
                     </Col>
                   )}
-                  <Col xs={24} sm={12} md={selectedType && selectedType !== 'home' && selectedType !== 'all' ? 4 : 5} style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                  <Col xs={24} sm={12} md={selectedType && selectedType !== 'home' && selectedType !== 'all' ? 4 : 6} style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
                     <span className="text-xs font-semibold uppercase tracking-wider text-muted">Created Date Range</span>
                     <DatePicker.RangePicker
                       value={dateRange}

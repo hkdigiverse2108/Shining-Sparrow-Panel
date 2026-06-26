@@ -1,5 +1,5 @@
 import { useState, useMemo, type FC } from 'react';
-import { Button, Tag, Modal, Segmented, DatePicker, Col } from 'antd';
+import { Button, Tag, Modal, Segmented, DatePicker, Col, Select } from 'antd';
 import { DeleteOutlined, MailOutlined, SendOutlined } from '@ant-design/icons';
 import { motion } from 'motion/react';
 import { useQueryClient } from '@tanstack/react-query';
@@ -23,9 +23,9 @@ const BroadcastSchema = Yup.object({
   subject: Yup.string().required('Subject is required'),
   body: Yup.string().required('Email content is required'),
   target: Yup.string().oneOf(['all', 'custom']).required(),
-  customEmails: Yup.string().when('target', {
+  customEmails: Yup.array().when('target', {
     is: 'custom',
-    then: (schema) => schema.required('Please enter at least one recipient email address'),
+    then: (schema) => schema.min(1, 'Please select or enter at least one recipient email address').required('Please enter at least one recipient email address'),
     otherwise: (schema) => schema.optional(),
   }),
 });
@@ -130,6 +130,21 @@ const NewsletterPage: FC = () => {
     [allSubscribersRes]
   );
 
+  // Fetch users to filter client-side for non-purchasing ones
+  const { data: allUsersRes } = Queries.useGetUser({
+    page: 1,
+    limit: 10000,
+  });
+
+  const nonPurchasingUsersOptions = useMemo(() => {
+    return (allUsersRes?.data?.user_data || [])
+      .filter((u: any) => (!u.courseIds || u.courseIds.length === 0) && (!u.workshopIds || u.workshopIds.length === 0))
+      .map((u: any) => ({
+        label: `${u.fullName} (${u.email})`,
+        value: u.email
+      }));
+  }, [allUsersRes]);
+
   // Mutations
   const addSubscriberMutation = Mutations.useAddNewsletter();
   const deleteSubscriberMutation = Mutations.useDeleteNewsletter();
@@ -153,7 +168,7 @@ const NewsletterPage: FC = () => {
     );
   };
 
-  const handleSendBroadcast = (values: { subject: string; body: string; target: string; customEmails?: string }, { resetForm, setSubmitting }: any) => {
+  const handleSendBroadcast = (values: { subject: string; body: string; target: string; customEmails?: string[] }, { resetForm, setSubmitting }: any) => {
     let recipientEmails: string[] = [];
 
     if (values.target === 'all') {
@@ -164,12 +179,9 @@ const NewsletterPage: FC = () => {
         return;
       }
     } else {
-      recipientEmails = (values.customEmails || '')
-        .split(',')
-        .map((e) => e.trim())
-        .filter((e) => e.length > 0 && e.includes('@'));
+      recipientEmails = values.customEmails || [];
       if (recipientEmails.length === 0) {
-        showNotification('error', 'Please enter valid recipient email addresses');
+        showNotification('error', 'Please select or enter valid recipient email addresses');
         setSubmitting(false);
         return;
       }
@@ -369,11 +381,11 @@ const NewsletterPage: FC = () => {
         className="modern-modal"
       >
         <Formik
-          initialValues={{ subject: '', body: '', target: 'all', customEmails: '' }}
+          initialValues={{ subject: '', body: '', target: 'all', customEmails: [] }}
           validationSchema={BroadcastSchema}
           onSubmit={handleSendBroadcast}
         >
-          {({ isSubmitting, values, setFieldValue, isValid, dirty }) => (
+          {({ isSubmitting, values, setFieldValue, isValid, dirty, errors, touched }) => (
             <Form className="space-y-4 mt-4">
               <div className="space-y-1">
                 <label className="text-xs font-bold text-foreground block">Recipients</label>
@@ -389,14 +401,22 @@ const NewsletterPage: FC = () => {
               </div>
 
               {values.target === 'custom' && (
-                <CommonValidationTextField
-                  name="customEmails"
-                  label="Target Email Address(es)"
-                  placeholder="Enter email addresses separated by commas..."
-                  multiline
-                  rows={2}
-                  required
-                />
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-foreground block">Target Email Address(es) / Non-purchasing Users</label>
+                  <Select
+                    mode="tags"
+                    placeholder="Select non-purchasing users or type custom email addresses..."
+                    value={values.customEmails}
+                    onChange={(val) => setFieldValue('customEmails', val)}
+                    options={nonPurchasingUsersOptions}
+                    className="w-full"
+                    style={{ minHeight: '40px' }}
+                    tokenSeparators={[',', ' ']}
+                  />
+                  {errors.customEmails && touched.customEmails && (
+                    <div className="text-red-500 text-xs mt-1">{errors.customEmails as string}</div>
+                  )}
+                </div>
               )}
 
               <CommonValidationTextField

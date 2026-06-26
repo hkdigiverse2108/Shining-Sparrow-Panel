@@ -2,7 +2,7 @@ import { type FC } from 'react';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import { CommonFormShell, CommonFormSection, CommonMultipleImageUpload } from '@/Components';
-import { CommonValidationTextField } from '@/Attribute';
+import { CommonValidationTextField, CommonButton } from '@/Attribute';
 
 interface GalleryFormProps {
   onClose: () => void;
@@ -51,7 +51,7 @@ export const GalleryForm: FC<GalleryFormProps> = ({ onClose, onSave, editing, lo
           onClose={onClose}
           closeLabel="Cancel"
         >
-          <Form className="space-y-6">
+          <Form className="course-form-shell">
             <CommonFormSection title="Folder Information">
               <CommonValidationTextField
                 name="title"
@@ -79,22 +79,16 @@ export const GalleryForm: FC<GalleryFormProps> = ({ onClose, onSave, editing, lo
               />
             </CommonFormSection>
 
-            <div className="flex justify-end gap-3 pt-4 border-t border-border">
-              <button
-                type="button"
-                onClick={onClose}
-                className="course-button course-button--ghost"
-                disabled={loading}
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="course-button course-button--primary"
+            <div className="course-form-actions">
+              <CommonButton
+                htmlType="submit"
+                type="primary"
+                title={editing ? 'Update Folder' : 'Create Folder'}
+                loading={loading}
                 disabled={!isValid || !dirty || loading}
-              >
-                {loading ? 'Saving...' : editing ? 'Update Folder' : 'Create Folder'}
-              </button>
+                block
+                className="course-button course-button--primary"
+              />
             </div>
           </Form>
         </CommonFormShell>
