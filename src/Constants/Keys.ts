@@ -94,6 +94,7 @@ export const KEYS = {
   },
   DASHBOARD: {
     BASE: "dashboard",
+    ANALYTICS: "dashboard-analytics",
   },
   CHAT: {
     BASE: "chat",
