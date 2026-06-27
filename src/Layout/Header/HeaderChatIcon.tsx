@@ -1,7 +1,7 @@
 import { Badge, Button } from 'antd';
 import { MessageOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-import { Queries } from '@/Api/Queries';
+import { useAppSelector } from '@/Store/hooks';
 import { motion } from 'motion/react';
 
 const MotionButton = motion.create(Button);
@@ -9,12 +9,9 @@ const MotionButton = motion.create(Button);
 const HeaderChatIcon: React.FC = () => {
   const navigate = useNavigate();
 
-  // Use your existing query
-  const { data: roomsData } = Queries.useGetRooms();
-
-  // Calculate unread count
-  const rooms = roomsData?.data?.room_data || [];
-  const unreadCount = rooms.reduce((acc: number, room: any) => acc + (room.unreadCount || 0), 0);
+  // Read unread count from Redux store
+  const unreadRooms = useAppSelector((state) => state.layout.unreadRooms);
+  const unreadCount = unreadRooms.length;
 
   return (
     <Badge count={unreadCount} size="small" offset={[-2, 2]}>

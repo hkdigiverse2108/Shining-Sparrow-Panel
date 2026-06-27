@@ -4,6 +4,13 @@ import { Storage } from "@/Utils";
 import type { LayoutStateProps } from "@/Types";
 
 const storedTheme = Storage.getItem(STORAGE_KEYS.THEME) || "light";
+const storedUnreadRooms = (() => {
+  try {
+    return JSON.parse(Storage.getItem('shining_sparrow_unread_rooms') || '[]');
+  } catch {
+    return [];
+  }
+})();
 
 if (storedTheme === "dark") document.documentElement.classList.add("dark");
 else document.documentElement.classList.remove("dark");
@@ -17,6 +24,8 @@ const initialState: LayoutStateProps = {
     openSubmenu: null,
     isToggleTheme: storedTheme,
     adminSetting: null,
+    unreadRooms: storedUnreadRooms,
+    activeRoomId: null,
 };
 
 const layoutSlice = createSlice({
@@ -58,10 +67,27 @@ const layoutSlice = createSlice({
             Storage.setItem(STORAGE_KEYS.THEME, action.payload);
             if (action.payload === "dark") document.documentElement.classList.add("dark");
             else document.documentElement.classList.remove("dark");
+        },
+        setUnreadRooms: (state, action) => {
+            state.unreadRooms = action.payload;
+            Storage.setItem('shining_sparrow_unread_rooms', JSON.stringify(action.payload));
+        },
+        addUnreadRoom: (state, action) => {
+            if (!state.unreadRooms.includes(action.payload)) {
+                state.unreadRooms.push(action.payload);
+                Storage.setItem('shining_sparrow_unread_rooms', JSON.stringify(state.unreadRooms));
+            }
+        },
+        removeUnreadRoom: (state, action) => {
+            state.unreadRooms = state.unreadRooms.filter(id => id !== action.payload);
+            Storage.setItem('shining_sparrow_unread_rooms', JSON.stringify(state.unreadRooms));
+        },
+        setActiveRoomId: (state, action) => {
+            state.activeRoomId = action.payload;
         }
     },
 });
 
-export const { setAdminSetting, setIsMobile, setToggleSidebar, setToggleMobileSidebar, setIsHovered, setApplicationMenuOpen, setToggleSubmenu, setToggleTheme, setSidebarOpen } = layoutSlice.actions;
+export const { setAdminSetting, setIsMobile, setToggleSidebar, setToggleMobileSidebar, setIsHovered, setApplicationMenuOpen, setToggleSubmenu, setToggleTheme, setSidebarOpen, setUnreadRooms, addUnreadRoom, removeUnreadRoom, setActiveRoomId } = layoutSlice.actions;
 
 export default layoutSlice.reducer;

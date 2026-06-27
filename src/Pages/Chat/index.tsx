@@ -5,18 +5,21 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { io, Socket } from 'socket.io-client';
 import { Queries } from '@/Api/Queries';
 import { Mutations } from '@/Api/Mutations';
-import { useAppSelector } from '@/Store/hooks';
+import { useAppSelector, useAppDispatch } from '@/Store/hooks';
 import { getToken, getImageUrl } from '@/Utils';
 import { CommonPageWrapper } from '@/Components';
 import { showNotification } from '@/Attribute';
 import { Post } from '@/Api/Methods';
 import type { ChatRoom, ChatMessage } from '@/Types/Chat';
 import { useQueryClient } from '@tanstack/react-query';
+import { setActiveRoomId, removeUnreadRoom } from '@/Store';
 
 const ChatPage: FC = () => {
   const currentUser = useAppSelector((state) => state.auth.user);
+  const unreadRooms = useAppSelector((state) => state.layout.unreadRooms);
   const location = useLocation();
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   
   const [selectedRoom, setSelectedRoom] = useState<ChatRoom | null>(null);
   const [roomsList, setRoomsList] = useState<ChatRoom[]>([]);
@@ -42,7 +45,17 @@ const ChatPage: FC = () => {
   useEffect(() => {
     selectedRoomRef.current = selectedRoom;
     setReplyToMessage(null);
-  }, [selectedRoom]);
+    dispatch(setActiveRoomId(selectedRoom?._id || null));
+    if (selectedRoom) {
+      dispatch(removeUnreadRoom(selectedRoom._id));
+    }
+  }, [selectedRoom, dispatch]);
+
+  useEffect(() => {
+    return () => {
+      dispatch(setActiveRoomId(null));
+    };
+  }, [dispatch]);
 
   // Mutations
   const createRoomMutation = Mutations.useCreateRoom();
@@ -423,11 +436,13 @@ const ChatPage: FC = () => {
                     onClick={() => setSelectedRoom(globalRoom)}
                   >
                     <div className="chat-room-avatar">
-                      <Avatar
-                        size={40}
-                        style={{ backgroundColor: 'var(--primary)' }}
-                        icon={<MessageOutlined />}
-                      />
+                      <Badge dot={unreadRooms.includes(globalRoom._id)} color="#e86424">
+                        <Avatar
+                          size={40}
+                          style={{ backgroundColor: 'var(--primary)' }}
+                          icon={<MessageOutlined />}
+                        />
+                      </Badge>
                     </div>
                     <div className="chat-room-info">
                       <div className="chat-room-meta">
@@ -456,6 +471,7 @@ const ChatPage: FC = () => {
                   filteredPersonalRooms.map((room) => {
                     const otherUser = getOtherParticipant(room);
                     const isActive = selectedRoom?._id === room._id;
+                    const isUnread = unreadRooms.includes(room._id);
                     
                     return (
                       <div
@@ -464,11 +480,13 @@ const ChatPage: FC = () => {
                         onClick={() => setSelectedRoom(room)}
                       >
                         <div className="chat-room-avatar">
-                          <Avatar
-                            size={40}
-                            icon={<UserOutlined />}
-                            src={getProfilePhotoUrl(otherUser?.profilePhoto)}
-                          />
+                          <Badge dot={isUnread} color="#e86424">
+                            <Avatar
+                              size={40}
+                              icon={<UserOutlined />}
+                              src={getProfilePhotoUrl(otherUser?.profilePhoto)}
+                            />
+                          </Badge>
                         </div>
                         <div className="chat-room-info">
                           <div className="chat-room-meta">
