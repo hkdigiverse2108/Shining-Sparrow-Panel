@@ -13,7 +13,6 @@ import {
   TagOutlined,
   DeleteOutlined,
   ArrowLeftOutlined,
-  PrinterOutlined,
   SendOutlined
 } from '@ant-design/icons';
 import { motion } from 'motion/react';
@@ -71,10 +70,6 @@ const FranchiseInquiryDetails: FC = () => {
       );
     }
   }, [record, queryClient]);
-
-  const handlePrint = () => {
-    window.print();
-  };
 
   const handleDeleteConfirm = () => {
     if (!record) return;
@@ -137,14 +132,6 @@ const FranchiseInquiryDetails: FC = () => {
               Back to Inquiries
             </Button>
             <div className="flex gap-2">
-              <Button 
-                type="default" 
-                onClick={handlePrint} 
-                icon={<PrinterOutlined />}
-                className="hover:border-primary hover:text-primary transition-all duration-200"
-              >
-                Print
-              </Button>
               <Button 
                 danger 
                 onClick={() => setIsDeleteModalOpen(true)} 
