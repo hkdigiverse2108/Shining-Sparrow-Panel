@@ -3,7 +3,7 @@ import { type FC, useMemo } from 'react';
 import { Formik, Form } from 'formik';
 import { CommonFormShell, CommonFormSection, CommonImageUpload, CommonVideoUpload, CommonAttachmentUpload } from '@/Components';
 import { CommonButton, CommonValidationTextField, CommonDatePicker, CommonRichTextEditor } from '@/Attribute';
-import * as Yup from 'yup';
+import { WorkshopCurriculumSchema } from '@/Utils';
 
 interface WorkshopCurriculumFormProps {
   editing: any | null;
@@ -13,22 +13,28 @@ interface WorkshopCurriculumFormProps {
 }
 
 export const WorkshopCurriculumForm: FC<WorkshopCurriculumFormProps> = ({ editing, onSave, loading, existingPriorities }) => {
-  const CurriculumSchema = useMemo(() => {
+  const validationSchema = useMemo(() => {
     const list = existingPriorities || [];
-    return Yup.object({
-      title: Yup.string().required('Title is required'),
-      priority: Yup.number()
-        .required('Priority is required')
-        .min(0, 'Priority must be non-negative')
-        .test('unique-priority', 'This priority is already in use for this workshop.', (val) => {
-          if (val === undefined || val === null) return true;
+    return WorkshopCurriculumSchema.shape({
+      priority: (WorkshopCurriculumSchema.fields.priority as any).test(
+        'unique-priority',
+        'This priority is already in use for this workshop.',
+        (val: any) => {
+          if (val === undefined || val === null || val === '') return true;
           return !list.includes(Number(val));
-        }),
-      duration: Yup.number().optional().min(0, 'Duration must be non-negative'),
+        }
+      )
     });
   }, [existingPriorities]);
-  const defaults = { title: '', description: '', videoLink: '', duration: '', priority: 0, thumbnail: '', attachment: '', date: null };
-  const initialValues = useMemo(() => (editing ? { ...defaults, ...editing } : defaults), [editing]);
+
+  const defaults = { title: '', description: '', videoLink: '', duration: '', priority: '', thumbnail: '', attachment: '', date: '' };
+  const initialValues = useMemo(() => (editing ? { 
+    ...defaults, 
+    ...editing,
+    priority: editing.priority ?? '',
+    duration: editing.duration ?? '',
+  } : defaults), [editing]);
+
   const handleSubmit = (v: any) => {
     const payload = { ...v };
     if (editing) payload.workshopCurriculumId = editing._id;
@@ -39,10 +45,10 @@ export const WorkshopCurriculumForm: FC<WorkshopCurriculumFormProps> = ({ editin
     <Formik
       enableReinitialize
       initialValues={initialValues}
-      validationSchema={CurriculumSchema}
+      validationSchema={validationSchema}
       onSubmit={handleSubmit}
     >
-      {({ values, setFieldValue, errors }) => (
+      {({ values, setFieldValue }) => (
         <CommonFormShell
           title={editing ? 'Edit Session' : 'Add Session'}
           description="Shape the session details, attach media files, and set the date schedule."
@@ -62,13 +68,14 @@ export const WorkshopCurriculumForm: FC<WorkshopCurriculumFormProps> = ({ editin
                 />
               </div>
 
-              <CommonValidationTextField name="duration" label="Duration (Minutes)" type="number" />
-              <CommonDatePicker name="date" label="Session Date" />
+              <CommonValidationTextField name="duration" label="Duration (Minutes)" type="number" required />
+              <CommonDatePicker name="date" label="Session Date" required />
               <CommonImageUpload
                 name="thumbnail"
                 label="Session Thumbnail"
                 shape="square"
                 size={100}
+                required
                 className="col-span-full"
               />
             </CommonFormSection>
@@ -86,17 +93,6 @@ export const WorkshopCurriculumForm: FC<WorkshopCurriculumFormProps> = ({ editin
                 className="col-span-full"
               />
             </CommonFormSection>
-
-            {Object.keys(errors).length > 0 && (
-              <div className="p-4 bg-red-50 border border-red-100 rounded-xl text-red-600">
-                <strong className="text-xs font-semibold block mb-1">Please fix the following validation errors:</strong>
-                <ul className="list-disc list-inside text-xs space-y-0.5">
-                  {Object.entries(errors).map(([key, value]) => (
-                    <li key={key}><span className="capitalize font-medium">{key}</span>: {String(value)}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
 
             <div className="pt-4">
               <CommonButton 

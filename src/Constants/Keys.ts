@@ -1,7 +1,6 @@
 export const KEYS = {
   AUTH: {
     LOGIN: "admin-login",
-    REGISTER: "admin-register",
     FORGOT_PASSWORD: "forgot-password",
     VERIFY_OTP: "otp-verify",
     RESET_PASSWORD: "reset-password",

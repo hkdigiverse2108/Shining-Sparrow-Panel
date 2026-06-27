@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 @layer components {
-  /* ─── BUTTONS ─── */
+  /* â”€â”€â”€ BUTTONS â”€â”€â”€ */
   .common-btn.ant-btn {
     @apply font-semibold rounded-lg border-0! transition-all! duration-200!;
     /* box-shadow: 0 2px 8px
@@ -81,7 +81,7 @@
   .field-error {
     @apply mb-0;
   }
-  /* ─── BREADCRUMBS ─── */
+  /* â”€â”€â”€ BREADCRUMBS â”€â”€â”€ */
 .common-breadcrumbs {
   @apply flex flex-col md:flex-row md:items-center md:justify-between gap-3 md:gap-4 mb-7 z-20 transition-colors duration-300 ease-in-out;
 }
@@ -164,7 +164,7 @@
   @apply p-0;
 }
 
-/* ─── ADVANCED SEARCH ─── */
+/* â”€â”€â”€ ADVANCED SEARCH â”€â”€â”€ */
 .advanced-search {
   margin-top: 16px !important;
   margin-bottom: 24px !important;
@@ -273,7 +273,7 @@
 .common-btn.ant-btn.btn-danger { background-color: var(--danger) !important; color: var(--surface) !important; }
 }
 /* -------------------------------------------------
-   ICON‑ONLY BUTTON
+   ICONâ€‘ONLY BUTTON
    ------------------------------------------------- */
 .common-btn.ant-btn.btn-icononly {
   @apply w-12 h-12 min-w-0 p-0 flex items-center justify-center!;
@@ -630,3 +630,12 @@
   border-radius: 50%;
   background-color: var(--danger);
 }
+
+/* --- SimplePagination --- */
+.simple-pager { display: flex; justify-content: flex-end; align-items: center; gap: 6px; padding: 14px 16px 10px; flex-wrap: wrap; }
+.simple-pager__total { font-size: 13px; color: var(--muted); margin-right: 6px; }
+.simple-pager__btn { display: inline-flex; align-items: center; justify-content: center; min-width: 32px; height: 32px; padding: 0 6px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface); color: var(--foreground); font-size: 13px; cursor: pointer; transition: all 0.2s; line-height: 1; }
+.simple-pager__btn:hover:not(:disabled) { border-color: var(--primary); color: var(--primary); }
+.simple-pager__btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.simple-pager__btn--active { background: var(--primary) !important; border-color: var(--primary) !important; color: #fff !important; font-weight: 600; }
+.simple-pager__size-select { min-width: 110px; }

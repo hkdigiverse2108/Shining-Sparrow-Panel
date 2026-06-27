@@ -2,7 +2,7 @@ import { type FC, useMemo } from "react";
 import { Formik, Form } from "formik";
 import { CommonFormShell, CommonFormSection, CommonMultipleImageUpload } from "@/Components";
 import { CommonButton, CommonValidationTextField, CommonValidationSelect, CommonRichTextEditor } from "@/Attribute";
-import * as Yup from "yup";
+
 
 interface HeroBannerFormProps {
   open: boolean;
@@ -12,12 +12,7 @@ interface HeroBannerFormProps {
   loading?: boolean;
 }
 
-const HeroBannerSchema = Yup.object({
-  type: Yup.string().required("Banner type is required"),
-  title: Yup.string().optional(),
-  description: Yup.string().optional(),
-  isBlocked: Yup.boolean().optional(),
-});
+import { HeroBannerSchema } from "@/Utils";
 
 const bannerTypes = [
   { label: "Web Banner", value: "web" },
@@ -87,13 +82,14 @@ export const HeroBannerForm: FC<HeroBannerFormProps> = ({ open, onClose, onSave,
                 //   setFieldValue("type", val);
                 // }}
               />
-              <CommonValidationTextField name="title" label="Banner Title" />
+              <CommonValidationTextField name="title" label="Banner Title" required />
               
               
               <div className="col-span-full mb-4">
                 <CommonRichTextEditor
                   name="description"
                   label="Banner Description"
+                  required
                   onChange={(val) => setFieldValue('description', val)}
                   value={values.description}
                   className="w-full"

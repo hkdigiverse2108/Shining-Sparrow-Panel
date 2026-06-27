@@ -1,4 +1,4 @@
-import { type FC, useEffect } from 'react'; // <-- Added useEffect
+import { type FC } from 'react';
 import { LockOutlined, RocketOutlined } from '@ant-design/icons';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Formik, Form } from 'formik';
@@ -13,17 +13,10 @@ const VerifyOtp: FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useAppDispatch();
-  const email = (location.state as any)?.email || '';
-  const type = (location.state as any)?.type || 'signup';
+  const email = ((location.state as any)?.email || '').trim().toLowerCase();
+  const type = (location.state as any)?.type || 'forgot';
   const { mutateAsync: verifyOtp, isPending } = Mutations.useVerifyOtp();
   const { mutateAsync: resendOtp, isPending: isResending } = Mutations.useResendOtp();
-  useEffect(() => {
-    if (type === 'signup' && email) {
-      resendOtp({ email })
-        .then(() => console.log("OTP email sent!"))
-        .catch(() => console.log("Failed to send OTP"));
-    }
-  }, [type, email, resendOtp]);
 
   return (
     <>
@@ -37,7 +30,7 @@ const VerifyOtp: FC = () => {
         onSubmit={async (values, { setSubmitting }) => {
           try {
             const response = await verifyOtp({ email, otp: values.otp });
-            
+
             if (type === 'forgot') {
               navigate(ROUTES.AUTH.RESET_PASSWORD, { state: { email } });
             } else {
@@ -62,7 +55,7 @@ const VerifyOtp: FC = () => {
       </Formik>
       <div className="auth-footer" style={{ display: 'flex', justifyContent: 'space-between' }}>
         <Link to={ROUTES.AUTH.LOGIN} className="auth-link">Back to Sign In</Link>
-        <button type="button" className="auth-link" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--primary-color)' }} onClick={async () => { try { await resendOtp({ email }); } catch (error) { console.log(error); } }} disabled={isResending} >
+        <button type="button" className="auth-link" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--primary-color)' }} onClick={async () => { try { await resendOtp({ email }); } catch (error) { console.log(error); } }} disabled={isResending || !email} >
           {isResending ? 'Resending...' : 'Resend OTP'}
         </button>
       </div>

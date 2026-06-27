@@ -21,8 +21,9 @@ const ForgotPassword: FC = () => {
         validationSchema={ForgotPasswordSchema}
         onSubmit={async (values, { setSubmitting }) => {
           try {
-            await forgotPassword({ email: values.email });
-            navigate(ROUTES.AUTH.VERIFY_OTP, { state: { email: values.email, type: 'forgot' } });
+            const email = values.email.trim().toLowerCase();
+            await forgotPassword({ email });
+            navigate(ROUTES.AUTH.VERIFY_OTP, { state: { email, type: 'forgot' } });
           } catch (error) {
             console.log(error);
           } finally {

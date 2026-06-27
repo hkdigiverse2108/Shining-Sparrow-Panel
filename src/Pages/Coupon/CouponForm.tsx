@@ -2,7 +2,6 @@ import { type FC, useMemo, useEffect, useRef } from "react";
 import { Formik, Form } from "formik";
 import { CommonFormShell, CommonFormSection } from "@/Components";
 import { CommonButton, CommonValidationTextField, CommonValidationSelect, CommonDatePicker } from "@/Attribute";
-import * as Yup from "yup";
 import { Select } from "antd";
 import dayjs from "dayjs";
 
@@ -16,35 +15,7 @@ interface CouponFormProps {
   workshops: { value: string; label: string }[];
 }
 
-const CouponCodeSchema = Yup.object({
-  title: Yup.string().required("Title is required"),
-  code: Yup.string()
-    .required("Coupon Code is required")
-    .matches(/^[A-Za-z0-9_-]+$/, "Code must contain only alphanumeric characters, dashes, or underscores"),
-  discountType: Yup.string().oneOf(["percentage", "flat"]).required("Discount Type is required"),
-  discountValue: Yup.number().required("Discount Value is required").min(1, "Value must be at least 1"),
-  minOrderAmount: Yup.number()
-    .typeError("Minimum order amount must be a number")
-    .transform((value, originalValue) => originalValue === "" ? 0 : value)
-    .min(0, "Amount must be at least 0")
-    .default(0)
-    .nullable(),
-  maxDiscountAmount: Yup.number()
-    .typeError("Maximum Discount must be a number")
-    .transform((value, originalValue) => originalValue === "" ? null : value)
-    .min(0, "Maximum Discount cannot be negative")
-    .nullable(),
-  startDate: Yup.string().required("Start Date is required"),
-  endDate: Yup.string().required("End Date is required"),
-  usageLimit: Yup.number()
-    .typeError("Usage limit must be a number")
-    .transform((value, originalValue) => originalValue === "" ? null : value)
-    .min(1, "Usage limit must be at least 1")
-    .nullable(),
-  appliesTo: Yup.string().oneOf(["course", "workshop", "default"]).required("Application Target is required"),
-  specificIds: Yup.array().of(Yup.string()).optional(),
-  status: Yup.string().oneOf(["active", "inactive", "expired"]).default("active"),
-});
+import { CouponCodeSchema } from "@/Utils";
 
 const DISCOUNT_TYPE_OPTIONS = [
   { label: "Percentage (%)", value: "percentage" },
@@ -154,7 +125,7 @@ export const CouponForm: FC<CouponFormProps> = ({
           <Form className="course-form-shell space-y-6">
             <CommonFormSection title="General Information">
               <CommonValidationTextField name="title" label="Promotion Title" required placeholder="e.g. Monsoon Special Offer" />
-              <CommonValidationTextField name="code" label="Coupon Code" required placeholder="e.g. MONSOON50" className="uppercase" />
+              <CommonValidationTextField name="code" label="Coupon Code" required placeholder="e.g. MONSOON50" />
               <CommonValidationSelect name="status" label="Status" options={STATUS_OPTIONS} required />
             </CommonFormSection>
 
@@ -170,7 +141,7 @@ export const CouponForm: FC<CouponFormProps> = ({
             <CommonFormSection title="Validity & Limits">
               <CommonDatePicker name="startDate" label="Start Date" required placeholder="Select start date" />
               <CommonDatePicker name="endDate" label="End Date" required placeholder="Select end date" />
-              <CommonValidationTextField name="usageLimit" label="Total Usage Limit (Times)" type="number" placeholder="Unlimited if empty" />
+              <CommonValidationTextField name="usageLimit" label="Total Usage Limit (Times)" type="number" required placeholder="e.g. 100" />
             </CommonFormSection>
 
             <CommonFormSection title="Applicability Target">

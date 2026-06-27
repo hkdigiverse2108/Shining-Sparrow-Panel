@@ -4,7 +4,7 @@ import { CommonFormSection, CommonFormShell, CommonImageUpload } from '@/Compone
 import { CommonButton, CommonValidationTextField, CommonValidationSelect } from '@/Attribute';
 import { Segmented, Button, Progress, message, Input } from 'antd';
 import { SoundOutlined, UploadOutlined } from '@ant-design/icons';
-import * as Yup from 'yup';
+import { QuestionSchema } from '@/Utils';
 
 interface QuestionFormProps {
   editing: any | null;
@@ -12,14 +12,6 @@ interface QuestionFormProps {
   loading: boolean;
   examId: string;
 }
-
-const QuestionSchema = Yup.object({
-  questionText: Yup.string().required('Question text is required'),
-  questionType: Yup.string().required('Type is required'),
-  correctAnswer: Yup.string().required('Correct answer is required'),
-  score: Yup.number().required('Required').min(0),
-  priority: Yup.number().optional().min(0, 'Priority must be non-negative'),
-});
 
 // A Formik side-effect observer to keep the calculation steps, questionText, and correctAnswer in sync
 const QuestionFormObserver: FC = () => {
@@ -70,8 +62,8 @@ export const QuestionForm: FC<QuestionFormProps> = ({ editing, onSave, loading }
     questionText: '', 
     questionType: 'calculation', 
     correctAnswer: '', 
-    score: 1,
-    priority: 0,
+    score: '',
+    priority: '',
     calculationSteps: [''],
     calculationLayout: 'horizontal',
     questionImage: '',
@@ -98,6 +90,8 @@ export const QuestionForm: FC<QuestionFormProps> = ({ editing, onSave, loading }
         ...editing,
         instructions,
         questionText: qText,
+        score: editing.score ?? '',
+        priority: editing.priority ?? '',
         calculationLayout: isVertical ? 'vertical' : 'horizontal',
         calculationSteps: steps.length ? steps : ['']
       };
@@ -179,7 +173,7 @@ export const QuestionForm: FC<QuestionFormProps> = ({ editing, onSave, loading }
 
   return (
     <Formik enableReinitialize initialValues={initialValues} validationSchema={QuestionSchema} onSubmit={handleSubmit}>
-      {({ values, setFieldValue }) => (
+      {({ values, setFieldValue, errors, touched }) => (
         <CommonFormShell
           title={editing ? 'Edit Question' : 'Add Question'}
           description="Capture the prompt, answer, and question type in one consistent form."
@@ -205,7 +199,7 @@ export const QuestionForm: FC<QuestionFormProps> = ({ editing, onSave, loading }
               <CommonValidationTextField name="score" label="Score / Marks" type="number" required />
 
               {/* Priority Input */}
-              <CommonValidationTextField name="priority" label="Priority / Order" type="number" />
+              <CommonValidationTextField name="priority" label="Priority / Order" type="number" required />
 
               {/* Question Instructions Input */}
               <div className="col-span-2 mb-2">
@@ -238,7 +232,7 @@ export const QuestionForm: FC<QuestionFormProps> = ({ editing, onSave, loading }
                 <div className="col-span-2 mb-4 animate-fade-in">
                   <div className="flex justify-between items-center mb-2">
                     <label className="block text-xs font-bold uppercase tracking-widest text-muted">
-                      Calculation Steps
+                      <span className="text-red-500 mr-1">*</span>Calculation Steps
                     </label>
                     <Segmented
                       options={[
@@ -250,10 +244,18 @@ export const QuestionForm: FC<QuestionFormProps> = ({ editing, onSave, loading }
                       className="w-fit"
                     />
                   </div>
-                  <div className="p-5 bg-surface-muted border border-border rounded-xl space-y-4 shadow-sm">
+                  <div className={`p-5 bg-surface-muted border rounded-xl space-y-4 shadow-sm transition-colors duration-200 ${
+                    touched.calculationSteps && errors.calculationSteps 
+                      ? 'border-red-500 bg-red-50/10' 
+                      : 'border-border'
+                  }`}>
                     <div className="flex flex-wrap items-center gap-3">
                       {values.calculationSteps.map((step: string, index: number) => (
-                        <div key={index} className="flex items-center gap-1.5 bg-surface p-2 border border-border rounded-xl shadow-sm hover:border-primary/50 transition-all">
+                        <div key={index} className={`flex items-center gap-1.5 bg-surface p-2 border rounded-xl shadow-sm hover:border-primary/50 transition-all ${
+                          touched.calculationSteps && errors.calculationSteps && (!step || !step.trim())
+                            ? 'border-red-400 bg-red-50/20'
+                            : 'border-border'
+                        }`}>
                           <input
                             type="text"
                             value={step}
@@ -305,6 +307,11 @@ export const QuestionForm: FC<QuestionFormProps> = ({ editing, onSave, loading }
                       </span>
                     </div>
                   </div>
+                  {touched.calculationSteps && errors.calculationSteps && (
+                    <div className="text-red-500 text-xs mt-1.5 font-medium animate-fade-in">
+                      {String(errors.calculationSteps)}
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -315,6 +322,7 @@ export const QuestionForm: FC<QuestionFormProps> = ({ editing, onSave, loading }
                   label="Question Image" 
                   shape="square" 
                   size={120} 
+                  required
                   className="col-span-full mb-4 animate-fade-in" 
                 />
               )}
@@ -323,9 +331,13 @@ export const QuestionForm: FC<QuestionFormProps> = ({ editing, onSave, loading }
               {values.questionType === 'audio' && (
                 <div className="col-span-2 mb-4 animate-fade-in">
                   <label className="block text-xs font-bold uppercase tracking-widest text-muted mb-2">
-                    Question Audio Resource
+                    <span className="text-red-500 mr-1">*</span>Question Audio Resource
                   </label>
-                  <div className="flex flex-col gap-3 p-4 bg-surface-muted border border-border rounded-xl">
+                  <div className={`flex flex-col gap-3 p-4 bg-surface-muted border rounded-xl transition-colors duration-200 ${
+                    touched.questionAudio && errors.questionAudio 
+                      ? 'border-red-500 bg-red-50/10' 
+                      : 'border-border'
+                  }`}>
                     <Segmented
                       options={[
                         { label: 'Upload Audio File', value: 'upload' },
@@ -401,6 +413,11 @@ export const QuestionForm: FC<QuestionFormProps> = ({ editing, onSave, loading }
                       </div>
                     )}
                   </div>
+                  {touched.questionAudio && errors.questionAudio && (
+                    <div className="text-red-500 text-xs mt-1.5 font-medium animate-fade-in">
+                      {String(errors.questionAudio)}
+                    </div>
+                  )}
                 </div>
               )}
 

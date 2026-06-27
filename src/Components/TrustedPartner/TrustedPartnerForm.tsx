@@ -1,8 +1,8 @@
 import { type FC } from 'react';
 import { Formik, Form } from 'formik';
-import * as Yup from 'yup';
 import { CommonFormShell, CommonFormSection, CommonImageUpload } from '@/Components';
 import { CommonValidationTextField, CommonButton } from '@/Attribute';
+import { PartnerSchema } from '@/Utils';
 
 interface TrustedPartnerFormProps {
   onClose: () => void;
@@ -10,12 +10,6 @@ interface TrustedPartnerFormProps {
   editing: any | null;
   loading?: boolean;
 }
-
-const PartnerSchema = Yup.object({
-  name: Yup.string().required('Partner Name is required'),
-  description: Yup.string().optional(),
-  image: Yup.string().required('Partner Logo is required'),
-});
 
 export const TrustedPartnerForm: FC<TrustedPartnerFormProps> = ({ onClose, onSave, editing, loading = false }) => {
   const initialValues = {
@@ -37,7 +31,7 @@ export const TrustedPartnerForm: FC<TrustedPartnerFormProps> = ({ onClose, onSav
       validationSchema={PartnerSchema}
       onSubmit={handleSubmit}
     >
-      {({ isValid, dirty }) => (
+      {() => (
         <CommonFormShell
           title={editing ? 'Edit Trusted Partner' : 'Add Trusted Partner'}
           description="Manage client logos, affiliate details, and sponsor entities."
@@ -80,7 +74,6 @@ export const TrustedPartnerForm: FC<TrustedPartnerFormProps> = ({ onClose, onSav
                 type="primary"
                 title={editing ? 'Update Partner' : 'Create Partner'}
                 loading={loading}
-                disabled={!isValid || !dirty || loading}
                 block
                 className="course-button course-button--primary"
               />

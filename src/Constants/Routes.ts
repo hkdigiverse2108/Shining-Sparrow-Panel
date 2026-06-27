@@ -3,7 +3,6 @@ export const ROUTES = {
   DASHBOARD: "/dashboard",
   ACCESS_DENIED: "/access-denied",
   AUTH: {
-    REGISTER: "/auth/signup",
     LOGIN: "/auth/login",
     VERIFY_OTP: "/auth/otp/verify",
     FORGOT_PASSWORD: "/auth/forgot-password",

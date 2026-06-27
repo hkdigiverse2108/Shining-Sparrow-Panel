@@ -286,7 +286,7 @@ const ManageContentPage: FC = () => {
                     <div className="course-hero-icon"><BookOutlined className="course-icon--glyph-xl" /></div>
                     <div>
                       <h1 className="course-hero-title">{course?.name || 'Course'}</h1>
-                      <CommonReadMore htmlContent={course?.description || 'Organize lessons, media resources, and assessments for this course.'} maxHeight={80} className="mt-1.5" />
+                      <CommonReadMore htmlContent={course?.description || 'Organize lessons, media resources, and exams for this course.'} maxHeight={80} className="mt-1.5" />
                     </div>
                   </div>
                   <div className="course-hero-badges">
@@ -430,7 +430,7 @@ const ManageContentPage: FC = () => {
                         <div className="course-section-card__header">
                           <div>
                             <h2 className="course-section-card__title">Lessons Track</h2>
-                            <p className="course-section-card__text">Configure lesson sequence, attachments, and assessments.</p>
+                            <p className="course-section-card__text">Configure lesson sequence, attachments, and exams.</p>
                           </div>
                           <span className="course-chip course-chip--neutral">{lessons.length} items</span>
                         </div>

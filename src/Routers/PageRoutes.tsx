@@ -4,7 +4,6 @@ import AuthLayout from "@/Pages/Auth";
 import NotFound from "@/Pages/NotFound";
 import Login from "@/Pages/Auth/Login";
 import ForgotPassword from "@/Pages/Auth/ForgotPassword";
-import Register from "@/Pages/Auth/Register";
 import Dashboard from "@/Pages/Dashboard";
 import Courses from "@/Pages/Course";
 import Workshops from "@/Pages/Workshop";
@@ -94,7 +93,6 @@ export const AuthRoutes = [
     children: [
       { path: ROUTES.HOME, element: <Navigate to={ROUTES.AUTH.LOGIN} replace />, },
       { path: ROUTES.AUTH.LOGIN, element: <Login />, },
-      { path: ROUTES.AUTH.REGISTER, element: <Register />, },
       { path: ROUTES.FORGOT_PASSWORD.BASE, element: <ForgotPassword />, },
       { path: ROUTES.AUTH.VERIFY_OTP , element: <VerifyOtp />, },
       { path: ROUTES.AUTH.RESET_PASSWORD , element: <ResetPassword />, },

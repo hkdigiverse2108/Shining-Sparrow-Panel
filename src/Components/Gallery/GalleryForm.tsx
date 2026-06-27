@@ -1,6 +1,6 @@
 import { type FC } from 'react';
 import { Formik, Form } from 'formik';
-import * as Yup from 'yup';
+
 import { CommonFormShell, CommonFormSection, CommonMultipleImageUpload } from '@/Components';
 import { CommonValidationTextField, CommonButton } from '@/Attribute';
 
@@ -11,16 +11,7 @@ interface GalleryFormProps {
   loading?: boolean;
 }
 
-const GallerySchema = Yup.object({
-  title: Yup.string().required('Folder Title is required'),
-  description: Yup.string().optional(),
-  images: Yup.array()
-    .of(Yup.string())
-    .test('min-one-image', 'At least one image must be uploaded', (val) => {
-      if (!val) return false;
-      return val.filter((img) => !!img).length > 0;
-    }),
-});
+import { GallerySchema } from '@/Utils';
 
 export const GalleryForm: FC<GalleryFormProps> = ({ onClose, onSave, editing, loading = false }) => {
   const initialValues = {
@@ -44,7 +35,7 @@ export const GalleryForm: FC<GalleryFormProps> = ({ onClose, onSave, editing, lo
       validationSchema={GallerySchema}
       onSubmit={handleSubmit}
     >
-      {({ isValid, dirty }) => (
+      {() => (
         <CommonFormShell
           title={editing ? 'Edit Gallery Folder' : 'Create Gallery Folder'}
           description="Group images together into folders for showcases."
@@ -85,7 +76,6 @@ export const GalleryForm: FC<GalleryFormProps> = ({ onClose, onSave, editing, lo
                 type="primary"
                 title={editing ? 'Update Folder' : 'Create Folder'}
                 loading={loading}
-                disabled={!isValid || !dirty || loading}
                 block
                 className="course-button course-button--primary"
               />

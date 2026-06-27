@@ -25,8 +25,9 @@ const Login: FC = () => {
         validationSchema={LoginSchema}
         onSubmit={async (values, { setSubmitting }) => {
           try {
+            const email = values.email.trim().toLowerCase();
             const response = await signin({ 
-              email: values.email, 
+              email, 
               password: values.password,
               userType: "admin"
             });

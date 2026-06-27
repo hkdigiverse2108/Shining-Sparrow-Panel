@@ -1,9 +1,8 @@
-// components/Workshop/TestimonialForm.tsx
 import { type FC, useMemo, useEffect, useRef } from 'react';
 import { Formik, Form } from 'formik';
 import { CommonFormShell, CommonFormSection, CommonImageUpload } from '@/Components';
 import { CommonButton, CommonValidationTextField, CommonValidationSelect } from '@/Attribute';
-import * as Yup from 'yup';
+import { editTestimonialSchema } from '@/Utils';
 
 const FormObserver: FC<{ type: string; onChange: (prev: string, next: string) => void }> = ({ type, onChange }) => {
   const prevTypeRef = useRef<string>(type);
@@ -25,13 +24,6 @@ interface TestimonialFormProps {
   catalogOptions?: { value: string; label: string }[];
 }
 
-const TestimonialSchema = Yup.object({
-  name: Yup.string().required('Name is required'),
-  rate: Yup.number().required('Rating is required').min(0, 'Rating cannot be negative').max(5, 'Max rating is 5'),
-  type: Yup.string().oneOf(['home', 'course', 'workshop']).required('Type is required'),
-  learningCatalogId: Yup.string().nullable(),
-});
-
 const TESTIMONIAL_TYPE_OPTIONS = [
   { label: 'Global (Home Page)', value: 'home' },
   { label: 'Course Specific', value: 'course' },
@@ -39,13 +31,14 @@ const TESTIMONIAL_TYPE_OPTIONS = [
 ];
 
 export const TestimonialForm: FC<TestimonialFormProps> = ({ editing, onSave, onClose, loading, showTypeSelector = false, catalogOptions = [] }) => {
-  const defaults = { name: '', designation: '', rate: 5, description: '', image: '', type: 'home', learningCatalogId: '' };
+  const defaults = { name: '', designation: '', rate: '', description: '', image: '', type: 'home', learningCatalogId: '' };
   
   const initialValues = useMemo(() => {
     if (editing) {
       return {
         ...defaults,
         ...editing,
+        rate: editing.rate ?? '',
         learningCatalogId: typeof editing.learningCatalogId === 'object' && editing.learningCatalogId !== null
           ? editing.learningCatalogId._id
           : editing.learningCatalogId || ''
@@ -54,8 +47,16 @@ export const TestimonialForm: FC<TestimonialFormProps> = ({ editing, onSave, onC
     return defaults;
   }, [editing]);
 
+  const handleFormSave = (values: any) => {
+    const payload = {
+      ...values,
+      image: values.image || '/assets/images/Logo_icon.png'
+    };
+    onSave(payload);
+  };
+
   return (
-    <Formik enableReinitialize initialValues={initialValues} validationSchema={TestimonialSchema} onSubmit={onSave}>
+    <Formik enableReinitialize initialValues={initialValues} validationSchema={editTestimonialSchema} onSubmit={handleFormSave}>
       {({ values, setFieldValue }) => {
         const currentTypeOptions = [
           { label: 'All', value: 'all' },
@@ -117,7 +118,7 @@ export const TestimonialForm: FC<TestimonialFormProps> = ({ editing, onSave, onC
                 <CommonValidationTextField name="name" label="Name" required />
                 <CommonValidationTextField name="designation" label="Designation / Title" placeholder="e.g. Student, CEO" />
                 <CommonValidationTextField name="rate" label="Rating (1-5)" type="number" required />
-                <CommonValidationTextField name="description" label="Review Description" className="col-span-full" placeholder="Write their testimonial here..." />
+                <CommonValidationTextField name="description" label="Review Description" required className="col-span-full" placeholder="Write their testimonial here..." />
               </CommonFormSection>
               <div className="course-form-actions">
                 <CommonButton htmlType="submit" type="primary" title={editing ? 'Update Testimonial' : 'Create Testimonial'} loading={loading} block className="course-button course-button--primary" />

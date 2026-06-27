@@ -2,7 +2,7 @@ import { type FC, useMemo } from 'react';
 import { Formik, Form } from 'formik';
 import { CommonFormSection, CommonFormShell, CommonImageUpload, CommonVideoUpload, CommonAttachmentUpload } from '@/Components';
 import { CommonButton, CommonValidationTextField, CommonRichTextEditor, CommonValidationSelect } from '@/Attribute';
-import * as Yup from 'yup';
+import { LessonSchema } from '@/Utils';
 
 interface LessonFormProps {
   editing: any | null;
@@ -13,19 +13,20 @@ interface LessonFormProps {
 }
 
 export const LessonForm: FC<LessonFormProps> = ({ editing, onSave, loading, assignToCurriculumId, existingPriorities }) => {
-  const LessonSchema = useMemo(() => {
+  const validationSchema = useMemo(() => {
     const list = existingPriorities || [];
-    return Yup.object({
-      title: Yup.string().required('Title is required'),
-      priority: Yup.number()
-        .required('Priority is required')
-        .min(0, 'Priority must be non-negative')
-        .test('unique-priority', 'This priority is already in use for this course.', (val) => {
-          if (val === undefined || val === null) return true;
+    return LessonSchema.shape({
+      priority: (LessonSchema.fields.priority as any).test(
+        'unique-priority',
+        'This priority is already in use for this course.',
+        (val: any) => {
+          if (val === undefined || val === null || val === '') return true;
           return !list.includes(Number(val));
-        }),
+        }
+      )
     });
   }, [existingPriorities]);
+
   const defaults = { 
     title: '', 
     subtitle: '', 
@@ -33,7 +34,7 @@ export const LessonForm: FC<LessonFormProps> = ({ editing, onSave, loading, assi
     thumbnail: '',
     videoLink: '',
     duration: '',
-    priority: 0, 
+    priority: '', 
     practiceMaterial: '',
     lessonLock: 'false' 
   };
@@ -43,6 +44,7 @@ export const LessonForm: FC<LessonFormProps> = ({ editing, onSave, loading, assi
       return { 
         ...defaults, 
         ...editing,
+        priority: editing.priority ?? '',
         lessonLock: String(editing.lessonLock ?? false)
       };
     }
@@ -58,7 +60,7 @@ export const LessonForm: FC<LessonFormProps> = ({ editing, onSave, loading, assi
   };
 
   return (
-    <Formik enableReinitialize initialValues={initialValues} validationSchema={LessonSchema} onSubmit={handleSubmit}>
+    <Formik enableReinitialize initialValues={initialValues} validationSchema={validationSchema} onSubmit={handleSubmit}>
       {({ values, setFieldValue }) => (
         <CommonFormShell
           title={editing ? 'Edit Lesson' : 'Add Lesson'}
@@ -66,30 +68,22 @@ export const LessonForm: FC<LessonFormProps> = ({ editing, onSave, loading, assi
         >
           <Form className="course-form-shell space-y-6">
             <CommonFormSection title="Lesson Details">
-              {/* Lesson Thumbnail */}
-              <CommonImageUpload
-                name="thumbnail"
-                label="Lesson Thumbnail"
-                shape="square"
-                size={100}
-                className="col-span-full"
-              />
-
               <CommonValidationTextField name="title" label="Title" required />
-              <CommonValidationTextField name="subtitle" label="Subtitle" />
-
+              <CommonValidationTextField name="subtitle" label="Subtitle" required />
+              
+              <CommonValidationTextField name="duration" label="Duration (Minutes/Hours)" required placeholder="e.g. 45 Mins, 1 Hour" />
               <div className="col-span-full">
                 <CommonRichTextEditor
                   name="description"
                   label="Description"
+                  required
                   onChange={(val) => setFieldValue('description', val)}
                   value={values.description}
                   className="w-full"
                 />
               </div>
-
+              <CommonImageUpload name="thumbnail" label="Lesson Thumbnail" shape="square" size={100} required className="col-span-full" />
               <CommonValidationTextField name="priority" label="Priority" type="number" required />
-              <CommonValidationTextField name="duration" label="Duration (Minutes/Hours)" placeholder="e.g. 45 Mins, 1 Hour" />
               
               <CommonValidationSelect
                 name="lessonLock"

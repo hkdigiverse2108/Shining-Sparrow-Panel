@@ -10,7 +10,7 @@ import { ResetPasswordSchema } from '@/Utils';
 const ResetPassword: FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const email = (location.state as any)?.email || '';
+  const email = ((location.state as any)?.email || '').trim().toLowerCase();
 
   const { mutateAsync: resetPassword, isPending } = Mutations.useResetPassword();
 

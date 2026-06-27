@@ -115,7 +115,7 @@ const QuestionEditorPage: FC = () => {
         breadcrumbs={[
           { label: 'Courses', href: '/courses' },
           { label: `Manage: ${course?.name || 'Course'}`, href: `/courses/${courseId}/manage` },
-          { label: 'Assessment', href: lessonId ? `/courses/${courseId}/lesson/${lessonId}/exam` : undefined },
+          { label: 'Exam', href: lessonId ? `/courses/${courseId}/lesson/${lessonId}/exam` : undefined },
           { label: isNew ? 'New Question' : 'Edit Question' },
         ]}
       />

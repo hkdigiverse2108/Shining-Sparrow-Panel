@@ -1,4 +1,4 @@
-import type { ForgotPasswordPayload, LoginPayload, LoginResponse, ResendOtpPayload, ResetPasswordPayload, UpdatePasswordPayload, VerifyOtpPayload, SignupPayload, UpdateProfilePayload } from "@/Types/Auth";
+import type { ForgotPasswordPayload, LoginPayload, LoginResponse, ResendOtpPayload, ResetPasswordPayload, UpdatePasswordPayload, VerifyOtpPayload, UpdateProfilePayload } from "@/Types/Auth";
 import { useMutations } from "./ReactQuery";
 import { KEYS, URL_KEYS } from "@/Constants";
 import { Delete, Post } from "./Methods";
@@ -7,8 +7,6 @@ import type { AddWorkshopPayload, UpdateWorkshopPayload } from "@/Types/Workshop
 
 export const Mutations = {
   // ************ Auth ***********
-  useSignup: () => useMutations<SignupPayload, MessageStatus>([KEYS.AUTH.REGISTER], (input) => Post(URL_KEYS.AUTH.REGISTER, input, false)),
-
   useSignin: () => useMutations<LoginPayload, LoginResponse>([KEYS.AUTH.LOGIN], (input) => Post(URL_KEYS.AUTH.LOGIN, input, false)),
 
   useForgotPassword: () => useMutations<ForgotPasswordPayload, MessageStatus>([KEYS.AUTH.FORGOT_PASSWORD], (input) => Post(URL_KEYS.AUTH.FORGOT_PASSWORD, input, false)),

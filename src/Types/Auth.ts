@@ -7,12 +7,6 @@ export interface LoginPayload {
   userType: string;
 }
 
-export interface SignupPayload {
-  fullName: string;
-  email: string;
-  password: string;
-}
-
 export interface ChangePasswordPayload {
   email?: string;
   oldPassword?: string;

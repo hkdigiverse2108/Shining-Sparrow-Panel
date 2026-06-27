@@ -3,6 +3,7 @@ import { Table } from "antd";
 import type { CommonTableProps } from "@/Types";
 import { exportExcel, exportPDF } from "./Export";
 import CommonTableToolbar from "./CommonTableToolbar";
+import { CommonSimplePagination } from "../CommonSimplePagination";
 
 export default function CommonTable<T extends object>({ columns, data, loading, total, current = 1, pageSize = 10, onTableChange, onSearch, searchPlaceholder = "Search...", onAdd, isActive, onActiveChange, onExportAll, fileName = "report", title, companyName, email, toolbarExtra, }: CommonTableProps<T>) {
   const [searchText, setSearchText] = useState("");
@@ -56,7 +57,23 @@ export default function CommonTable<T extends object>({ columns, data, loading, 
         onExportAll={onExportAll}
         toolbarExtra={toolbarExtra}
       />
-      <Table className="common-table-surface" rowKey={(r: any) => r._id || r.id} columns={filteredColumns as any} dataSource={data} loading={loading} scroll={{ x: 'max-content' }}  pagination={{ current, pageSize, total, showSizeChanger: true, showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items` }} onChange={onTableChange} locale={{ emptyText: "No Data Found" }} />
+      <Table
+        className="common-table-surface"
+        rowKey={(r: any) => r._id || r.id}
+        columns={filteredColumns as any}
+        dataSource={data}
+        loading={loading}
+        scroll={{ x: 'max-content' }}
+        pagination={false}
+        onChange={onTableChange}
+        locale={{ emptyText: "No Data Found" }}
+      />
+      <CommonSimplePagination
+        current={current}
+        total={total ?? 0}
+        pageSize={pageSize}
+        onChange={(page, ps) => onTableChange?.({ current: page, pageSize: ps }, {}, {})}
+      />
     </div>
   );
 }

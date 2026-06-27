@@ -208,11 +208,11 @@ const ExamManagerPage: FC = () => {
   return (
     <>
       <CommonBreadcrumbs
-        title={`Assessments: ${lesson?.title || 'Lesson'}`}
+        title={`Exams: ${lesson?.title || 'Lesson'}`}
         breadcrumbs={[
           { label: 'Courses', href: '/courses' },
           { label: `Manage: ${course?.name || 'Course'}`, href: `/courses/${courseId}/manage` },
-          { label: 'Assessments' },
+          { label: 'Exams' },
         ]}
       />
 
@@ -230,7 +230,7 @@ const ExamManagerPage: FC = () => {
                 <div>
                   <h1 className="course-hero-title">{lesson?.title || 'Lesson Overview'}</h1>
                   <p className="course-hero-text">
-                    {lesson?.subtitle || 'Manage the curriculum content, learning resources, and active student assessments.'}
+                    {lesson?.subtitle || 'Manage the curriculum content, learning resources, and active student exams.'}
                   </p>
                 </div>
               </div>
@@ -265,9 +265,9 @@ const ExamManagerPage: FC = () => {
               <div>
                 <h3 className="text-base font-bold text-foreground flex items-center gap-2">
                   <FileProtectOutlined className="text-primary text-lg" />
-                  Select Assessment ({lessonExams.length})
+                  Select Exam ({lessonExams.length})
                 </h3>
-                <p className="text-xs text-text-muted mt-0.5">Switch between active tests or configure a new assessment for this lesson.</p>
+                <p className="text-xs text-text-muted mt-0.5">Switch between active tests or configure a new exam for this lesson.</p>
               </div>
               <Button
                 type="primary"
@@ -275,7 +275,7 @@ const ExamManagerPage: FC = () => {
                 onClick={openExamEditorForNew}
                 className="course-button course-button--primary course-button--compact"
               >
-                Add New Assessment
+                Add New Exam
               </Button>
             </div>
 
@@ -309,7 +309,7 @@ const ExamManagerPage: FC = () => {
                           <h4 className={`font-bold text-sm truncate group-hover:text-primary transition-colors ${
                             isActive ? 'text-primary font-extrabold' : 'text-foreground'
                           }`}>
-                            {e.title || 'Untitled Assessment'}
+                            {e.title || 'Untitled Exam'}
                           </h4>
                           <p className="text-xs text-text-muted mt-0.5 truncate">{e.description || 'No description provided.'}</p>
                         </div>
@@ -372,9 +372,9 @@ const ExamManagerPage: FC = () => {
             ) : (
               <div className="course-empty-panel p-6 border border-dashed border-border rounded-xl text-center bg-surface-muted/10">
                 <FileProtectOutlined className="text-text-muted text-3xl mb-2" />
-                <h4 className="text-sm font-bold text-foreground">No assessments configured for this lesson</h4>
+                <h4 className="text-sm font-bold text-foreground">No exams configured for this lesson</h4>
                 <p className="text-xs text-text-muted max-w-sm mx-auto mt-1">
-                  Click 'Add New Assessment' above to begin configuring questions.
+                  Click 'Add New Exam' above to begin configuring questions.
                 </p>
               </div>
             )}
@@ -390,7 +390,7 @@ const ExamManagerPage: FC = () => {
                     <div>
                       <h4 className="font-bold text-red-800 text-sm">Marks Mismatch Warning</h4>
                       <p className="text-red-700 text-xs mt-1 leading-relaxed">
-                        The sum of individual question scores (<strong>{totalScore}</strong> points) does not match the configured Exam Total Marks (<strong>{lessonExam.totalMarks}</strong> marks). Students will see a mismatch. Please adjust question scores or edit the assessment marks.
+                        The sum of individual question scores (<strong>{totalScore}</strong> points) does not match the configured Exam Total Marks (<strong>{lessonExam.totalMarks}</strong> marks). Students will see a mismatch. Please adjust question scores or edit the exam marks.
                       </p>
                       {Number(lessonExam.passingMarks) > totalScore && (
                         <p className="text-amber-700 text-xs mt-1.5 font-semibold flex items-center gap-1.5">
@@ -428,8 +428,8 @@ const ExamManagerPage: FC = () => {
               <div className="course-section-card">
                 <div className="course-section-card__header">
                   <div>
-                    <h2 className="course-section-card__title">Assessment questions</h2>
-                    <p className="course-section-card__text">Review, edit, or remove questions from the lesson assessment.</p>
+                    <h2 className="course-section-card__title">Exam questions</h2>
+                    <p className="course-section-card__text">Review, edit, or remove questions from the lesson exam.</p>
                   </div>
                   <Button
                     type="primary"
@@ -600,7 +600,7 @@ const ExamManagerPage: FC = () => {
                       </div>
                       <h3 className="course-empty-panel__title">No questions yet</h3>
                       <p className="course-empty-panel__text">
-                        Start by adding the first question. You can build the assessment gradually and keep it organized in one place.
+                        Start by adding the first question. You can build the exam gradually and keep it organized in one place.
                       </p>
                       <Button
                         type="primary"
@@ -617,7 +617,7 @@ const ExamManagerPage: FC = () => {
                     <div className="course-empty-panel__icon">
                       <FileProtectOutlined className="course-icon--glyph-3xl" />
                     </div>
-                    <h3 className="course-empty-panel__title">Create the assessment first</h3>
+                    <h3 className="course-empty-panel__title">Create the exam first</h3>
                     <p className="course-empty-panel__text">
                       Configure time limit, marks, and passing threshold before you begin adding questions.
                     </p>
@@ -627,7 +627,7 @@ const ExamManagerPage: FC = () => {
                       onClick={openExamEditorForNew}
                       className="course-button course-button--primary"
                     >
-                      Configure Assessment
+                      Configure Exam
                     </Button>
                   </div>
                 )}
@@ -637,8 +637,8 @@ const ExamManagerPage: FC = () => {
             <aside className="course-sidebar">
               {lessonExam ? (
                 <div className="course-sidebar-card shadow-sm border border-border bg-surface">
-                  <span className="course-sidebar-label">Active Assessment Config</span>
-                  <h3 className="course-sidebar-title truncate">{lessonExam.title || 'Untitled Assessment'}</h3>
+                  <span className="course-sidebar-label">Active Exam Config</span>
+                  <h3 className="course-sidebar-title truncate">{lessonExam.title || 'Untitled Exam'}</h3>
                   {lessonExam.description && <p className="text-xs text-text-muted mb-4">{lessonExam.description}</p>}
                   
                   <div className="course-sidebar-list">
@@ -687,7 +687,7 @@ const ExamManagerPage: FC = () => {
                       loading={editExamMutation.isPending}
                       className="w-full flex items-center justify-center rounded-lg"
                     >
-                      {lessonExam.isBlocked ? 'Unblock Assessment' : 'Block Assessment'}
+                      {lessonExam.isBlocked ? 'Unblock Exam' : 'Block Exam'}
                     </Button>
                     <Button 
                       danger 
@@ -696,21 +696,21 @@ const ExamManagerPage: FC = () => {
                       onClick={openDeleteExamModal} 
                       className="w-full flex items-center justify-center rounded-lg"
                     >
-                      Delete Assessment
+                      Delete Exam
                     </Button>
                   </div>
                 </div>
               ) : (
                 <div className="course-sidebar-card shadow-sm border border-border bg-surface text-center py-6">
-                  <span className="course-sidebar-label">No Assessment Active</span>
-                  <p className="text-xs text-text-muted mt-2">Select an assessment from the grid above or create one to configure rules.</p>
+                  <span className="course-sidebar-label">No Exam Active</span>
+                  <p className="text-xs text-text-muted mt-2">Select an exam from the grid above or create one to configure rules.</p>
                 </div>
               )}
 
               <div className="course-sidebar-card">
                 <span className="course-sidebar-label">Workflow tip</span>
                 <p className="course-sidebar-text">
-                  Keep the assessment configuration stable first, then use the question list to manage content as the lesson evolves.
+                  Keep the exam configuration stable first, then use the question list to manage content as the lesson evolves.
                 </p>
               </div>
             </aside>
@@ -718,7 +718,7 @@ const ExamManagerPage: FC = () => {
         </div>
       </CommonPageWrapper>
 
-      <CommonDeleteModal open={isDeleteModalOpen} title={deleteTarget?.type === 'exam' ? 'Delete Assessment' : 'Delete Question'} itemName={deleteTarget?.type === 'exam' ? lessonExam?.title || lesson?.title : 'this question'} loading={deleteExamMutation.isPending || deleteQuestionMutation.isPending} onClose={() => { setIsDeleteModalOpen(false); setDeleteTarget(null); }} onConfirm={handleConfirmDelete} />
+      <CommonDeleteModal open={isDeleteModalOpen} title={deleteTarget?.type === 'exam' ? 'Delete Exam' : 'Delete Question'} itemName={deleteTarget?.type === 'exam' ? lessonExam?.title || lesson?.title : 'this question'} loading={deleteExamMutation.isPending || deleteQuestionMutation.isPending} onClose={() => { setIsDeleteModalOpen(false); setDeleteTarget(null); }} onConfirm={handleConfirmDelete} />
     </>
   );
 };

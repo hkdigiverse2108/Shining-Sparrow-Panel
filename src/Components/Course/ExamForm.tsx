@@ -2,7 +2,7 @@ import { type FC, useMemo } from 'react';
 import { Formik, Form } from 'formik';
 import { CommonFormSection, CommonFormShell } from '@/Components';
 import { CommonButton, CommonValidationTextField } from '@/Attribute';
-import * as Yup from 'yup';
+import { ExamSchema } from '@/Utils';
 
 interface ExamFormProps {
   editing: any | null;
@@ -11,26 +11,15 @@ interface ExamFormProps {
   lessonId: string;
 }
 
-const ExamSchema = Yup.object({
-  title: Yup.string().required('Exam title is required'),
-  totalMarks: Yup.number().required('Required').min(1, 'Total marks must be at least 1'),
-  passingMarks: Yup.number()
-    .required('Required')
-    .min(0, 'Passing marks cannot be negative')
-    .test(
-      'passing-less-than-total',
-      'Warning: Passing marks cannot be greater than total marks',
-      function (value) {
-        const { totalMarks } = this.parent;
-        return value === undefined || totalMarks === undefined || value <= totalMarks;
-      }
-    ),
-  timeLimit: Yup.number().required('Required in minutes').min(1),
-});
-
 export const ExamForm: FC<ExamFormProps> = ({ editing, onSave, loading, lessonId }) => {
-  const defaults = { title: '', description: '', passingMarks: 0, totalMarks: 0, timeLimit: 30 };
-  const initialValues = useMemo(() => (editing ? { ...defaults, ...editing } : defaults), [editing]);
+  const defaults = { title: '', description: '', passingMarks: '', totalMarks: '', timeLimit: '' };
+  const initialValues = useMemo(() => (editing ? { 
+    ...defaults, 
+    ...editing,
+    passingMarks: editing.passingMarks ?? '',
+    totalMarks: editing.totalMarks ?? '',
+    timeLimit: editing.timeLimit ?? '',
+  } : defaults), [editing]);
 
   const handleSubmit = (v: any) => {
     const { _id, createdAt, updatedAt, isDeleted, isBlocked, __v, courseId, courseLessonId, ...formData } = v;
@@ -57,7 +46,7 @@ export const ExamForm: FC<ExamFormProps> = ({ editing, onSave, loading, lessonId
       {({ values }) => (
         <CommonFormShell
           title={editing ? 'Edit Exam' : 'Add Exam'}
-          description="Set the timing, total marks, and passing threshold for the lesson assessment."
+          description="Set the timing, total marks, and passing threshold for the lesson exam."
         >
           <Form className="course-form-shell">
             <CommonFormSection title="Exam Configuration">

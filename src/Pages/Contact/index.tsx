@@ -155,17 +155,7 @@ const getColumns = ({
   },
 ];
 
-// ─── Contact Details Schema ──────────────────────────────────────────────────
-const ContactDetailsSchema = Yup.object().shape({
-  address: Yup.string().optional(),
-  phoneNumber: Yup.string().optional(),
-  email: Yup.string().email("Invalid email").optional().nullable().transform((value, originalValue) => originalValue === "" ? null : value),
-  workingHours: Yup.string().optional(),
-  facebook: Yup.string().url("Must be a valid URL").optional().nullable().transform((value, originalValue) => originalValue === "" ? null : value),
-  instagram: Yup.string().url("Must be a valid URL").optional().nullable().transform((value, originalValue) => originalValue === "" ? null : value),
-  linkedin: Yup.string().url("Must be a valid URL").optional().nullable().transform((value, originalValue) => originalValue === "" ? null : value),
-  twitter: Yup.string().url("Must be a valid URL").optional().nullable().transform((value, originalValue) => originalValue === "" ? null : value),
-});
+import { ContactDetailsSchema } from '@/Utils';
 
 // ─── Contact Details Form Tab ────────────────────────────────────────────────
 const ContactDetailsTab: FC = () => {
@@ -234,19 +224,19 @@ const ContactDetailsTab: FC = () => {
         <Form className="profile-tab-form space-y-6 max-w-4xl mx-auto mt-4">
           <div className="profile-form-section-card">
             <CommonFormSection title="Company Contact Information">
-              <CommonValidationTextField name="address" label="Office Address" />
-              <CommonValidationTextField name="phoneNumber" label="Phone Number" />
-              <CommonValidationTextField name="email" label="Contact Email" />
-              <CommonValidationTextField name="workingHours" label="Working Hours" />
+              <CommonValidationTextField name="address" label="Office Address" required />
+              <CommonValidationTextField name="phoneNumber" label="Phone Number" required />
+              <CommonValidationTextField name="email" label="Contact Email" required />
+              <CommonValidationTextField name="workingHours" label="Working Hours" required />
             </CommonFormSection>
           </div>
 
           <div className="profile-form-section-card">
             <CommonFormSection title="Social Media Handles">
-              <CommonValidationTextField name="facebook" label="Facebook URL" />
-              <CommonValidationTextField name="instagram" label="Instagram URL" />
-              <CommonValidationTextField name="linkedin" label="LinkedIn URL" />
-              <CommonValidationTextField name="twitter" label="Twitter / X URL" />
+              <CommonValidationTextField name="facebook" label="Facebook URL" required />
+              <CommonValidationTextField name="instagram" label="Instagram URL" required />
+              <CommonValidationTextField name="linkedin" label="LinkedIn URL" required />
+              <CommonValidationTextField name="twitter" label="Twitter / X URL" required />
             </CommonFormSection>
           </div>
 

@@ -3,7 +3,7 @@ import { type FC, useMemo, useEffect, useRef } from 'react';
 import { Formik, Form } from 'formik';
 import { CommonFormShell, CommonFormSection } from '@/Components';
 import { CommonButton, CommonValidationTextField, CommonValidationSelect, CommonCheckbox } from '@/Attribute';
-import * as Yup from 'yup';
+import { FAQSchema } from '@/Utils';
 
 const FormObserver: FC<{ type: string; onChange: (prev: string, next: string) => void }> = ({ type, onChange }) => {
   const prevTypeRef = useRef<string>(type);
@@ -24,19 +24,6 @@ interface FAQFormProps {
   showTypeSelector?: boolean;
   catalogOptions?: { value: string; label: string }[];
 }
-
-const FAQSchema = Yup.object({
-  questionEn: Yup.string().required('Question (English) is required'),
-  questionHi: Yup.string().nullable(),
-  questionGu: Yup.string().nullable(),
-  answerEn: Yup.string().required('Answer (English) is required'),
-  answerHi: Yup.string().nullable(),
-  answerGu: Yup.string().nullable(),
-  type: Yup.string().oneOf(['home', 'course', 'workshop']),
-  learningCatalogId: Yup.string().nullable(),
-  isFeatured: Yup.boolean(),
-  isBlocked: Yup.boolean(),
-});
 
 const FAQ_TYPE_OPTIONS = [
   { label: 'Global (Home Page)', value: 'home' },
@@ -78,8 +65,29 @@ export const FAQForm: FC<FAQFormProps> = ({ editing, onSave, onClose, loading, s
     return defaults;
   }, [editing]);
 
+  const handleFormSave = (values: any) => {
+    const payload = {
+      ...values,
+      question: {
+        en: values.questionEn,
+        hi: values.questionHi || null,
+        gu: values.questionGu || null,
+      },
+      answer: {
+        en: values.answerEn,
+        hi: values.answerHi || null,
+        gu: values.answerGu || null,
+      },
+      learningCatalogId: values.learningCatalogId || null,
+    };
+    if (editing) {
+      (payload as any).faqId = editing._id;
+    }
+    onSave(payload);
+  };
+
   return (
-    <Formik enableReinitialize initialValues={initialValues} validationSchema={FAQSchema} onSubmit={onSave}>
+    <Formik enableReinitialize initialValues={initialValues} validationSchema={FAQSchema} onSubmit={handleFormSave}>
       {({ values, setFieldValue }) => {
         const currentTypeOptions = [
           { label: 'All', value: 'all' },

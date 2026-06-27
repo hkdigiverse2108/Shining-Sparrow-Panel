@@ -3,7 +3,7 @@ import { type FC, useMemo } from "react";
 import { Formik, Form } from "formik";
 import { CommonFormShell, CommonFormSection, CommonImageUpload } from "@/Components";
 import { CommonButton, CommonValidationTextField, CommonRichTextEditor, CommonValidationSelect } from "@/Attribute"; // Ensure you have a CommonSwitch or use Ant's Switch
-import * as Yup from "yup";
+
 
 interface BlogFormProps {
   open: boolean;
@@ -13,11 +13,7 @@ interface BlogFormProps {
   loading?: boolean;
 }
 
-const BlogSchema = Yup.object({
-  title: Yup.string().required("Title is required"),
-  content: Yup.string().required("Content is required"),
-  category: Yup.string().required("Category is required"),
-});
+import { BlogSchema } from "@/Utils";
 
 const blogCategories = [
   { label: "Technology", value: "Technology" },
@@ -68,7 +64,7 @@ export const BlogForm: FC<BlogFormProps> = ({ open, onClose, onSave, editing, lo
         >
           <Form className="course-form-shell">
             <CommonFormSection title="Blog Details">
-              <CommonImageUpload name="coverImage" label="Cover Image" shape="square" size={120} className="col-span-full" />
+              <CommonImageUpload name="coverImage" label="Cover Image" shape="square" size={120} required className="col-span-full" />
               <CommonValidationTextField name="title" label="Blog Title" required />
               <CommonValidationTextField name="subTitle" label="Subtitle" />
               <CommonValidationSelect name="category" label="Category" options={blogCategories} required fullWidth />

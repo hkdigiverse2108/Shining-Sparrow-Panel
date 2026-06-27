@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { motion } from 'motion/react';
 import { Table, Tag } from 'antd';
 import { ClockCircleOutlined, DesktopOutlined, GlobalOutlined } from '@ant-design/icons';
@@ -6,17 +6,28 @@ import { fadeInUp } from '@/Utils/animations';
 import { Queries } from '@/Api';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
+import { CommonSimplePagination } from '@/Components/Common/CommonSimplePagination';
 
 dayjs.extend(relativeTime);
 
 import type { ColumnType } from 'antd/es/table';
 
 const DashboardLoginHistoryTable: React.FC = () => {
-  const { data: historyRes, isLoading } = Queries.useGetLoginHistory({ page: 1, limit: 10 });
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
+  const { data: historyRes, isLoading } = Queries.useGetLoginHistory({ page, limit: pageSize });
 
   const records = useMemo(() => {
     return historyRes?.data?.records || [];
   }, [historyRes]);
+
+  const total = historyRes?.data?.total ?? 0;
+
+  const handlePageChange = (newPage: number, newPageSize: number) => {
+    setPage(newPage);
+    setPageSize(newPageSize);
+  };
 
   const columns: ColumnType<any>[] = [
     {
@@ -85,6 +96,12 @@ const DashboardLoginHistoryTable: React.FC = () => {
         pagination={false}
         scroll={{ x: 'max-content' }}
         className="common-table-surface"
+      />
+      <CommonSimplePagination
+        current={page}
+        total={total}
+        pageSize={pageSize}
+        onChange={handlePageChange}
       />
     </motion.div>
   );

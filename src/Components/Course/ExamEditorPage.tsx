@@ -55,11 +55,11 @@ const ExamEditorPage: FC = () => {
   return (
     <>
       <CommonBreadcrumbs
-        title={lessonExam ? 'Edit Assessment' : 'Create Assessment'}
+        title={lessonExam ? 'Edit Exam' : 'Create Exam'}
         breadcrumbs={[
           { label: 'Courses', href: '/courses' },
           { label: `Manage: ${course?.name || 'Course'}`, href: `/courses/${courseId}/manage` },
-          { label: 'Assessment', href: `/courses/${courseId}/lesson/${lessonId}/exam` },
+          { label: 'Exam', href: `/courses/${courseId}/lesson/${lessonId}/exam` },
           { label: lessonExam ? 'Edit' : 'Create' },
         ]}
       />
@@ -73,7 +73,7 @@ const ExamEditorPage: FC = () => {
               onClick={() => navigate(`/courses/${courseId}/lesson/${lessonId}/exam${examId ? `?selectedExamId=${examId}` : ''}`)}
               className="course-button course-button--text"
             >
-              Back to Assessment
+              Back to Exam
             </Button>
           </div>
 
@@ -83,8 +83,8 @@ const ExamEditorPage: FC = () => {
                 <FileProtectOutlined className="course-icon--glyph-xl" />
               </div>
               <div>
-                <h2 className="course-form-title">{lessonExam ? 'Edit Assessment' : 'Create Assessment'}</h2>
-                <p className="course-form-subtitle">Keep the assessment editor isolated so configuration changes stay focused and easy to review.</p>
+                <h2 className="course-form-title">{lessonExam ? 'Edit Exam' : 'Create Exam'}</h2>
+                <p className="course-form-subtitle">Keep the exam editor isolated so configuration changes stay focused and easy to review.</p>
               </div>
             </div>
 
