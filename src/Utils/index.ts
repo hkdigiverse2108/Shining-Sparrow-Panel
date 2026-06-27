@@ -37,6 +37,17 @@ export const GenerateOptions = (data?: { _id: string; name?: string; firstName?:
 };
 
 
+export const getImageUrl = (imagePath?: string | null): string => {
+  if (!imagePath) return "";
+  if (imagePath.startsWith("http://") || imagePath.startsWith("https://") || imagePath.startsWith("data:")) {
+    return imagePath;
+  }
+  const API_URL = import.meta.env.VITE_API_BASE_URL || "";
+  const cleanApiUrl = API_URL.endsWith("/") ? API_URL.slice(0, -1) : API_URL;
+  const cleanPath = imagePath.startsWith("/") ? imagePath : `/${imagePath}`;
+  return `${cleanApiUrl}${cleanPath}`;
+};
+
 export * from "@/Utils/Hooks";
 export * from "@/Utils/ValidationSchemas";
 export { extractArray } from "@/Utils/extractArray";

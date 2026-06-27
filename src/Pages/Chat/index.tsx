@@ -6,7 +6,7 @@ import { io, Socket } from 'socket.io-client';
 import { Queries } from '@/Api/Queries';
 import { Mutations } from '@/Api/Mutations';
 import { useAppSelector } from '@/Store/hooks';
-import { getToken } from '@/Utils';
+import { getToken, getImageUrl } from '@/Utils';
 import { CommonPageWrapper } from '@/Components';
 import { showNotification } from '@/Attribute';
 import { Post } from '@/Api/Methods';
@@ -359,7 +359,10 @@ const ChatPage: FC = () => {
     if (photo.startsWith('http') || photo.startsWith('data:')) {
       return photo;
     }
-    return `${import.meta.env.VITE_API_BASE_URL}/images/${photo}`;
+    if (photo.startsWith('images/') || photo.startsWith('/images/')) {
+      return getImageUrl(photo);
+    }
+    return getImageUrl(`/images/${photo}`);
   };
 
 

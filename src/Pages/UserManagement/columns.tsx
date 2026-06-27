@@ -5,6 +5,7 @@ import { CommonTag } from "@/Components/Common/CommonTag";
 import { Link } from "react-router-dom";
 import { ROUTES } from "@/Constants";
 import dayjs from "dayjs";
+import { getImageUrl } from "@/Utils";
 
 export const getUserColumns = ({ onEdit, onToggleStatus, onDelete, onStartChat, current = 1, pageSize = 10 }: HandlerProps & { current?: number; pageSize?: number }): ColumnType<any>[] => [
   {
@@ -22,9 +23,9 @@ export const getUserColumns = ({ onEdit, onToggleStatus, onDelete, onStartChat, 
     align: "left",
     render: (_, r) => (
       <div className="user-cell-profile">
-        <Avatar src={r.profilePhoto || undefined} size={40} icon={<UserOutlined />} className="shadow-sm border-2 border-primary/20 shrink-0" />
+        <Avatar src={getImageUrl(r.profilePhoto) || undefined} size={40} icon={<UserOutlined />} className="shadow-sm border-2 border-primary/20 shrink-0" />
         <div className="user-cell-info">
-          <Link to={`${ROUTES.USERS.BASE}/${r._id}`} className="user-cell-name items-start hover:!text-primary transition-colors text-sm font-semibold">
+          <Link to={`${ROUTES.USERS.BASE}/${r._id}`} className="user-cell-name items-start hover:text-primary! transition-colors text-sm font-semibold">
             {r.fullName}
           </Link>
           <div className="user-cell-date flex items-center gap-1 text-[10px] text-muted mt-0.5">
