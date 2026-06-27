@@ -28,7 +28,9 @@ export const CommonFormShell: FC<CommonFormShellProps> = ({
         )}
       </div>
 
-      <div className="course-form-panel__body">{children}</div>
+      <div className="course-form-panel__body">
+        {children}
+      </div>
 
       {footer && <div className="course-form-panel__footer">{footer}</div>}
     </section>

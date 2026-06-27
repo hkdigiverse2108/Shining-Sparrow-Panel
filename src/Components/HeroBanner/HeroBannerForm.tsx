@@ -68,7 +68,7 @@ export const HeroBannerForm: FC<HeroBannerFormProps> = ({ open, onClose, onSave,
 
   return (
     <Formik enableReinitialize initialValues={initialValues} validationSchema={HeroBannerSchema} onSubmit={handleSubmit}>
-      {({ errors, setFieldValue, values }) => (
+      {({ setFieldValue, values }) => (
         <CommonFormShell
           title={editing ? "Edit Hero Banner" : "Add Hero Banner"}
           description="Configure marketing hero banners for web or app channels."
@@ -120,16 +120,7 @@ export const HeroBannerForm: FC<HeroBannerFormProps> = ({ open, onClose, onSave,
               </CommonFormSection>
             )}
 
-            {Object.keys(errors).length > 0 && (
-              <div className="course-form-error">
-                <strong>Cannot submit because of validation errors:</strong>
-                <ul className="course-form-error-list">
-                  {Object.entries(errors).map(([key, value]) => (
-                    <li key={key}>{key}: {String(value)}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
+
 
             <div className="course-form-actions">
               <CommonButton 

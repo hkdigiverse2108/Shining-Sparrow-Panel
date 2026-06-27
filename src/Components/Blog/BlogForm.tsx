@@ -59,7 +59,7 @@ export const BlogForm: FC<BlogFormProps> = ({ open, onClose, onSave, editing, lo
 
   return (
     <Formik enableReinitialize initialValues={initialValues} validationSchema={BlogSchema} onSubmit={handleSubmit}>
-      {({ errors, setFieldValue, values }) => (
+      {({ setFieldValue, values }) => (
         <CommonFormShell
           title={editing ? "Edit Blog" : "Add Blog"}
           description="Compose and format blog posts. Use the rich text editor for detailed content."
@@ -89,16 +89,7 @@ export const BlogForm: FC<BlogFormProps> = ({ open, onClose, onSave, editing, lo
               
             </CommonFormSection>
 
-            {Object.keys(errors).length > 0 && (
-              <div className="course-form-error">
-                <strong>Cannot submit because of validation errors:</strong>
-                <ul className="course-form-error-list">
-                  {Object.entries(errors).map(([key, value]) => (
-                    <li key={key}>{key}: {String(value)}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
+
 
             <div className="course-form-actions">
               <CommonButton 

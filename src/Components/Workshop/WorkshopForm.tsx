@@ -75,7 +75,7 @@ export const WorkshopForm: FC<any> = ({ open, onClose, onSave, editing }) => {
 
   return (
     <Formik enableReinitialize initialValues={initialValues} validationSchema={WorkshopSchema} onSubmit={handleSubmit}>
-      {({ errors }) => (
+      {() => (
         <CommonFormShell title={editing ? "Edit Workshop" : "Add Workshop"} description="Use a single, plain form to create or update workshop details." onClose={onClose} closeLabel="Cancel">
           <Form className="course-form-shell">
             <CommonFormSection title="Workshop Details">
@@ -96,7 +96,7 @@ export const WorkshopForm: FC<any> = ({ open, onClose, onSave, editing }) => {
               <CommonValidationTextField name="priority" label="Priority / Order" type="number" placeholder="e.g. 1" />
             </CommonFormSection>
             
-            {Object.keys(errors).length > 0 && ( <div className="course-form-error"><strong>Validation errors:</strong><ul className="course-form-error-list">{Object.entries(errors).map(([k, v]) => <li key={k}>{k}: {String(v)}</li>)}</ul></div> )}
+
             <div className="course-form-actions">
               <CommonButton htmlType="submit" type="primary" title={editing ? "Update Workshop" : "Create Workshop"} block className="course-button course-button--primary" />
             </div>

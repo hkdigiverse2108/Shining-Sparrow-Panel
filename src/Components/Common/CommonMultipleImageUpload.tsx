@@ -213,10 +213,10 @@ export const CommonMultipleImageUpload: FC<CommonMultipleImageUploadProps> = ({
         {previewOpen && (
           <div className="hidden">
             <Image 
-              src={previewImage} 
+              src={previewImage || undefined} 
               preview={{ 
-                visible: previewOpen, 
-                onVisibleChange: (vis) => setPreviewOpen(vis) 
+                open: previewOpen, 
+                onOpenChange: (vis) => setPreviewOpen(vis) 
               }} 
             />
           </div>

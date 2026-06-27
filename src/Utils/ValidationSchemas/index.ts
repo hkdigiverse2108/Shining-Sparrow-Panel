@@ -70,29 +70,29 @@ export const WorkshopAgendaSchema = Yup.object({
 });
 // Course
 export const CourseSchema = Yup.object({
-    title: Validation("string", "Course Title"),
-    status: Validation("string", "Status"),
-    category: Validation("string", "Category"),
-    description: Validation("string", "Description"),
-    instructorId: Validation("string", "Instructor"),
-    price: Validation("string", "Price", {
-        extraRules: (s) => s.matches(/^\$?\d+(\.\d{1,2})?$/, "Invalid price format (e.g., $49 or 49.99)"),
-    }),
-    fullPrice: Yup.string().optional(),
-    rating: Yup.string().optional(),
-    image: Yup.string().nullable().optional(),
+    name: Yup.string().required("Course Name is required"),
+    price: Yup.number().required("Main Price is required").min(0, "Price must be non-negative"),
+    language: Yup.string().required("Course Language is required"),
+    duration: Yup.number().required("Course Duration is required").min(0, "Duration must be positive"),
+    accessDurationDays: Yup.number().required("Access Duration is required").min(0, "Access duration must be positive"),
+    priority: Yup.number().required("Priority / Order is required").min(0, "Priority must be at least 0"),
+    image: Yup.string().required("Course Thumbnail Image is required"),
+    description: Yup.string().required("Description is required"),
+    mrpPrice: Yup.number().optional().nullable().min(0),
+    pdf: Yup.string().optional().nullable(),
+    courseCurriculumIds: Yup.array(Yup.string()).optional(),
+    trailerUrl: Yup.string().url("Must be a valid URL").nullable().optional(),
+    isBlocked: Yup.boolean().optional(),
 });
-
 export const CurriculumSchema = Yup.object({
     title: Validation("string", "Title"),
     duration: Validation("string", "Duration"),
 });
 
-// User Schema (For Adding new users)
 export const UserSchema = Yup.object({
     fullName: Yup.string().required("Full Name is required"),
     email: Yup.string().email("Invalid email address").required("Email is required"),
-    phoneNumber: Yup.string().optional(),
+    phoneNumber: Yup.string().required("Phone Number is required"),
     profilePhoto: Yup.string().nullable().optional(),
     isBlocked: Yup.string().optional(),
     isEmailVerified: Yup.string().optional(),
@@ -112,7 +112,7 @@ export const UserSchema = Yup.object({
 export const EditUserSchema = Yup.object({
     fullName: Yup.string().required("Full Name is required"),
     email: Yup.string().email("Invalid email address").required("Email is required"),
-    phoneNumber: Yup.string().optional(),
+    phoneNumber: Yup.string().required("Phone Number is required"),
     profilePhoto: Yup.string().nullable().optional(),
     designation: Yup.string().optional(),
     district: Yup.string().optional(),

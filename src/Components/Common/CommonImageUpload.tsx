@@ -116,7 +116,7 @@ export const CommonImageUpload: FC<CommonImageUploadProps> = ({
         />
         
         <div className="hidden">
-          <Image src={field.value} preview={{ visible: previewOpen, onVisibleChange: (vis) => setPreviewOpen(vis) }} />
+          <Image src={field.value || undefined} preview={{ open: previewOpen, onOpenChange: (vis) => setPreviewOpen(vis) }} />
         </div>
 
         {mode === "upload" ? (
@@ -180,10 +180,12 @@ export const CommonImageUpload: FC<CommonImageUploadProps> = ({
                   className={`w-full h-36 border-2 border-dashed rounded-2xl flex flex-col items-center justify-center gap-2.5 cursor-pointer transition-all duration-300 group bg-surface-muted/50 ${
                     dragOver 
                       ? "border-primary bg-primary/5 scale-[1.01]" 
-                      : "border-border hover:border-primary/50 hover:bg-primary/5"
+                      : showError
+                        ? "border-red-500/80 hover:border-red-500 bg-red-50/10"
+                        : "border-border hover:border-primary/50 hover:bg-primary/5"
                   }`}
                 >
-                  <div className="w-10 h-10 rounded-xl bg-surface border border-border flex items-center justify-center text-muted group-hover:text-primary group-hover:scale-110 group-hover:rotate-3 shadow-sm transition-all duration-300">
+                  <div className={`w-10 h-10 rounded-xl bg-surface border flex items-center justify-center text-muted group-hover:text-primary group-hover:scale-110 group-hover:rotate-3 shadow-sm transition-all duration-300 ${showError ? 'border-red-500/50 text-red-500' : 'border-border'}`}>
                     <PictureOutlined className="text-xl" />
                   </div>
                   <div className="text-center px-4">

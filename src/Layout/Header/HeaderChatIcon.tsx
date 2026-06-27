@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Queries } from '@/Api/Queries';
 import { motion } from 'motion/react';
 
-const MotionButton = motion(Button);
+const MotionButton = motion.create(Button);
 
 const HeaderChatIcon: React.FC = () => {
   const navigate = useNavigate();

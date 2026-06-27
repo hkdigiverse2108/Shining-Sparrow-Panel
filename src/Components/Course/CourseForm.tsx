@@ -3,59 +3,52 @@ import { Formik, Form } from "formik";
 import { CommonFormShell, CommonFormSection, CommonAttachmentUpload, CommonVideoUpload, CommonImageUpload } from "@/Components";
 import { CommonButton, CommonValidationTextField, CommonValidationSelect, CommonRichTextEditor } from "@/Attribute";
 import { Queries } from "@/Api";
-import * as Yup from "yup";
 import type { CourseHandlerProps } from "@/Types";
+import { CourseSchema } from "@/Utils";
 
 export const CourseForm: FC<CourseHandlerProps> = ({ open, onClose, onSave, editing }) => {
   const { data: courseResponse } = Queries.useGetCourses({ page: 1, limit: 1000 });
   const allCourses = courseResponse?.data?.course_data || [];
 
-  const CourseSchema = useMemo(() => {
-    return Yup.object({
-      name: Yup.string().required("Course Name is required"),
-      description: Yup.string().optional(),
-      price: Yup.number().required("Main Price is required").min(0),
-      mrpPrice: Yup.number().required("Price after Discount is required").min(0),
-      duration: Yup.number().optional().min(0, "Duration must be positive"),
-      accessDurationDays: Yup.number().optional().nullable().min(0, "Access duration must be positive"),
-      language: Yup.string().optional().nullable(),
-      pdf: Yup.string().optional().nullable(),
-      courseCurriculumIds: Yup.array(Yup.string()).optional(),
-      trailerUrl: Yup.string().url("Must be a valid URL").nullable().optional(),
-      isBlocked: Yup.boolean().optional(),
-      priority: Yup.number()
-        .optional()
-        .min(0, "Priority must be at least 0")
-        .test("unique-priority", "This priority is already assigned to another course", (val) => {
+  const validationSchema = useMemo(() => {
+    return CourseSchema.shape({
+      priority: (CourseSchema.fields.priority as any).test(
+        "unique-priority",
+        "This priority is already assigned to another course",
+        (val: any) => {
           if (val === undefined || val === null || val === 0) return true;
           return !allCourses.some((c: any) => c._id !== editing?._id && Number(c.priority) === Number(val));
-        }),
+        }
+      )
     });
   }, [allCourses, editing]);
   const defaults = {
     name: "",
     description: "",
-    price: 0,
-    mrpPrice: 0,
+    price: "",
+    mrpPrice: "",
     language: "",
     image: "",
-    duration: 0,
+    duration: "",
     courseCurriculumIds: [] as string[],
     isBlocked: false,
     accessDurationDays: "",
     trailerUrl: "",
     pdf: "",
-    priority: 0,
+    priority: "",
   };
 
   const initialValues = useMemo(() => (editing ? {
     ...defaults,
     ...editing,
     courseCurriculumIds: (editing.courseCurriculumIds || []).map((sub: any) => typeof sub === 'object' ? sub._id : sub),
+    price: editing.price ?? "",
+    mrpPrice: editing.mrpPrice ?? "",
+    duration: editing.duration ?? "",
     accessDurationDays: editing.accessDurationDays ?? "",
     trailerUrl: editing.trailerUrl ?? "",
     pdf: editing.pdf ?? "",
-    priority: editing.priority ?? 0,
+    priority: editing.priority ?? "",
   } : defaults), [editing]);
 
   const courseOptions = useMemo(() => {
@@ -91,8 +84,8 @@ export const CourseForm: FC<CourseHandlerProps> = ({ open, onClose, onSave, edit
   if (!open) return null;
 
   return (
-    <Formik enableReinitialize initialValues={initialValues} validationSchema={CourseSchema} onSubmit={handleSubmit}>
-      {({ errors }) => (
+    <Formik enableReinitialize initialValues={initialValues} validationSchema={validationSchema} onSubmit={handleSubmit}>
+      {() => (
         <CommonFormShell
           title={editing ? "Edit Course" : "Add Course"}
           description="Use a single, plain form to create or update course details."
@@ -103,16 +96,16 @@ export const CourseForm: FC<CourseHandlerProps> = ({ open, onClose, onSave, edit
             <CommonFormSection title="Course Details">
               <CommonValidationTextField name="name" label="Course Name" required />
               <CommonValidationTextField name="price" label="Main Price (₹)" type="number" required placeholder="Enter main price" />
-              <CommonValidationTextField name="mrpPrice" label="Price after Discount (₹)" type="number" required placeholder="Enter price after discount" />
+              <CommonValidationTextField name="mrpPrice" label="Price after Discount (₹)" type="number" placeholder="Enter price after discount" />
               
-              <CommonValidationTextField name="language" label="Course Language" placeholder="e.g. English, Hindi" />
-              <CommonValidationTextField name="duration" label="Course Duration (in Hours)" type="number" placeholder="e.g. 40" />
-              <CommonValidationTextField name="accessDurationDays" label="Access Duration (in Days)" type="number" placeholder="e.g. 365" />
-              <CommonValidationTextField name="priority" label="Priority / Order" type="number" placeholder="e.g. 1" />
+              <CommonValidationTextField name="language" label="Course Language" required placeholder="e.g. English, Hindi" />
+              <CommonValidationTextField name="duration" label="Course Duration (in Hours)" type="number" required placeholder="e.g. 40" />
+              <CommonValidationTextField name="accessDurationDays" label="Access Duration (in Days)" type="number" required placeholder="e.g. 365" />
+              <CommonValidationTextField name="priority" label="Priority / Order" type="number" required placeholder="e.g. 1" />
               
-              <CommonImageUpload name="image" label="Course Thumbnail Image" shape="square" size={160} className="col-span-full" />
+              <CommonImageUpload name="image" label="Course Thumbnail Image" shape="square" size={160} required className="col-span-full" />
               
-              <CommonRichTextEditor name="description" label="Description" className="col-span-full" />
+              <CommonRichTextEditor name="description" label="Description" required className="col-span-full" />
               <CommonVideoUpload name="trailerUrl" label="Trailer Video" className="col-span-full" />
               
               <CommonAttachmentUpload name="pdf" label="Course Attachment (PDF)" className="col-span-full" />
@@ -129,16 +122,7 @@ export const CourseForm: FC<CourseHandlerProps> = ({ open, onClose, onSave, edit
               />
             </CommonFormSection>
 
-            {Object.keys(errors).length > 0 && (
-              <div className="course-form-error">
-                <strong>Cannot submit because of validation errors:</strong>
-                <ul className="course-form-error-list">
-                  {Object.entries(errors).map(([key, value]) => (
-                    <li key={key}>{key}: {String(value)}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
+
 
             <div className="course-form-actions">
               <CommonButton htmlType="submit" type="primary" title={editing ? "Update Course" : "Create Course"} block className="course-button course-button--primary" />

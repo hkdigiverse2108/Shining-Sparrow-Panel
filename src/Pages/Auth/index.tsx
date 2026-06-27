@@ -74,7 +74,7 @@ const AuthLayout: React.FC = () => {
             <Flex align="center" justify="center" gap={6} className="security-footer">
               <SafetyCertificateOutlined style={{ fontSize: '12px', color: 'var(--text-muted)' }} />
               <span style={{ fontSize: '12px', letterSpacing: '0.5px', color: 'var(--text-muted)' }}>
-                Secured by 256-bit encryption
+                Shining Sparrow
               </span>
             </Flex>
           </div>

@@ -53,10 +53,6 @@ const Login: FC = () => {
           </Form>
         )}
       </Formik>
-      
-      <div style={{ textAlign: 'center', marginTop: '20px', color: 'var(--text-muted)' }}>
-        Don't have an account? <Link to={ROUTES.AUTH.REGISTER} className="universal-forgot">Sign Up</Link>
-      </div>
     </>
   );
 };

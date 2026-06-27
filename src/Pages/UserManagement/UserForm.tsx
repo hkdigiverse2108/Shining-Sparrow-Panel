@@ -4,39 +4,10 @@ import { CommonFormShell, CommonFormSection, CommonImageUpload } from "@/Compone
 import { CommonButton, CommonValidationTextField, CommonValidationSelect } from "@/Attribute";
 import type { UserFormProps } from "@/Types";
 import { EditUserSchema, UserSchema } from "@/Utils";
-import { 
-  UserOutlined, 
-  MailOutlined, 
-  PhoneOutlined, 
-  IdcardOutlined, 
-  BookOutlined, 
-  LockOutlined
-} from "@ant-design/icons";
-
-// State master list of districts in Gujarat (since government API is offline or key-restricted)
-const GUJARAT_DISTRICTS = [
-  "Ahmedabad", "Amreli", "Anand", "Aravalli", "Banaskantha", "Bharuch", 
-  "Bhavnagar", "Botad", "Chhota Udepur", "Dahod", "Dang", "Devbhumi Dwarka", 
-  "Gandhinagar", "Gir Somnath", "Jamnagar", "Junagadh", "Kheda", "Kutch", 
-  "Mahisagar", "Mehsana", "Morbi", "Narmada", "Navsari", "Panchmahal", 
-  "Patan", "Porbandar", "Rajkot", "Sabarkantha", "Surat", "Surendranagar", 
-  "Tapi", "Vadodara", "Valsad"
-];
+import { UserOutlined, MailOutlined, PhoneOutlined, IdcardOutlined, BookOutlined, LockOutlined } from "@ant-design/icons";
 
 export const UserForm: FC<UserFormProps> = ({ open, onClose, onSave, editingUser }) => {
-  const defaults = { 
-    fullName: "", 
-    email: "", 
-    password: "", 
-    profilePhoto: "", 
-    phoneNumber: "", 
-    designation: "", 
-    district: "",
-    std: "",
-    reachFrom: "",
-    schoolName: "",
-    address: ""
-  };
+  const defaults = { fullName: "", email: "", password: "", profilePhoto: "", phoneNumber: "", designation: "", district: "", std: "", reachFrom: "", schoolName: "", address: "" };
   
   const initialValues = useMemo(() => editingUser ? { 
     ...defaults, 
@@ -49,23 +20,28 @@ export const UserForm: FC<UserFormProps> = ({ open, onClose, onSave, editingUser
     address: (editingUser as any).address || ""
   } : defaults, [editingUser]);
 
-  const [districts, setDistricts] = useState<string[]>(GUJARAT_DISTRICTS);
+  const [districts, setDistricts] = useState<string[]>([]);
   const [loadingDistricts, setLoadingDistricts] = useState(false);
-
-  // Try fetching district data from open data catalog dynamically as fallback
   useEffect(() => {
     setLoadingDistricts(true);
-    fetch("https://raw.githubusercontent.com/somen-das/indian-states-and-districts-json/master/states-and-districts.json")
+    fetch("https://raw.githubusercontent.com/KTBsomen/Indian-state-district-json/master/states-and-districts.json")
       .then(res => res.json())
       .then(data => {
-        // Find Gujarat or default state records
-        const gujState = data.states?.find((s: any) => s.state === "Gujarat");
-        if (gujState && Array.isArray(gujState.districts)) {
-          setDistricts(gujState.districts.sort());
+        const statesList = Array.isArray(data) ? data : (data?.states || []);
+        if (Array.isArray(statesList)) {
+          const allDistricts = statesList.reduce((acc: string[], stateObj: any) => {
+            if (Array.isArray(stateObj.districts)) {
+              acc.push(...stateObj.districts);
+            }
+            return acc;
+          }, []);
+          // Deduplicate and sort
+          const sortedUnique = Array.from(new Set(allDistricts)).sort() as string[];
+          setDistricts(sortedUnique);
         }
       })
       .catch(() => {
-        // Fallback silently to static list on error
+        // Fallback silently if offline or request fails
       })
       .finally(() => {
         setLoadingDistricts(false);
@@ -103,18 +79,13 @@ export const UserForm: FC<UserFormProps> = ({ open, onClose, onSave, editingUser
   return (
     <Formik enableReinitialize initialValues={initialValues} validationSchema={validationSchema} onSubmit={handleSubmit}>
       {() => (
-        <CommonFormShell
-          title={editingUser ? "Edit User" : "Add User"}
-          description="Configure account details and academic information."
-          onClose={onClose}
-          closeLabel="Cancel"
-        >
+        <CommonFormShell title={editingUser ? "Edit User" : "Add User"} description="Configure account details and academic information." onClose={onClose} closeLabel="Cancel" >
           <Form className="course-form-shell">
             <CommonFormSection title="Account Profile">
               <CommonImageUpload name="profilePhoto" label="Profile Image" shape="circle" size={100} className="col-span-full" />
               <CommonValidationTextField name="fullName" label="Full Name" startIcon={<UserOutlined />} required />
               <CommonValidationTextField name="email" label="Email" startIcon={<MailOutlined />} required />
-              <CommonValidationTextField name="phoneNumber" label="Phone Number" startIcon={<PhoneOutlined />} />
+              <CommonValidationTextField name="phoneNumber" label="Phone Number" startIcon={<PhoneOutlined />} required />
               <CommonValidationTextField name="designation" label="Designation" startIcon={<IdcardOutlined />} />
               
               {!editingUser && (
@@ -143,13 +114,7 @@ export const UserForm: FC<UserFormProps> = ({ open, onClose, onSave, editingUser
                   { label: "Adult Learner", value: "Adult Learner" }
                 ]}
               />
-              <CommonValidationSelect 
-                name="district" 
-                label="District (Gujarat)" 
-                isLoading={loadingDistricts}
-                showSearch={true}
-                options={districts.map(d => ({ label: d, value: d }))} 
-              />
+              <CommonValidationSelect name="district" label="District" isLoading={loadingDistricts} showSearch={true} options={districts.map(d => ({ label: d, value: d }))} />
               {editingUser && (
                 <CommonValidationTextField name="address" label="Address" multiline rows={3} className="col-span-full" />
               )}

@@ -144,7 +144,7 @@ export const CouponForm: FC<CouponFormProps> = ({
 
   return (
     <Formik enableReinitialize initialValues={initialValues} validationSchema={CouponCodeSchema} onSubmit={handleSubmit}>
-      {({ errors, setFieldValue, values }) => (
+      {({ setFieldValue, values }) => (
         <CommonFormShell 
           title={editing ? "Edit Coupon Code" : "Create Coupon Code"} 
           description="Setup promotional discount codes, validity periods, and applicability targets." 
@@ -203,16 +203,7 @@ export const CouponForm: FC<CouponFormProps> = ({
               )}
             </CommonFormSection>
 
-            {Object.keys(errors).length > 0 && (
-              <div className="course-form-error">
-                <strong>Validation errors:</strong>
-                <ul className="course-form-error-list">
-                  {Object.entries(errors).map(([k, v]) => (
-                    <li key={k}>{k}: {String(v)}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
+
 
             <div className="course-form-actions">
               <CommonButton 

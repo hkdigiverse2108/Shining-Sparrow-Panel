@@ -326,9 +326,9 @@ const GalleryDetails: FC = () => {
       <div style={{ display: 'none' }}>
         <Image.PreviewGroup 
           preview={{ 
-            visible: previewVisible, 
+            open: previewVisible, 
             current: previewIndex,
-            onVisibleChange: (visible) => setPreviewVisible(visible),
+            onOpenChange: (visible) => setPreviewVisible(visible),
             onChange: (index) => setPreviewIndex(index)
           }}
         >
