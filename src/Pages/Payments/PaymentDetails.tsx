@@ -104,6 +104,8 @@ const PaymentDetails: FC = () => {
       finalAmount: finalAmount,
       status: record.paymentStatus || 'pending',
       date: transactionDate || new Date().toISOString(),
+      studentDistrict: user?.district || '',
+      studentAddress: user?.address || '',
     });
 
     printWindow.document.write(htmlContent);

@@ -24,7 +24,7 @@ export const UserForm: FC<UserFormProps> = ({ open, onClose, onSave, editingUser
   const [loadingDistricts, setLoadingDistricts] = useState(false);
   useEffect(() => {
     setLoadingDistricts(true);
-    fetch("https://raw.githubusercontent.com/KTBsomen/Indian-state-district-json/master/states-and-districts.json")
+    fetch("https://raw.githubusercontent.com/sab99r/Indian-States-And-Districts/master/states-and-districts.json")
       .then(res => res.json())
       .then(data => {
         const statesList = Array.isArray(data) ? data : (data?.states || []);
