@@ -337,11 +337,11 @@ export interface SidebarProps {
   isExpanded: boolean;
 }
 
-
 export interface AuthStateProps {
   isAuthenticated: boolean;
   user: User | null;
 }
+
 
 export type LayoutStateProps = {
     isExpanded: boolean;
@@ -352,10 +352,9 @@ export type LayoutStateProps = {
     openSubmenu: string | null;
     isToggleTheme: string;
     adminSetting: AdminSettingBase | null;
+    unreadRooms: string[];
+    activeRoomId: string | null;
 };
-
-
-// page
 export interface HeroSectionProps {
   name: string;
   goalPercentage: number;

@@ -1,5 +1,5 @@
 import { useState, type FC } from 'react';
-import { Layout, Menu, Drawer, Grid, Flex, Avatar, Dropdown } from 'antd';
+import { Layout, Menu, Drawer, Grid, Flex, Avatar, Dropdown, Badge } from 'antd';
 import type { MenuProps } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -7,6 +7,7 @@ import { useAppDispatch, useAppSelector } from '@/Store/hooks';
 import { setToggleSidebar } from '@/Store';
 import type { SidebarProps } from '@/Types';
 import { NavItems, UserMenuData } from '@/Data';
+import { Queries } from '@/Api/Queries';
 const { Sider } = Layout;
 const { useBreakpoint } = Grid;
 
@@ -25,11 +26,39 @@ const Sidebar: FC<SidebarProps> = ({ isExpanded }) => {
     navigate(key);
     if (isMobile) dispatch(setToggleSidebar()); 
   };
-  const menuItems: MenuProps['items'] = NavItems .filter((item): item is typeof item & { path: string } => typeof item.path === 'string' ) .map(item => ({
-    key: item.path,
-    icon: item.icon,
-    label: item.name,
-  }));
+
+  const unreadRooms = useAppSelector((state) => state.layout.unreadRooms);
+  const unreadCount = unreadRooms.length;
+
+  const menuItems: MenuProps['items'] = NavItems
+    .filter((item): item is typeof item & { path: string } => typeof item.path === 'string')
+    .map(item => {
+      const isChat = item.path === '/chat';
+      const showBadge = isChat && unreadCount > 0;
+      return {
+        key: item.path,
+        icon: showBadge && isActuallyCollapsed ? (
+          <Badge count={unreadCount} size="small" offset={[8, -2]}>
+            {item.icon}
+          </Badge>
+        ) : item.icon,
+        label: showBadge && !isActuallyCollapsed ? (
+          <Flex align="center" justify="space-between" style={{ width: '100%' }}>
+            <span>{item.name}</span>
+            <Badge 
+              count={unreadCount} 
+              size="small" 
+              style={{ 
+                backgroundColor: '#e86424', 
+                color: '#fff',
+                fontSize: '10px',
+                fontWeight: 800,
+              }} 
+            />
+          </Flex>
+        ) : item.name,
+      };
+    });
 
   const isDividerItem = (item: typeof UserMenuData[number]): item is { type: 'divider' } =>
     'type' in item && item.type === 'divider';
