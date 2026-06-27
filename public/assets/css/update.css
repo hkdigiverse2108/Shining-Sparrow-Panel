@@ -294,8 +294,8 @@
   color: var(--text-muted) !important;
   margin-bottom: 6px !important;
   display: block !important;
-  line-height: 16px !important;
-  height: 16px !important;
+  line-height: 1.2 !important;
+  white-space: nowrap !important;
 }
 .advanced-search .ant-form-item {
   margin-bottom: 0 !important;

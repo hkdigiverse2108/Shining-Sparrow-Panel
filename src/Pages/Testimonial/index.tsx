@@ -1,5 +1,5 @@
 import { useState, useMemo, type FC } from 'react';
-import { Button, Tag, Rate, Select, Tooltip, DatePicker, Col, Avatar } from 'antd';
+import { Button, Tag, Rate, Tooltip, DatePicker, Col, Avatar } from 'antd';
 import {
   DeleteOutlined, EditOutlined, LockOutlined, UnlockOutlined, CalendarOutlined,
 } from '@ant-design/icons';
@@ -290,6 +290,63 @@ const TestimonialPage: FC = () => {
     }
   ], [current, pageSize, courses, workshops, editTestimonialMutation.isPending]);
 
+  const filterItems = useMemo(() => {
+    const items = [
+      {
+        label: 'Status',
+        value: isBlockedFilter,
+        options: [
+          { label: 'All', value: 'all' },
+          { label: 'Active', value: 'false' },
+          { label: 'Blocked', value: 'true' },
+        ],
+        onChange: (val: any) => { setIsBlockedFilter(val); setCurrent(1); },
+        grid: { xs: 24, sm: 12, md: colSpan },
+      },
+      {
+        label: 'Rating',
+        value: ratingFilter,
+        options: [
+          { label: 'All Ratings', value: 'all' },
+          { label: '5 Stars ★★★★★', value: '5' },
+          { label: '4 Stars ★★★★', value: '4' },
+          { label: '3 Stars ★★★', value: '3' },
+          { label: '2 Stars ★★', value: '2' },
+          { label: '1 Star ★', value: '1' },
+        ],
+        onChange: (val: any) => { setRatingFilter(val); setCurrent(1); },
+        grid: { xs: 24, sm: 12, md: colSpan },
+      },
+      {
+        label: 'Linked To',
+        value: selectedType,
+        options: [
+          { value: 'all', label: 'All' },
+          { value: 'home', label: 'Home Page' },
+          { value: 'course', label: 'Course Specific' },
+          { value: 'workshop', label: 'Workshop Specific' },
+        ],
+        onChange: (val: any) => { setSelectedType(val); setSelectedCatalogId(undefined); setCurrent(1); },
+        grid: { xs: 24, sm: 12, md: colSpan },
+      },
+    ];
+
+    if (hasCatalog) {
+      items.push({
+        label: `Select ${selectedType === 'course' ? 'Course' : 'Workshop'}`,
+        value: selectedCatalogId || 'all',
+        options: [
+          { label: 'All', value: 'all' },
+          ...catalogOptions
+        ],
+        onChange: (val: any) => { setSelectedCatalogId(val === 'all' ? undefined : val); setCurrent(1); },
+        grid: { xs: 24, sm: 12, md: 4 },
+      });
+    }
+
+    return items;
+  }, [isBlockedFilter, ratingFilter, selectedType, selectedCatalogId, hasCatalog, catalogOptions, colSpan]);
+
   return (
     <>
       <CommonBreadcrumbs title="Testimonial Management" breadcrumbs={BREADCRUMBS.TESTIMONIAL.BASE} />
@@ -317,66 +374,7 @@ const TestimonialPage: FC = () => {
 
               {/* ── Advanced Search ── */}
               <div className="mb-8">
-                <AdvancedSearch filter={[
-                  {
-                    label: 'Linked To',
-                    value: selectedType,
-                    options: [
-                      { value: 'all', label: 'All' },
-                      { value: 'home', label: 'Home Page' },
-                      { value: 'course', label: 'Course Specific' },
-                      { value: 'workshop', label: 'Workshop Specific' },
-                    ],
-                    onChange: (val: any) => { setSelectedType(val); setSelectedCatalogId(undefined); setCurrent(1); },
-                    grid: { xs: 24, sm: 12, md: colSpan },
-                  },
-                  {
-                    label: 'Status',
-                    value: isBlockedFilter,
-                    options: [
-                      { label: 'All', value: 'all' },
-                      { label: 'Active', value: 'false' },
-                      { label: 'Blocked', value: 'true' },
-                    ],
-                    onChange: (val: any) => { setIsBlockedFilter(val); setCurrent(1); },
-                    grid: { xs: 24, sm: 12, md: colSpan },
-                  },
-                  {
-                    label: 'Rating',
-                    value: ratingFilter,
-                    options: [
-                      { label: 'All Ratings', value: 'all' },
-                      { label: '5 Stars ★★★★★', value: '5' },
-                      { label: '4 Stars ★★★★', value: '4' },
-                      { label: '3 Stars ★★★', value: '3' },
-                      { label: '2 Stars ★★', value: '2' },
-                      { label: '1 Star ★', value: '1' },
-                    ],
-                    onChange: (val: any) => { setRatingFilter(val); setCurrent(1); },
-                    grid: { xs: 24, sm: 12, md: colSpan },
-                  },
-                ]}>
-                  {/* Course / Workshop picker — visible when type is selected */}
-                  {hasCatalog && (
-                    <Col xs={24} sm={12} md={4} style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                      <span className="text-xs font-semibold uppercase tracking-wider text-muted">
-                        Select {selectedType === 'course' ? 'Course' : 'Workshop'}
-                      </span>
-                      <Select
-                        value={selectedCatalogId || null}
-                        onChange={(val) => { setSelectedCatalogId(val || undefined); setCurrent(1); }}
-                        options={catalogOptions}
-                        className="w-full"
-                        placeholder={`Choose a ${selectedType}`}
-                        showSearch
-                        allowClear
-                        filterOption={(input, option) =>
-                          (option?.label as string)?.toLowerCase().includes(input.toLowerCase())
-                        }
-                        style={{ height: '40px' }}
-                      />
-                    </Col>
-                  )}
+                <AdvancedSearch filter={filterItems}>
 
                   {/* Date range */}
                   <Col

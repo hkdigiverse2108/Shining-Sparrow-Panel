@@ -184,18 +184,7 @@ const Faq: FC = () => {
               {/* Advanced Search */}
               <div className="mb-8">
                 <AdvancedSearch filter={[
-                  {
-                    label: "FAQ Placement",
-                    value: selectedType,
-                    options: [
-                      { value: "all", label: "All" },
-                      { value: "home", label: "Global (Home Page)" },
-                      { value: "course", label: "Course Specific" },
-                      { value: "workshop", label: "Workshop Specific" }
-                    ],
-                    onChange: (val: any) => { setSelectedType(val); setSelectedCatalogId(undefined); setCurrent(1); },
-                    grid: { xs: 24, sm: 12, md: selectedType && selectedType !== 'home' && selectedType !== 'all' ? 4 : 6 }
-                  },
+                 
                   {
                     label: "Featured Display",
                     value: isFeaturedFilter,
@@ -217,7 +206,19 @@ const Faq: FC = () => {
                     ],
                     onChange: (val: any) => { setIsBlockedFilter(val); setCurrent(1); },
                     grid: { xs: 24, sm: 12, md: selectedType && selectedType !== 'home' && selectedType !== 'all' ? 4 : 6 }
-                  }
+                    },
+                   {
+                    label: "FAQ Placement",
+                    value: selectedType,
+                    options: [
+                      { value: "all", label: "All" },
+                      { value: "home", label: "Global (Home Page)" },
+                      { value: "course", label: "Course Specific" },
+                      { value: "workshop", label: "Workshop Specific" }
+                    ],
+                    onChange: (val: any) => { setSelectedType(val); setSelectedCatalogId(undefined); setCurrent(1); },
+                    grid: { xs: 24, sm: 12, md: selectedType && selectedType !== 'home' && selectedType !== 'all' ? 4 : 6 }
+                  },
                 ]}>
                   {selectedType && selectedType !== 'home' && selectedType !== 'all' && (
                     <Col xs={24} sm={12} md={4} style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
