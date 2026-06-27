@@ -132,7 +132,17 @@ const QuestionEditorPage: FC = () => {
             </Button>
           </div>
 
-          <QuestionForm editing={editingQuestion} examId={examId!} onSave={handleSaveQuestion} loading={isMutationLoading} />
+          <QuestionForm
+            editing={editingQuestion}
+            examId={examId!}
+            onSave={handleSaveQuestion}
+            loading={isMutationLoading}
+            existingPriorities={
+              exam?.questionIds
+                ?.filter((q: any) => String(q?._id ?? q) !== String(questionId))
+                ?.map((q: any) => Number(q?.priority || 0)) || []
+            }
+          />
         </div>
       </CommonPageWrapper>
     </>

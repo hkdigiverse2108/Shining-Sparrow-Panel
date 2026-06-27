@@ -1,18 +1,20 @@
 import { useMemo, useState, type FC } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Spin, Button, Segmented, Tag } from 'antd';
+import { Spin, Button, Segmented, Tag, Rate } from 'antd';
 import {
   BookOutlined, BarsOutlined, LockOutlined, UnlockOutlined,
   AppstoreOutlined, FolderOutlined, FileTextOutlined, PlusOutlined,
   QuestionCircleOutlined, ArrowLeftOutlined, EditOutlined, DeleteOutlined,
   TeamOutlined, CheckCircleOutlined, StarOutlined, FilePdfOutlined,
-  ArrowUpOutlined, ArrowDownOutlined
+  ArrowUpOutlined, ArrowDownOutlined, CommentOutlined
 } from '@ant-design/icons';
 import { Queries, Mutations } from '@/Api';
 import { KEYS } from '@/Constants';
 import { useQueryClient } from '@tanstack/react-query';
 import { CommonBreadcrumbs, CommonPageWrapper, ContentItemCard, EmptyContentPanel, CommonReadMore, CommonDeleteModal } from '@/Components';
 import { FAQForm } from '@/Components/Workshop/FAQForm';
+import { TestimonialForm } from '@/Components/Workshop/TestimonialForm';
+import { CommonButton } from '@/Attribute';
 import {
   priorityBadge, durationBadge, videoBadge, attachmentBadge,
   lockBadge, editAction, deleteAction, blockAction, blockedBadge,
@@ -66,13 +68,16 @@ const ManageContentPage: FC = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
-  const [activeTab, setActiveTab] = useState<'lessons' | 'faqs'>('lessons');
+  const [activeTab, setActiveTab] = useState<'lessons' | 'faqs' | 'testimonials'>('lessons');
   const [activeForm, setActiveForm] = useState<
     | { type: 'view' }
     | { type: 'addFAQ' }
     | { type: 'editFAQ'; data: any }
+    | { type: 'addTestimonial' }
+    | { type: 'editTestimonial'; data: any }
   >({ type: 'view' });
   const [deleteConfirmFaqId, setDeleteConfirmFaqId] = useState<string | null>(null);
+  const [deleteConfirmTestId, setDeleteConfirmTestId] = useState<string | null>(null);
 
   const { data: courseRes, isLoading: courseLoading } = Queries.useGetCourses({ page: 1, limit: 1000 });
   const { data: lessRes, isLoading: lessLoading } = Queries.useGetLessons();
@@ -80,9 +85,13 @@ const ManageContentPage: FC = () => {
 
   const deleteLessonMutation = Mutations.useDeleteLesson();
   const editLessonMutation = Mutations.useUpdateLesson();
+  const editCourseMutation = Mutations.useUpdateCourse();
   const addFAQMutation = Mutations.useAddFAQ();
   const editFAQMutation = Mutations.useUpdateFAQ();
   const deleteFAQMutation = Mutations.useDeleteFAQ();
+  const addTestimonialMutation = Mutations.useAddTestimonial();
+  const editTestimonialMutation = Mutations.useUpdateTestimonial();
+  const deleteTestimonialMutation = Mutations.useDeleteTestimonial();
 
   const handleToggleBlockLesson = (lesson: any) => {
     editLessonMutation.mutate(
@@ -101,6 +110,17 @@ const ManageContentPage: FC = () => {
       {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: [KEYS.FAQ.BASE] });
+        },
+      }
+    );
+  };
+
+  const handleToggleBlockTestimonial = (test: any) => {
+    editTestimonialMutation.mutate(
+      { testimonialId: test._id, isBlocked: !test.isBlocked } as any,
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: [KEYS.COURSE.BASE] });
         },
       }
     );
@@ -131,12 +151,59 @@ const ManageContentPage: FC = () => {
       .sort((a: any, b: any) => (a.priority || 0) - (b.priority || 0));
   }, [allLessons, isBundle, subCourses, courseId]);
 
+  const testimonials = useMemo(() => course?.courseTestimonials || [], [course]);
   const faqs = useMemo(() => faqsRes?.data?.faq_data || [], [faqsRes]);
 
   const lockedCount = useMemo(() => lessons.filter((l) => l.lessonLock).length, [lessons]);
 
   const isMutationLoading =
-    addFAQMutation.isPending || editFAQMutation.isPending || deleteFAQMutation.isPending;
+    addFAQMutation.isPending || editFAQMutation.isPending || deleteFAQMutation.isPending ||
+    addTestimonialMutation.isPending || editTestimonialMutation.isPending || deleteTestimonialMutation.isPending ||
+    editCourseMutation.isPending;
+
+  const handleSaveTestimonial = (values: any) => {
+    const payload: any = {
+      name: values.name,
+      designation: values.designation || '',
+      rate: Number(values.rate),
+      description: values.description || '',
+      image: values.image || '/assets/images/logo_icon.png',
+      learningCatalogId: courseId,
+      type: 'course',
+    };
+    if (values._id) payload.testimonialId = values._id;
+
+    const mutation = values._id ? editTestimonialMutation : addTestimonialMutation;
+    mutation.mutate(payload, {
+      onSuccess: (res: any) => {
+        const testimonialId = res.data?._id;
+        if (!values._id && testimonialId) {
+          const updatedIds = [...(course?.courseTestimonials || []).map((t: any) => t._id || t), testimonialId];
+          editCourseMutation.mutate({ courseId, courseTestimonials: updatedIds } as any, {
+            onSuccess: () => {
+              queryClient.invalidateQueries({ queryKey: [KEYS.COURSE.BASE] });
+              setActiveForm({ type: 'view' });
+            },
+          });
+        } else {
+          queryClient.invalidateQueries({ queryKey: [KEYS.COURSE.BASE] });
+          setActiveForm({ type: 'view' });
+        }
+      },
+    });
+  };
+
+  const handleDeleteTestimonial = (testimonialId: string) => {
+    const updatedIds = (course?.courseTestimonials || []).map((t: any) => t._id || t).filter((id: any) => id !== testimonialId);
+    editCourseMutation.mutate({ courseId, courseTestimonials: updatedIds } as any, {
+      onSuccess: () => {
+        deleteTestimonialMutation.mutate(testimonialId, {
+          onSuccess: () => queryClient.invalidateQueries({ queryKey: [KEYS.COURSE.BASE] }),
+          onError: () => queryClient.invalidateQueries({ queryKey: [KEYS.COURSE.BASE] }),
+        });
+      },
+    });
+  };
 
   const handleDeleteLesson = (id: string) => {
     deleteLessonMutation.mutate(id, {
@@ -275,6 +342,8 @@ const ManageContentPage: FC = () => {
 
               {activeForm.type === 'addFAQ' && <FAQForm editing={null} onSave={handleSaveFAQ} onClose={() => setActiveForm({ type: 'view' })} loading={isMutationLoading} />}
               {activeForm.type === 'editFAQ' && <FAQForm editing={activeForm.data} onSave={handleSaveFAQ} onClose={() => setActiveForm({ type: 'view' })} loading={isMutationLoading} />}
+              {activeForm.type === 'addTestimonial' && <TestimonialForm editing={null} onSave={handleSaveTestimonial} onClose={() => setActiveForm({ type: 'view' })} loading={isMutationLoading} />}
+              {activeForm.type === 'editTestimonial' && <TestimonialForm editing={activeForm.data} onSave={handleSaveTestimonial} onClose={() => setActiveForm({ type: 'view' })} loading={isMutationLoading} />}
             </div>
           ) : (
             <>
@@ -295,19 +364,18 @@ const ManageContentPage: FC = () => {
                     <span className="course-chip course-chip--success">{lessons.length - lockedCount} Unlocked Preview</span>
                     <span className="course-chip course-chip--danger">{lockedCount} Locked</span>
                     {faqs.length > 0 && <span className="course-chip course-chip--neutral">{faqs.length} FAQs</span>}
+                    {testimonials.length > 0 && <span className="course-chip course-chip--neutral">{testimonials.length} Testimonials</span>}
                   </div>
                 </div>
                 <div className="course-hero-actions">
                   {activeTab === 'lessons' ? (
                     !isBundle && (
-                      <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate(`/courses/${courseId}/lesson/new`)} className="course-button course-button--primary">
-                        Add Lesson
-                      </Button>
+                      <CommonButton type="primary" icon={<PlusOutlined />} onClick={() => navigate(`/courses/${courseId}/lesson/new`)} title="Add Lesson" className="course-button course-button--primary" />
                     )
+                  ) : activeTab === 'faqs' ? (
+                    <CommonButton type="primary" icon={<PlusOutlined />} onClick={() => setActiveForm({ type: 'addFAQ' })} title="Add FAQ" className="course-button course-button--primary" />
                   ) : (
-                    <Button type="primary" icon={<PlusOutlined />} onClick={() => setActiveForm({ type: 'addFAQ' })} className="course-button course-button--primary">
-                      Add FAQ
-                    </Button>
+                    <CommonButton type="primary" icon={<PlusOutlined />} onClick={() => setActiveForm({ type: 'addTestimonial' })} title="Add Testimonial" className="course-button course-button--primary" />
                   )}
                 </div>
               </section>
@@ -352,6 +420,7 @@ const ManageContentPage: FC = () => {
                   options={[
                     { label: 'Lessons', value: 'lessons', icon: <BarsOutlined /> },
                     { label: 'FAQs', value: 'faqs', icon: <QuestionCircleOutlined /> },
+                    { label: 'Testimonials', value: 'testimonials', icon: <CommentOutlined /> },
                   ]}
                   value={activeTab}
                   onChange={(val) => setActiveTab(val as typeof activeTab)}
@@ -371,15 +440,19 @@ const ManageContentPage: FC = () => {
                       <h4 className="course-workflow-guide__title">
                         {activeTab === 'lessons' 
                           ? (isBundle ? 'Managing Course Bundle Lessons' : 'Managing Standalone Lessons')
-                          : 'Managing Course FAQs'}
+                          : activeTab === 'faqs' 
+                            ? 'Managing Course FAQs'
+                            : 'Managing Course Testimonials'}
                       </h4>
                       <p className="course-workflow-guide__text">
                         {activeTab === 'lessons' ? (
                           isBundle 
                             ? 'This is a bundle course. Lessons are organized under their respective sub-courses. To add a lesson, find the sub-course block below and click the "+ Add Lesson" button inside its header.'
                             : 'This is a standalone course. You can manage lessons sequentially. To add a new lesson, use the "+ Add Lesson" button at the top-right of the page.'
-                        ) : (
+                        ) : activeTab === 'faqs' ? (
                           'FAQs are configured globally for this course. You can add new FAQ cards using the "+ Add FAQ" button at the top-right of the page.'
+                        ) : (
+                          'Testimonials are configured for this course catalog. You can add student ratings, review contents and images using the "+ Add Testimonial" button at the top-right.'
                         )}
                       </p>
                     </div>
@@ -450,7 +523,7 @@ const ManageContentPage: FC = () => {
                         </div>
                       </div>
                     )
-                  ) : (
+                  ) : activeTab === 'faqs' ? (
                     <div className="course-section-card">
                       <div className="course-section-card__header">
                         <div>
@@ -544,6 +617,78 @@ const ManageContentPage: FC = () => {
                         )}
                       </div>
                     </div>
+                  ) : (
+                    <div className="course-section-card">
+                      <div className="course-section-card__header">
+                        <div>
+                          <h2 className="course-section-card__title">Course Testimonials</h2>
+                          <p className="course-section-card__text">Configure reviews and satisfaction details for students.</p>
+                        </div>
+                        <span className="course-chip course-chip--neutral">{testimonials.length} review{testimonials.length !== 1 ? 's' : ''}</span>
+                      </div>
+
+                      <div className="space-y-4 mt-4">
+                        {testimonials.length > 0 ? (
+                          testimonials.map((test: any) => (
+                            <div key={test._id} className={`bg-surface border border-border shadow-sm rounded-2xl p-4 sm:p-6 hover:shadow-md transition-shadow group ${test.isBlocked ? 'opacity-75 border-red-200 bg-red-50/5' : ''}`}>
+                              <div className="flex justify-between items-start gap-4">
+                                <div className="flex items-start gap-4 flex-1">
+                                  <img 
+                                    src={test.image || '/assets/images/logo_icon.png'} 
+                                    alt={test.name} 
+                                    className="w-12 h-12 rounded-full object-cover border border-border flex-shrink-0"
+                                    onError={(e: any) => { e.target.src = '/assets/images/logo_icon.png'; }}
+                                  />
+                                  <div className="space-y-1.5 flex-1">
+                                    <div className="flex flex-wrap items-center gap-2">
+                                      <h4 className="font-semibold text-foreground text-base leading-none">{test.name}</h4>
+                                      <span className="text-xs text-text-muted">({test.designation || 'Learner'})</span>
+                                      {test.isBlocked && <Tag color="red" className="m-0 ml-2">Blocked</Tag>}
+                                    </div>
+                                    <Rate disabled defaultValue={test.rate || 5} className="text-sm" />
+                                    <p className="text-sm text-text-muted leading-relaxed font-normal">{test.description}</p>
+                                  </div>
+                                </div>
+                                <div className="flex items-center gap-1 opacity-50 group-hover:opacity-100 transition-all duration-200 flex-shrink-0">
+                                  <Button
+                                    type="text"
+                                    size="small"
+                                    icon={test.isBlocked ? <UnlockOutlined /> : <LockOutlined />}
+                                    onClick={() => handleToggleBlockTestimonial(test)}
+                                    className="h-7 w-7 rounded-full flex items-center justify-center p-0"
+                                    title={test.isBlocked ? "Unblock Testimonial" : "Block Testimonial"}
+                                    danger={!test.isBlocked}
+                                    loading={editTestimonialMutation.isPending}
+                                  />
+                                  <Button 
+                                    type="text" 
+                                    size="small" 
+                                    icon={<EditOutlined />} 
+                                    onClick={() => setActiveForm({ type: 'editTestimonial', data: test })} 
+                                    className="h-7 w-7 rounded-full flex items-center justify-center p-0 hover:bg-surface-muted" 
+                                  />
+                                  <Button 
+                                    type="text" 
+                                    size="small" 
+                                    danger 
+                                    icon={<DeleteOutlined />} 
+                                    className="hover:bg-red-50 h-7 w-7 rounded-full flex items-center justify-center p-0" 
+                                    onClick={() => setDeleteConfirmTestId(test._id)}
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                          ))
+                        ) : (
+                          <EmptyContentPanel
+                            icon={<CommentOutlined />}
+                            title="No Testimonials configured"
+                            description="Start building course reviews by adding your first student testimonial."
+                            action={{ label: 'Create First Testimonial', onClick: () => setActiveForm({ type: 'addTestimonial' }) }}
+                          />
+                        )}
+                      </div>
+                    </div>
                   )}
                 </main>
 
@@ -603,7 +748,7 @@ const ManageContentPage: FC = () => {
                         </p>
                       </div>
                     </>
-                  ) : (
+                  ) : activeTab === 'faqs' ? (
                     <>
                       <div className="course-sidebar-card">
                         <span className="course-sidebar-label">FAQ Snapshot</span>
@@ -614,12 +759,28 @@ const ManageContentPage: FC = () => {
                         </div>
                       </div>
 
-
+                      <div className="course-sidebar-card">
+                        <span className="course-sidebar-label">Workflow tip</span>
+                        <p className="course-sidebar-text">
+                          FAQs are configured globally for this course. Changes made here will update the page configurations.
+                        </p>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="course-sidebar-card">
+                        <span className="course-sidebar-label">Reviews Snapshot</span>
+                        <h3 className="course-sidebar-title">Fast overview</h3>
+                        <div className="course-sidebar-list">
+                          <div className="course-sidebar-item"><span>Total Testimonials</span><strong>{testimonials.length}</strong></div>
+                          <div className="course-sidebar-item"><span>Status</span><strong>Active</strong></div>
+                        </div>
+                      </div>
 
                       <div className="course-sidebar-card">
                         <span className="course-sidebar-label">Workflow tip</span>
                         <p className="course-sidebar-text">
-                          FAQs are shared across all courses. Changes made here will be visible on all course pages.
+                          Testimonials are displayed on the public landing page to build user trust and showcase student feedback.
                         </p>
                       </div>
                     </>
@@ -639,6 +800,18 @@ const ManageContentPage: FC = () => {
           onConfirm={() => {
             handleDeleteFAQ(deleteConfirmFaqId);
             setDeleteConfirmFaqId(null);
+          }}
+        />
+      )}
+      {deleteConfirmTestId && (
+        <CommonDeleteModal
+          open={!!deleteConfirmTestId}
+          title="Delete Testimonial"
+          description="Are you sure you want to delete this Testimonial? This will remove it from the course catalog."
+          onClose={() => setDeleteConfirmTestId(null)}
+          onConfirm={() => {
+            handleDeleteTestimonial(deleteConfirmTestId);
+            setDeleteConfirmTestId(null);
           }}
         />
       )}

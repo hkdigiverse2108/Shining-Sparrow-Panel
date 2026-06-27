@@ -33,9 +33,10 @@ const getColumns = ({
   pageSize?: number;
 }): ColumnType<any>[] => [
   {
-    title: 'Sr.',
+    title: '#',
     key: 'srNo',
     width: 60,
+    align: "center",
     render: (_: any, __: any, i: number) => (
       <span className="font-mono text-xs text-muted font-semibold">
         {(current - 1) * pageSize + i + 1}
@@ -67,6 +68,7 @@ const getColumns = ({
     title: 'Phone',
     dataIndex: 'phoneNumber',
     width: 140,
+    align: "center",
     render: (v: string) => (
       <div className="flex items-center gap-1.5 text-sm text-muted">
         <PhoneOutlined className="text-xs" />
@@ -78,6 +80,7 @@ const getColumns = ({
     title: 'Subject',
     dataIndex: 'subject',
     width: 180,
+    align: "center",
     render: (v: string) => (
       <span className="text-sm text-foreground truncate max-w-[160px] block">
         {v || <span className="text-muted italic">No subject</span>}
@@ -86,6 +89,7 @@ const getColumns = ({
   },
   {
     title: 'Message',
+    align: "center",
     dataIndex: 'message',
     render: (v: string) => (
       <p className="text-sm text-muted truncate max-w-[220px] m-0">{v}</p>
@@ -94,6 +98,7 @@ const getColumns = ({
   {
     title: 'Status',
     dataIndex: 'isRead',
+    align: "center",
     width: 100,
     render: (v: boolean, r: any) => (
       <div className="flex flex-col gap-1">
@@ -120,6 +125,7 @@ const getColumns = ({
     title: 'Date',
     dataIndex: 'createdAt',
     width: 120,
+    align: "center",
     render: (v: string) => (
       <span className="text-xs text-muted">{v ? dayjs(v).format('DD MMM YYYY') : '—'}</span>
     ),
@@ -127,8 +133,8 @@ const getColumns = ({
   {
     title: 'Actions',
     dataIndex: 'actions',
-    width: 100,
-    fixed: 'right' as const,
+    width: 100,    
+    align: "center",
     render: (_: any, r: any) => (
       <div className="flex items-center gap-1.5 justify-center">
         <Tooltip title="View Message">

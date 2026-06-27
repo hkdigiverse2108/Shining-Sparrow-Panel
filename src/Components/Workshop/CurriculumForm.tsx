@@ -1,7 +1,7 @@
 // components/Workshop/CurriculumForm.tsx
 import { type FC, useMemo } from 'react';
 import { Formik, Form } from 'formik';
-import { CommonFormShell, CommonFormSection, CommonImageUpload, CommonVideoUpload, CommonAttachmentUpload } from '@/Components';
+import { CommonFormShell, CommonFormSection, CommonImageUpload, CommonVideoUpload, CommonAttachmentUpload, CommonPrioritySelect } from '@/Components';
 import { CommonButton, CommonValidationTextField, CommonDatePicker, CommonRichTextEditor } from '@/Attribute';
 import { WorkshopCurriculumSchema } from '@/Utils';
 
@@ -56,7 +56,16 @@ export const WorkshopCurriculumForm: FC<WorkshopCurriculumFormProps> = ({ editin
           <Form className="space-y-6">
             <CommonFormSection title="Session Details">
               <CommonValidationTextField name="title" label="Session Title" required className="col-span-full lg:col-span-2" />
-              <CommonValidationTextField name="priority" label="Priority / Order" type="number" required className="col-span-full lg:col-span-1" />
+              <div className="col-span-full lg:col-span-1">
+                <CommonPrioritySelect
+                  name="priority"
+                  label="Priority / Order"
+                  required
+                  usedPriorities={existingPriorities || []}
+                  editingId={editing?._id}
+                  editingPriority={editing?.priority}
+                />
+              </div>
               
               <div className="col-span-full mb-4">
                 <CommonRichTextEditor

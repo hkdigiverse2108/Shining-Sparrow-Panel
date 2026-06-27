@@ -18,6 +18,8 @@ import {CommonDeleteModal, CommonModal} from "./Modal";
 import ContentItemCard from "./ContentItemCard";
 import EmptyContentPanel from "./EmptyContentPanel";
 import { CommonReadMore } from "./CommonReadMore";
+import { CommonPrioritySelect } from "./CommonPrioritySelect";
 
-export { CommonTable, AdvancedSearch, CommonBreadcrumbs, CommonCard, CommonDrawer, CommonFormModal, CommonFormShell, CommonFormSection, CommonImageUpload, CommonMultipleImageUpload, CommonVideoUpload, CommonAttachmentUpload, CommonPageWrapper, CommonTag, Loader, CommonSummaryCards, CommonDeleteModal, CommonModal, ContentItemCard, EmptyContentPanel, CommonReadMore };
+export { CommonTable, AdvancedSearch, CommonBreadcrumbs, CommonCard, CommonDrawer, CommonFormModal, CommonFormShell, CommonFormSection, CommonImageUpload, CommonMultipleImageUpload, CommonVideoUpload, CommonAttachmentUpload, CommonPageWrapper, CommonTag, Loader, CommonSummaryCards, CommonDeleteModal, CommonModal, ContentItemCard, EmptyContentPanel, CommonReadMore, CommonPrioritySelect };
+
 

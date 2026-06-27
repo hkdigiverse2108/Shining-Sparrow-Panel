@@ -117,6 +117,7 @@ export const ExamSchema = Yup.object({
             }
         ),
     description: Yup.string().optional().nullable(),
+    priority: Yup.number().required("Priority is required").min(0, "Priority must be non-negative"),
 });
 
 // Question
@@ -298,4 +299,31 @@ export const EditCourseCategorySchema = Yup.object({
     description: Yup.string().optional(),
     isFeatured: Yup.string().optional(),
     isBlocked: Yup.string().optional(),
+});
+
+export const ProfileSchema = Yup.object().shape({
+  fullName: Yup.string().required("Full name is required"),
+  phone: Yup.string().required("Phone number is required").matches(/^\+?[1-9]\d{1,14}$/, "Invalid phone number format"),
+  designation: Yup.string().required("Designation is required"),
+  profilePhoto: Yup.string().nullable().optional(),
+});
+
+export const PasswordSchema = Yup.object().shape({
+  oldPassword: Yup.string()
+    .required("Old password is required"),
+  newPassword: Yup.string()
+    .required("New password is required")
+    .min(6, "Minimum 6 characters"),
+  confirmPassword: Yup.string()
+    .required("Please confirm your password")
+    .oneOf([Yup.ref("newPassword")], "Passwords do not match"),
+});
+
+export const SettingsSchema = Yup.object().shape({
+  logo: Yup.string().required("Site logo is required"),
+  enrolledLearners: Yup.number().required("Total Enrolled Learners is required").min(0, "Must be at least 0"),
+  classCompleted: Yup.number().required("Classes Completed is required").min(0, "Must be at least 0"),
+  satisfactionRate: Yup.number().required("Satisfaction Rate is required").min(0, "Must be at least 0").max(100, "Cannot exceed 100"),
+  razorpayKey: Yup.string().required("Razorpay Key ID is required"),
+  razorpaySecret: Yup.string().required("Razorpay Secret is required"),
 });

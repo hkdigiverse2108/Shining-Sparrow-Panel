@@ -1,7 +1,7 @@
 // Components/Workshop/WorkshopForm.tsx
 import { type FC, useMemo } from "react";
 import { Formik, Form } from "formik";
-import { CommonFormShell, CommonFormSection, CommonImageUpload, CommonAttachmentUpload } from "@/Components";
+import { CommonFormShell, CommonFormSection, CommonImageUpload, CommonAttachmentUpload, CommonPrioritySelect } from "@/Components";
 import { CommonButton, CommonValidationTextField, CommonRichTextEditor } from "@/Attribute";
 import { WorkshopSchema } from "@/Utils";
 import { Queries } from "@/Api";
@@ -79,7 +79,7 @@ export const WorkshopForm: FC<any> = ({ open, onClose, onSave, editing }) => {
               <CommonValidationTextField name="title" label="Title" required />
               <CommonValidationTextField name="subTitle" label="Subtitle" required />
               <CommonValidationTextField name="language" label="Language" required />
-              <CommonValidationTextField name="duration" label="Duration (in Minutes)" required />
+              <CommonValidationTextField name="duration" label="Duration (Hours)" required />
               <CommonRichTextEditor name="about" label="About Workshop" required className="col-span-full" />       
               <CommonImageUpload name="image" label="Workshop Banner" shape="square" size={120} required className="col-span-full" />
               <CommonAttachmentUpload name="pdfAttach" label="Workshop Material (PDF)" className="col-span-full" />
@@ -90,7 +90,14 @@ export const WorkshopForm: FC<any> = ({ open, onClose, onSave, editing }) => {
               <CommonValidationTextField name="mrpPrice" label="MRP Price (₹)" type="number" required />
               <CommonValidationTextField name="validFor" label="Access Validity (e.g. 30 Days)" required />
               <CommonValidationTextField name="couponCode" label="Coupon Code" />
-              <CommonValidationTextField name="priority" label="Priority / Order" type="number" required placeholder="e.g. 1" />
+              <CommonPrioritySelect
+                name="priority"
+                label="Priority / Order"
+                required
+                usedPriorities={allWorkshops.map((w: any) => Number(w.priority))}
+                editingId={editing?._id}
+                editingPriority={editing?.priority}
+              />
             </CommonFormSection>
             
 

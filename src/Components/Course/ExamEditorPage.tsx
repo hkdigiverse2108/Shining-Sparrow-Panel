@@ -88,7 +88,17 @@ const ExamEditorPage: FC = () => {
               </div>
             </div>
 
-            <ExamForm editing={lessonExam || null} lessonId={lessonId!} onSave={handleSaveExam} loading={isMutationLoading} />
+            <ExamForm
+              editing={lessonExam || null}
+              lessonId={lessonId!}
+              onSave={handleSaveExam}
+              loading={isMutationLoading}
+              existingPriorities={
+                extractArray(examRes)
+                  .filter((e: any) => String(e.courseLessonId?._id ?? e.courseLessonId) === String(lessonId) && String(e._id) !== String(examId))
+                  .map((e: any) => Number(e.priority || 0))
+              }
+            />
           </div>
         </div>
       </CommonPageWrapper>

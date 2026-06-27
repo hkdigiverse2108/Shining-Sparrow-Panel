@@ -7,41 +7,12 @@ import { CommonBreadcrumbs, CommonPageWrapper, CommonFormSection, CommonImageUpl
 import { blurRevealUp, staggerContainer } from "@/Utils/animations";
 import { CommonButton, CommonValidationTextField } from "@/Attribute";
 import { BREADCRUMBS } from "@/Data";
-import * as Yup from "yup";
 import { useAppSelector, useAppDispatch } from "@/Store/hooks";
 import { setUser } from "@/Store";
 import { Mutations, Queries } from "@/Api";
 import { useQueryClient } from "@tanstack/react-query";
 import { KEYS } from "@/Constants";
-
-// ─── Validation schemas ──────────────────────────────────────────────────────
-
-const ProfileSchema = Yup.object().shape({
-  fullName: Yup.string().required("Full name is required"),
-  phone: Yup.string().optional(),
-  designation: Yup.string().optional(),
-  profilePhoto: Yup.string().nullable().optional(),
-});
-
-const PasswordSchema = Yup.object().shape({
-  oldPassword: Yup.string()
-    .required("Old password is required"),
-  newPassword: Yup.string()
-    .required("New password is required")
-    .min(6, "Minimum 6 characters"),
-  confirmPassword: Yup.string()
-    .required("Please confirm your password")
-    .oneOf([Yup.ref("newPassword")], "Passwords do not match"),
-});
-
-const SettingsSchema = Yup.object().shape({
-  logo: Yup.string().nullable().optional(),
-  enrolledLearners: Yup.number().optional(),
-  classCompleted: Yup.number().optional(),
-  satisfactionRate: Yup.number().min(0).max(100).optional(),
-  razorpayKey: Yup.string().optional(),
-  razorpaySecret: Yup.string().optional(),
-});
+import { ProfileSchema, PasswordSchema, SettingsSchema } from "@/Utils";
 
 // ─── Personal Info Tab ────────────────────────────────────────────────────────
 
@@ -91,8 +62,8 @@ const PersonalInfoTab: FC<{
             <div className="profile-form-section-card">
               <CommonFormSection title="Personal Information">
                 <CommonValidationTextField name="fullName" label="Full Name" required startIcon={<UserOutlined />} className="col-span-1" />
-                <CommonValidationTextField name="phone" label="Phone Number" startIcon={<PhoneOutlined />} className="col-span-1" />
-                <CommonValidationTextField name="designation" label="Designation" startIcon={<EditOutlined />} className="col-span-1" />
+                <CommonValidationTextField name="phone" label="Phone Number" required startIcon={<PhoneOutlined />} className="col-span-1" />
+                <CommonValidationTextField name="designation" label="Designation" required startIcon={<EditOutlined />} className="col-span-1" />
                 <CommonValidationTextField name="email" label="Email Address" value={values.email} disabled startIcon={<MailOutlined />} className="col-span-full" />
               </CommonFormSection>
             </div>
@@ -249,15 +220,15 @@ const SiteSettingsTab: FC = () => {
           <Form className="profile-tab-form">
             <div className="profile-form-section-card">
               <CommonFormSection title="Branding">
-                <CommonImageUpload name="logo" label="Site Logo" shape="circle" size={140} className="col-span-full" />
+                <CommonImageUpload name="logo" label="Site Logo" required shape="circle" size={140} className="col-span-full" />
               </CommonFormSection>
             </div>
 
             <div className="profile-form-section-card">
               <CommonFormSection title="Stats & Metrics">
-                <CommonValidationTextField name="enrolledLearners" label="Total Enrolled Learners" type="number" startIcon={<UserOutlined />} className="col-span-1" />
-                <CommonValidationTextField name="classCompleted" label="Classes Completed" type="number" startIcon={<SettingOutlined />} className="col-span-1" />
-                <CommonValidationTextField name="satisfactionRate" label="Satisfaction Rate (%)" type="number" startIcon={<SettingOutlined />} className="col-span-1" />
+                <CommonValidationTextField name="enrolledLearners" label="Total Enrolled Learners" type="number" required startIcon={<UserOutlined />} className="col-span-1" />
+                <CommonValidationTextField name="classCompleted" label="Classes Completed" type="number" required startIcon={<SettingOutlined />} className="col-span-1" />
+                <CommonValidationTextField name="satisfactionRate" label="Satisfaction Rate (%)" type="number" required startIcon={<SettingOutlined />} className="col-span-1" />
               </CommonFormSection>
             </div>
 
@@ -267,6 +238,7 @@ const SiteSettingsTab: FC = () => {
                   name="razorpayKey" 
                   label="Razorpay Key ID" 
                   type="password" 
+                  required
                   startIcon={<KeyOutlined />}
                   className="col-span-1"
                 />
@@ -274,6 +246,7 @@ const SiteSettingsTab: FC = () => {
                   name="razorpaySecret" 
                   label="Razorpay Secret (leave blank to keep existing)" 
                   type="password" 
+                  required
                   startIcon={<KeyOutlined />}
                   className="col-span-1"
                 />

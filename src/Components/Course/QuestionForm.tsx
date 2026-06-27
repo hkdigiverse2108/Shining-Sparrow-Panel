@@ -1,6 +1,6 @@
 import { type FC, useMemo, useState, useRef, useEffect } from 'react';
 import { Formik, Form, useFormikContext } from 'formik';
-import { CommonFormSection, CommonFormShell, CommonImageUpload } from '@/Components';
+import { CommonFormSection, CommonFormShell, CommonImageUpload, CommonPrioritySelect } from '@/Components';
 import { CommonButton, CommonValidationTextField, CommonValidationSelect } from '@/Attribute';
 import { Segmented, Button, Progress, message, Input } from 'antd';
 import { SoundOutlined, UploadOutlined } from '@ant-design/icons';
@@ -11,6 +11,7 @@ interface QuestionFormProps {
   onSave: (values: any) => void;
   loading: boolean;
   examId: string;
+  existingPriorities?: number[];
 }
 
 // A Formik side-effect observer to keep the calculation steps, questionText, and correctAnswer in sync
@@ -56,7 +57,7 @@ const QuestionFormObserver: FC = () => {
   return null;
 };
 
-export const QuestionForm: FC<QuestionFormProps> = ({ editing, onSave, loading }) => {
+export const QuestionForm: FC<QuestionFormProps> = ({ editing, onSave, loading, existingPriorities }) => {
   const defaults = { 
     instructions: '',
     questionText: '', 
@@ -199,7 +200,14 @@ export const QuestionForm: FC<QuestionFormProps> = ({ editing, onSave, loading }
               <CommonValidationTextField name="score" label="Score / Marks" type="number" required />
 
               {/* Priority Input */}
-              <CommonValidationTextField name="priority" label="Priority / Order" type="number" required />
+              <CommonPrioritySelect
+                name="priority"
+                label="Priority / Order"
+                required
+                usedPriorities={existingPriorities || []}
+                editingId={editing?._id}
+                editingPriority={editing?.priority}
+              />
 
               {/* Question Instructions Input */}
               <div className="col-span-2 mb-2">

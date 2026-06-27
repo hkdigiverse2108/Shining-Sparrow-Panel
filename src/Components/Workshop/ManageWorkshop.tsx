@@ -11,6 +11,7 @@ import { Queries, Mutations } from '@/Api';
 import { KEYS } from '@/Constants';
 import { useQueryClient } from '@tanstack/react-query';
 import { CommonBreadcrumbs, CommonPageWrapper, EmptyContentPanel, ContentItemCard, CommonReadMore, CommonDeleteModal } from '@/Components';
+import { CommonButton } from '@/Attribute';
 import {
   priorityBadge, durationBadge, dateBadge,
   videoResourceBadge, attachmentFileBadge, editAction, deleteAction, blockAction, blockedBadge
@@ -249,7 +250,7 @@ const ManageWorkshop: FC = () => {
                     </span>
                   </div>
                 </div>
-                <Button
+                <CommonButton
                   type="primary"
                   icon={<PlusOutlined />}
                   onClick={() => {
@@ -259,10 +260,9 @@ const ManageWorkshop: FC = () => {
                       setActiveForm({ type: tabAddMode[activeTab] as 'addTestimonial' | 'addFAQ' });
                     }
                   }}
+                  title={tabAddLabel[activeTab]}
                   className="bg-indigo-600 hover:!bg-indigo-700 text-white rounded-lg h-10 px-5 font-medium"
-                >
-                  {tabAddLabel[activeTab]}
-                </Button>
+                />
               </div>
 
               {/* ── Tab Selector ── */}

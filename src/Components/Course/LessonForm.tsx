@@ -1,6 +1,6 @@
 import { type FC, useMemo } from 'react';
 import { Formik, Form } from 'formik';
-import { CommonFormSection, CommonFormShell, CommonImageUpload, CommonVideoUpload, CommonAttachmentUpload } from '@/Components';
+import { CommonFormSection, CommonFormShell, CommonImageUpload, CommonVideoUpload, CommonAttachmentUpload, CommonPrioritySelect } from '@/Components';
 import { CommonButton, CommonValidationTextField, CommonRichTextEditor, CommonValidationSelect } from '@/Attribute';
 import { LessonSchema } from '@/Utils';
 
@@ -71,7 +71,7 @@ export const LessonForm: FC<LessonFormProps> = ({ editing, onSave, loading, assi
               <CommonValidationTextField name="title" label="Title" required />
               <CommonValidationTextField name="subtitle" label="Subtitle" required />
               
-              <CommonValidationTextField name="duration" label="Duration (Minutes/Hours)" required placeholder="e.g. 45 Mins, 1 Hour" />
+              <CommonValidationTextField name="duration" label="Duration (Minutes)" required placeholder="e.g. 45 Mins, 1 Hour" />
               <div className="col-span-full">
                 <CommonRichTextEditor
                   name="description"
@@ -83,7 +83,14 @@ export const LessonForm: FC<LessonFormProps> = ({ editing, onSave, loading, assi
                 />
               </div>
               <CommonImageUpload name="thumbnail" label="Lesson Thumbnail" shape="square" size={100} required className="col-span-full" />
-              <CommonValidationTextField name="priority" label="Priority" type="number" required />
+              <CommonPrioritySelect
+                name="priority"
+                label="Priority"
+                required
+                usedPriorities={existingPriorities || []}
+                editingId={editing?._id}
+                editingPriority={editing?.priority}
+              />
               
               <CommonValidationSelect
                 name="lessonLock"

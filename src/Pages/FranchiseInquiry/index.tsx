@@ -30,7 +30,7 @@ const getColumns = ({
     title: '#',
     key: 'srNo',
     width: 60,
-    align: 'center' as const,
+    align: "center",
     render: (_: any, __: any, i: number) => (
       <span className="font-mono text-xs text-muted font-semibold">
         {(current - 1) * pageSize + i + 1}
@@ -57,6 +57,7 @@ const getColumns = ({
   {
     title: 'Email',
     dataIndex: 'email',
+    align: "center",
     render: (v: string) => (
       <div className="flex items-center gap-1.5 text-sm text-muted">
         <MailOutlined className="text-[10px]" />
@@ -68,7 +69,7 @@ const getColumns = ({
     title: 'Phone',
     dataIndex: 'phoneNumber',
     width: 140,
-    align: 'center' as const,
+    align: "center",
     render: (v: string) => (
       <div className="flex items-center gap-1.5 text-sm text-muted justify-center">
         <PhoneOutlined className="text-xs" />
@@ -80,7 +81,7 @@ const getColumns = ({
     title: 'Location',
     key: 'location',
     width: 150,
-    align: 'center' as const,
+    align: "center",
     render: (_: any, r: any) => (
       <div className="flex flex-col items-center gap-0.5 text-xs text-muted">
         {r.city && <span>{r.city}</span>}
@@ -93,7 +94,7 @@ const getColumns = ({
     title: 'Budget',
     dataIndex: 'investmentBudget',
     width: 130,
-    align: 'center' as const,
+    align: "center",
     render: (v: string) => (
       <span className="text-xs font-semibold text-foreground">
         {v || <span className="text-muted italic">Not specified</span>}
@@ -104,7 +105,7 @@ const getColumns = ({
     title: 'Occupation',
     dataIndex: 'occupation',
     width: 140,
-    align: 'center' as const,
+    align: "center",
     render: (v: string) => (
       <span className="text-xs text-muted">{v || '—'}</span>
     ),
@@ -113,7 +114,7 @@ const getColumns = ({
     title: 'Status',
     dataIndex: 'isRead',
     width: 100,
-    align: 'center' as const,
+    align: "center",
     render: (v: boolean) => (
       <Tag
         icon={v ? <CheckCircleOutlined /> : <InboxOutlined />}
@@ -128,7 +129,7 @@ const getColumns = ({
     title: 'Date',
     dataIndex: 'createdAt',
     width: 120,
-    align: 'center' as const,
+    align: "center",
     render: (v: string) => (
       <span className="text-xs text-muted">{v ? dayjs(v).format('DD MMM YYYY') : '—'}</span>
     ),
@@ -137,8 +138,7 @@ const getColumns = ({
     title: 'Actions',
     dataIndex: 'actions',
     width: 100,
-    align: 'center' as const,
-    fixed: 'right' as const,
+    align: "center",
     render: (_: any, r: any) => (
       <div className="flex items-center gap-1.5 justify-center">
         <Tooltip title="View Inquiry">

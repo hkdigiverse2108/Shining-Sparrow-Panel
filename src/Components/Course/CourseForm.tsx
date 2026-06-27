@@ -1,6 +1,6 @@
 import { type FC, useMemo } from "react";
 import { Formik, Form } from "formik";
-import { CommonFormShell, CommonFormSection, CommonAttachmentUpload, CommonVideoUpload, CommonImageUpload } from "@/Components";
+import { CommonFormShell, CommonFormSection, CommonAttachmentUpload, CommonVideoUpload, CommonImageUpload, CommonPrioritySelect } from "@/Components";
 import { CommonButton, CommonValidationTextField, CommonValidationSelect, CommonRichTextEditor } from "@/Attribute";
 import { Queries } from "@/Api";
 import type { CourseHandlerProps } from "@/Types";
@@ -101,7 +101,14 @@ export const CourseForm: FC<CourseHandlerProps> = ({ open, onClose, onSave, edit
               <CommonValidationTextField name="language" label="Course Language" required placeholder="e.g. English, Hindi" />
               <CommonValidationTextField name="duration" label="Course Duration (in Hours)" type="number" required placeholder="e.g. 40" />
               <CommonValidationTextField name="accessDurationDays" label="Access Duration (in Days)" type="number" required placeholder="e.g. 365" />
-              <CommonValidationTextField name="priority" label="Priority / Order" type="number" required placeholder="e.g. 1" />
+              <CommonPrioritySelect
+                name="priority"
+                label="Priority / Order"
+                required
+                usedPriorities={allCourses.map((c: any) => Number(c.priority))}
+                editingId={editing?._id}
+                editingPriority={editing?.priority}
+              />
               
               <CommonImageUpload name="image" label="Course Thumbnail Image" shape="square" size={160} required className="col-span-full" />
               

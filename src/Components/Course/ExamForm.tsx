@@ -1,6 +1,6 @@
 import { type FC, useMemo } from 'react';
 import { Formik, Form } from 'formik';
-import { CommonFormSection, CommonFormShell } from '@/Components';
+import { CommonFormSection, CommonFormShell, CommonPrioritySelect } from '@/Components';
 import { CommonButton, CommonValidationTextField } from '@/Attribute';
 import { ExamSchema } from '@/Utils';
 
@@ -9,16 +9,18 @@ interface ExamFormProps {
   onSave: (values: any) => void;
   loading: boolean;
   lessonId: string;
+  existingPriorities?: number[];
 }
 
-export const ExamForm: FC<ExamFormProps> = ({ editing, onSave, loading, lessonId }) => {
-  const defaults = { title: '', description: '', passingMarks: '', totalMarks: '', timeLimit: '' };
+export const ExamForm: FC<ExamFormProps> = ({ editing, onSave, loading, lessonId, existingPriorities }) => {
+  const defaults = { title: '', description: '', passingMarks: '', totalMarks: '', timeLimit: '', priority: '' };
   const initialValues = useMemo(() => (editing ? { 
     ...defaults, 
     ...editing,
     passingMarks: editing.passingMarks ?? '',
     totalMarks: editing.totalMarks ?? '',
     timeLimit: editing.timeLimit ?? '',
+    priority: editing.priority ?? '',
   } : defaults), [editing]);
 
   const handleSubmit = (v: any) => {
@@ -55,6 +57,14 @@ export const ExamForm: FC<ExamFormProps> = ({ editing, onSave, loading, lessonId
               <CommonValidationTextField name="timeLimit" label="Time Limit (Minutes)" type="number" required />
               <CommonValidationTextField name="totalMarks" label="Total Marks" type="number" required />
               <CommonValidationTextField name="passingMarks" label="Passing Marks" type="number" required />
+              <CommonPrioritySelect
+                name="priority"
+                label="Priority"
+                required
+                usedPriorities={existingPriorities || []}
+                editingId={editing?._id}
+                editingPriority={editing?.priority}
+              />
             </CommonFormSection>
 
             {values.passingMarks !== undefined && values.totalMarks !== undefined && Number(values.passingMarks) > Number(values.totalMarks) && (

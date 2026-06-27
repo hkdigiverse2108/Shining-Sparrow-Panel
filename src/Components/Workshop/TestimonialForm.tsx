@@ -58,12 +58,9 @@ export const TestimonialForm: FC<TestimonialFormProps> = ({ editing, onSave, onC
   return (
     <Formik enableReinitialize initialValues={initialValues} validationSchema={editTestimonialSchema} onSubmit={handleFormSave}>
       {({ values, setFieldValue }) => {
-        const currentTypeOptions = [
-          { label: 'All', value: 'all' },
-          ...catalogOptions
-            .filter((opt: any) => opt.type === values.type)
-            .map((opt: any) => ({ label: opt.label.replace(/^(Course|Workshop):\s*/, ''), value: opt.value }))
-        ];
+        const currentTypeOptions = catalogOptions
+          .filter((opt: any) => opt.type === values.type)
+          .map((opt: any) => ({ label: opt.label.replace(/^(Course|Workshop):\s*/, ''), value: opt.value }));
 
         return (
           <CommonFormShell
