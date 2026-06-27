@@ -7,7 +7,6 @@ import { useAppDispatch, useAppSelector } from '@/Store/hooks';
 import { setToggleSidebar } from '@/Store';
 import type { SidebarProps } from '@/Types';
 import { NavItems, UserMenuData } from '@/Data';
-import { Queries } from '@/Api/Queries';
 const { Sider } = Layout;
 const { useBreakpoint } = Grid;
 

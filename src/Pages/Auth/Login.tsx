@@ -3,7 +3,7 @@ import { UserOutlined, LockOutlined, RocketOutlined } from '@ant-design/icons';
 import { Link, useNavigate } from 'react-router-dom';
 import { Formik, Form } from 'formik';
 import { ROUTES } from '@/Constants';
-import { CommonValidationTextField, CommonButton, CommonCheckbox, showNotification } from '@/Attribute';
+import { CommonValidationTextField, CommonButton, CommonCheckbox } from '@/Attribute';
 import { LoginSchema } from '@/Utils';
 import { useAppDispatch } from '@/Store/hooks';
 import { setSignin as setCredentials } from '@/Store';
@@ -34,9 +34,8 @@ const Login: FC = () => {
             
             dispatch(setCredentials(response.data));
             navigate(ROUTES.DASHBOARD);
-          } catch (error: any) {
-            const msg = error?.response?.data?.message || "Login failed";
-            showNotification('error', msg); 
+          } catch {
+            // Handle silently
           } finally {
             setSubmitting(false);
           }
