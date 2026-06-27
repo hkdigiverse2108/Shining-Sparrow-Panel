@@ -154,7 +154,9 @@ export const QuestionSchema = Yup.object({
 export const UserSchema = Yup.object({
     fullName: Yup.string().required("Full Name is required"),
     email: Yup.string().email("Invalid email address").required("Email is required"),
-    phoneNumber: Yup.string().required("Phone Number is required"),
+    phoneNumber: Yup.string()
+        .required("Phone Number is required")
+        .matches(/^[0-9]{10}$/, "Phone number must be exactly 10 digits"),
     profilePhoto: Yup.string().nullable().optional(),
     isBlocked: Yup.string().optional(),
     isEmailVerified: Yup.string().optional(),
@@ -174,7 +176,9 @@ export const UserSchema = Yup.object({
 export const EditUserSchema = Yup.object({
     fullName: Yup.string().required("Full Name is required"),
     email: Yup.string().email("Invalid email address").required("Email is required"),
-    phoneNumber: Yup.string().required("Phone Number is required"),
+    phoneNumber: Yup.string()
+        .required("Phone Number is required")
+        .matches(/^[0-9]{10}$/, "Phone number must be exactly 10 digits"),
     profilePhoto: Yup.string().nullable().optional(),
     designation: Yup.string().optional(),
     district: Yup.string().optional(),
@@ -242,7 +246,9 @@ export const CouponCodeSchema = Yup.object({
 // Contact Details Validation
 export const ContactDetailsSchema = Yup.object().shape({
     address: Yup.string().required("Office Address is required"),
-    phoneNumber: Yup.string().required("Phone Number is required"),
+    phoneNumber: Yup.string()
+        .required("Phone Number is required")
+        .matches(/^[0-9]{10}$/, "Phone number must be exactly 10 digits"),
     email: Yup.string().email("Invalid email").required("Contact Email is required"),
     workingHours: Yup.string().required("Working Hours is required"),
     facebook: Yup.string().url("Must be a valid URL").required("Facebook URL is required"),
@@ -303,7 +309,9 @@ export const EditCourseCategorySchema = Yup.object({
 
 export const ProfileSchema = Yup.object().shape({
   fullName: Yup.string().required("Full name is required"),
-  phone: Yup.string().required("Phone number is required").matches(/^\+?[1-9]\d{1,14}$/, "Invalid phone number format"),
+  phone: Yup.string()
+    .required("Phone number is required")
+    .matches(/^[0-9]{10}$/, "Phone number must be exactly 10 digits"),
   designation: Yup.string().required("Designation is required"),
   profilePhoto: Yup.string().nullable().optional(),
 });
@@ -321,9 +329,9 @@ export const PasswordSchema = Yup.object().shape({
 
 export const SettingsSchema = Yup.object().shape({
   logo: Yup.string().required("Site logo is required"),
-  enrolledLearners: Yup.number().required("Total Enrolled Learners is required").min(0, "Must be at least 0"),
-  classCompleted: Yup.number().required("Classes Completed is required").min(0, "Must be at least 0"),
+  enrolledLearners: Yup.string().required("Total Enrolled Learners is required").min(0, "Must be at least 0"),
+  classCompleted: Yup.string().required("Classes Completed is required").min(0, "Must be at least 0"),
   satisfactionRate: Yup.number().required("Satisfaction Rate is required").min(0, "Must be at least 0").max(100, "Cannot exceed 100"),
-  razorpayKey: Yup.string().required("Razorpay Key ID is required"),
-  razorpaySecret: Yup.string().required("Razorpay Secret is required"),
+//   razorpayKey: Yup.string().required("Razorpay Key ID is required"),
+//   razorpaySecret: Yup.string().required("Razorpay Secret is required"),
 });
