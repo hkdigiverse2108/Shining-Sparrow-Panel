@@ -166,10 +166,7 @@ export const UserSchema = Yup.object({
     reachFrom: Yup.string().optional(),
     schoolName: Yup.string().optional(),
     address: Yup.string().optional(),
-    password: Yup.string()
-        .required("Password is required")
-        .min(6, "Minimum 6 characters required")
-        .matches(/[!@#$%^&*()_+={}:;"'<>,.?/-]/, "Password must include at least one special character"),
+    password: Yup.string().optional().nullable(),
 });
 
 // Edit User Schema (For Updating existing users)

@@ -4,7 +4,7 @@ import { CommonFormShell, CommonFormSection, CommonImageUpload } from "@/Compone
 import { CommonButton, CommonValidationTextField, CommonValidationSelect } from "@/Attribute";
 import type { UserFormProps } from "@/Types";
 import { EditUserSchema, UserSchema } from "@/Utils";
-import { UserOutlined, MailOutlined, PhoneOutlined, IdcardOutlined, BookOutlined, LockOutlined } from "@ant-design/icons";
+import { UserOutlined, MailOutlined, PhoneOutlined, IdcardOutlined, BookOutlined } from "@ant-design/icons";
 
 export const UserForm: FC<UserFormProps> = ({ open, onClose, onSave, editingUser }) => {
   const defaults = { fullName: "", email: "", password: "", profilePhoto: "", phoneNumber: "", designation: "", district: "", std: "", reachFrom: "", schoolName: "", address: "" };
@@ -67,8 +67,6 @@ export const UserForm: FC<UserFormProps> = ({ open, onClose, onSave, editingUser
       payload.userId = (editingUser as any)._id || editingUser.id;
       // 'address' is only supported by editUserSchema on the backend, not addUserSchema
       payload.address = v.address;
-    } else {
-      payload.password = v.password;
     }
 
     onSave(payload);
@@ -88,9 +86,6 @@ export const UserForm: FC<UserFormProps> = ({ open, onClose, onSave, editingUser
               <CommonValidationTextField name="phoneNumber" label="Phone Number" startIcon={<PhoneOutlined />} required />
               <CommonValidationTextField name="designation" label="Designation" startIcon={<IdcardOutlined />} />
               
-              {!editingUser && (
-                <CommonValidationTextField name="password" label="Password" type="password" startIcon={<LockOutlined />} showPasswordToggle placeholder="Enter password" required />
-              )}
             </CommonFormSection>
 
             <CommonFormSection title="Academic & Location details">

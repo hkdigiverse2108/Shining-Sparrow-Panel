@@ -16,10 +16,16 @@ export default defineConfig(({ mode }) => {
     },
     server: {
       port: port,
+      watch: {
+        ignored: ['**/node_modules/**', '**/dist/**', '**/.git/**']
+      }
     },
     preview: {
       port: port,
       strictPort: true,
+    },
+    build: {
+      sourcemap: false, // Disables memory-heavy source map tracing files
     },
   };
 })

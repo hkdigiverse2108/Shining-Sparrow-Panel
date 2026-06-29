@@ -109,7 +109,7 @@ const Sidebar: FC<SidebarProps> = ({ isExpanded }) => {
             {!isActuallyCollapsed && (
               <div style={{ overflow: 'hidden', flex: 1 }}>
                 <div style={{ color: 'var(--foreground)', fontWeight: 600, fontSize: '13px', lineHeight: '18px', whiteSpace: 'nowrap' }}>
-                   {user?.name || 'Guest User'}
+                   {user?.fullName || 'Guest User'}
                 </div>
                 <div style={{ color: 'var(--text-muted)', fontSize: '11px', lineHeight: '14px', whiteSpace: 'nowrap' }}>
                   {user?.email || 'guest@myapp.com'}

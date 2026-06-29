@@ -1,24 +1,33 @@
 import { createBrowserRouter, Outlet } from "react-router-dom";
-import { AuthRoutes, PageRoutes } from "./PageRoutes";
 import NotFound from "@/Pages/NotFound";
 import Layout from "@/Layout";
-import PublicRoutes from "./PublicRoutes";
+import PrivateRoutes from "./PrivateRoutes";
+import { Suspense } from "react";
+import { Spin } from "antd";
+import { AuthRoutes, PageRoutes } from "./PageRoutes";
 
 export const Router = createBrowserRouter([
-    {
+  {
     children: [
       {
-        // element: <PrivateRoutes />,
-        element: <PublicRoutes />,
+        element: <PrivateRoutes />,
         children: [
           {
-            element: <Layout />,
+            element: (
+              <Suspense fallback={<div className="flex h-screen w-full items-center justify-center"><Spin size="large" /></div>}>
+                <Layout />
+              </Suspense>
+            ),
             children: PageRoutes,
           },
         ],
       },
       {
-        element: <Outlet />,
+        element: (
+          <Suspense fallback={<div className="flex h-screen w-full items-center justify-center"><Spin size="large" /></div>}>
+            <Outlet />
+          </Suspense>
+        ),
         children: AuthRoutes,
       },
     ],

@@ -1,121 +1,66 @@
 import { useState, useMemo, type FC } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Input, Pagination, Spin, DatePicker, Col } from 'antd';
-import { DeleteOutlined, EditOutlined, FolderOpenOutlined, PlusOutlined, EyeOutlined, SearchOutlined, PictureOutlined } from '@ant-design/icons';
+import { DeleteOutlined, EditOutlined, FolderOpenOutlined, PlusOutlined, SearchOutlined, PictureOutlined } from '@ant-design/icons';
 import { motion } from 'motion/react';
 import dayjs from 'dayjs';
 import { useQueryClient } from '@tanstack/react-query';
 import { CommonBreadcrumbs, CommonPageWrapper, CommonDeleteModal, AdvancedSearch } from '@/Components';
-import { blurRevealUp, staggerContainer } from '@/Utils/animations';
+import { staggerContainer } from '@/Utils/animations';
 import { BREADCRUMBS } from '@/Data';
 import { Queries, Mutations } from '@/Api';
 import { KEYS } from '@/Constants';
 import { useDebounce } from '@/Utils';
 import { GalleryForm } from '@/Components/Gallery/GalleryForm';
 
-const PhotoStack = ({ images, title }: { images: string[]; title: string }) => {
-  if (!images || images.length === 0) {
-    return (
-      <div className="relative w-full h-64 bg-gradient-to-br from-primary-soft/40 via-primary-soft/10 to-surface-muted rounded-3xl border-2 border-dashed border-border/85 flex flex-col items-center justify-center gap-3 group-hover:border-primary/30 transition-all duration-300">
-        <div className="p-4 rounded-full bg-primary/10 text-primary border border-primary/20 shadow-inner group-hover:scale-110 group-hover:rotate-12 transition-all duration-300">
-          <FolderOpenOutlined style={{ fontSize: 36 }} />
-        </div>
-        <div className="flex flex-col items-center">
-          <span className="text-xs font-bold uppercase tracking-wider text-text-muted">Empty Folder</span>
-          <span className="text-[11px] text-text-muted/60 mt-0.5">No images uploaded</span>
-        </div>
-      </div>
-    );
-  }
-
-  const frontImg = images[0];
-  const middleImg = images[1] || images[0];
-  const backImg = images[2] || images[1] || images[0];
-
-  return (
-    <div className="relative w-full h-64 flex items-center justify-center select-none">
-      {/* Back Image */}
-      <div className="absolute inset-x-5 bottom-2 top-6 rounded-3xl overflow-hidden border border-white/40 dark:border-white/10 shadow-md transform -rotate-6 -translate-y-4 scale-[0.92] opacity-50 transition-all duration-500 ease-out group-hover:-rotate-12 group-hover:-translate-y-8 group-hover:-translate-x-6 group-hover:opacity-70 z-10">
-        <img src={backImg} alt={title} className="w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-black/10" />
-      </div>
-
-      {/* Middle Image */}
-      <div className="absolute inset-x-2.5 bottom-4 top-4 rounded-3xl overflow-hidden border border-white/60 dark:border-white/10 shadow-lg transform rotate-3 -translate-y-2 scale-[0.96] opacity-85 transition-all duration-500 ease-out group-hover:rotate-8 group-hover:-translate-y-5 group-hover:translate-x-6 group-hover:opacity-95 z-20">
-        <img src={middleImg} alt={title} className="w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-black/5" />
-      </div>
-
-      {/* Front Image */}
-      <div className="absolute inset-0 bottom-6 rounded-3xl overflow-hidden border border-white/80 dark:border-white/20 shadow-xl transform transition-all duration-500 ease-out group-hover:scale-[1.03] group-hover:-translate-y-2 group-hover:shadow-2xl z-30">
-        <img src={frontImg} alt={title} className="w-full h-full object-cover" />
-        
-        {/* Count Badge on Front Image */}
-        {images.length > 1 && (
-          <div className="absolute bottom-3 right-3 bg-black/75 backdrop-blur-md text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full border border-white/20 shadow-sm z-45">
-            +{images.length - 1} More
-          </div>
-        )}
-      </div>
-    </div>
-  );
-};
-
 const FolderCard = ({ record, onEdit, onDelete, onClick }: any) => {
   const images = record.images || [];
+  const previewImg = images[0];
 
   return (
-    <motion.div 
-      variants={blurRevealUp}
+    <div 
       onClick={onClick}
-      className="group relative flex flex-col cursor-pointer pb-4"
-      whileHover={{ y: -6 }}
-      transition={{ type: 'spring', stiffness: 260, damping: 20 }}
+      className="group relative cursor-pointer bento-gallery-card gallery-fade-in-card"
     >
-      {/* 3D Photo Stack Container */}
-      <div className="relative w-full mb-4">
-        <PhotoStack images={images} title={record.title} />
+      {/* Animated Glow Blob */}
+      <div className="bento-glow-blob" />
 
-        {/* Hover overlay controls (sliding/revealing) */}
-        {images.length > 0 && (
-          <div className="absolute inset-0 bottom-6 rounded-3xl bg-black/40 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center gap-3.5 z-40 backdrop-blur-[1.5px]">
-            <Button 
-              shape="circle" 
-              icon={<EditOutlined style={{ fontSize: 16 }} />} 
-              onClick={(e) => { e.stopPropagation(); onEdit(record); }} 
-              className="shadow-lg hover:scale-110 active:scale-95 bg-white/20 text-white border-white/25 hover:bg-white/40 hover:text-white transition-all duration-200"
-              style={{ height: 38, width: 38 }}
-            />
-            <Button 
-              type="primary" 
-              shape="circle" 
-              icon={<EyeOutlined style={{ fontSize: 20 }} />} 
-              onClick={(e) => { e.stopPropagation(); onClick(); }} 
-              className="shadow-xl hover:scale-115 active:scale-95 transition-all duration-200"
-              style={{ height: 48, width: 48, backgroundColor: 'var(--primary)', borderColor: 'var(--primary)' }}
-            />
-            <Button 
-              danger
-              type="primary"
-              shape="circle" 
-              icon={<DeleteOutlined style={{ fontSize: 16 }} />} 
-              onClick={(e) => { e.stopPropagation(); onDelete(record); }} 
-              className="shadow-lg hover:scale-110 active:scale-95 transition-all duration-200"
-              style={{ height: 38, width: 38 }}
-            />
-          </div>
-        )}
+      {/* Top Section: Icon & Info Badge */}
+      <div className="flex items-start justify-between w-full z-10">
+        <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/10 border border-primary/15 text-primary transition-all duration-300 group-hover:scale-110">
+          <FolderOpenOutlined style={{ fontSize: 20 }} />
+        </div>
+        <span className="bento-card-badge shrink-0 flex items-center">
+          {images.length} {images.length === 1 ? 'Item' : 'Items'}
+        </span>
       </div>
 
-      {/* Floating Action Bar for Empty Folders */}
-      {images.length === 0 && (
-        <div className="absolute top-3 right-3 flex gap-1.5 z-40 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+      {/* Center Image Preview (only if images exist) */}
+      {previewImg && (
+        <div className="absolute right-6 top-16 w-20 h-20 rounded-2xl overflow-hidden border border-border bg-surface rotate-6 opacity-60 group-hover:rotate-12 group-hover:scale-110 group-hover:opacity-100 transition-all duration-300 shadow-md">
+          <img src={previewImg} alt={record.title} className="w-full h-full object-cover" loading="lazy" />
+        </div>
+      )}
+
+      {/* Bottom Section: Details & Quick Actions */}
+      <div className="w-full z-10 mt-6">
+        <div className="max-w-[58%]">
+          <h4 className="font-extrabold text-foreground text-[16px] tracking-tight m-0 transition-colors duration-200 group-hover:text-primary truncate">
+            {record.title}
+          </h4>
+          <p className="text-[11px] text-text-muted line-clamp-1 m-0 mt-1">
+            {record.description || "No description provided."}
+          </p>
+        </div>
+
+        {/* Action icons reveal on hover */}
+        <div className="absolute right-4 bottom-4 flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-250 z-20">
           <Button 
             shape="circle" 
             size="small"
             icon={<EditOutlined style={{ fontSize: 13 }} />} 
             onClick={(e) => { e.stopPropagation(); onEdit(record); }} 
-            className="shadow-md hover:scale-105 bg-surface text-foreground border-border"
+            className="shadow-sm hover:scale-105 bg-surface text-foreground border-border"
           />
           <Button 
             danger
@@ -124,33 +69,11 @@ const FolderCard = ({ record, onEdit, onDelete, onClick }: any) => {
             size="small"
             icon={<DeleteOutlined style={{ fontSize: 13 }} />} 
             onClick={(e) => { e.stopPropagation(); onDelete(record); }} 
-            className="shadow-md hover:scale-105"
+            className="shadow-sm hover:scale-105"
           />
         </div>
-      )}
-
-      {/* Info details */}
-      <div className="px-1.5 flex flex-col gap-1.5">
-        <div className="flex items-center justify-between gap-3">
-          <h4 className="font-extrabold text-foreground text-[15px] tracking-tight m-0 group-hover:text-primary transition-colors duration-200 truncate leading-snug">
-            {record.title}
-          </h4>
-          <span className="shrink-0 flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-primary-soft text-primary border border-primary-ring text-[11px] font-bold shadow-inner">
-            <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
-            {images.length} {images.length === 1 ? 'item' : 'items'}
-          </span>
-        </div>
-        {record.description ? (
-          <p className="text-xs text-text-muted line-clamp-2 leading-relaxed m-0">
-            {record.description}
-          </p>
-        ) : (
-          <p className="text-xs text-text-muted/50 italic leading-relaxed m-0">
-            No description provided.
-          </p>
-        )}
       </div>
-    </motion.div>
+    </div>
   );
 };
 
@@ -359,12 +282,7 @@ const GalleryPage: FC = () => {
             <Spin spinning={isLoading || isFetching} size="large">
               {galleries.length > 0 ? (
                 <div className="relative z-10 flex flex-col gap-8 min-h-[300px]">
-                  <motion.div 
-                    variants={staggerContainer}
-                    initial="hidden"
-                    animate="visible"
-                    className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-8 gap-y-10"
-                  >
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-8 gap-y-10">
                     {galleries.map((gallery: any) => (
                       <FolderCard 
                         key={gallery._id} 
@@ -374,7 +292,7 @@ const GalleryPage: FC = () => {
                         onDelete={handleDeleteClick}
                       />
                     ))}
-                  </motion.div>
+                  </div>
 
                   {/* Pagination */}
                   {totalGalleries > pageSize && (

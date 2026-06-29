@@ -384,16 +384,23 @@ const ExamManagerPage: FC = () => {
             <main className="course-main">
               {/* ── Marks Mismatch Warning Bar ── */}
               {lessonExam && totalScore !== Number(lessonExam.totalMarks) && (
-                <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-4 rounded-r-xl shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 animate-fade-in">
+                <div 
+                  style={{
+                    backgroundColor: 'color-mix(in srgb, var(--danger) 8%, var(--surface))',
+                    borderLeft: '4px solid var(--danger)',
+                    color: 'var(--danger)'
+                  }}
+                  className="p-4 mb-4 rounded-r-xl shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 animate-fade-in"
+                >
                   <div className="flex items-start gap-3">
-                    <div className="text-red-500 mt-0.5"><CalculatorOutlined className="text-lg" /></div>
+                    <div className="mt-0.5" style={{ color: 'var(--danger)' }}><CalculatorOutlined className="text-lg" /></div>
                     <div>
-                      <h4 className="font-bold text-red-800 text-sm">Marks Mismatch Warning</h4>
-                      <p className="text-red-700 text-xs mt-1 leading-relaxed">
+                      <h4 className="font-bold text-sm" style={{ color: 'var(--danger)' }}>Marks Mismatch Warning</h4>
+                      <p className="text-xs mt-1 leading-relaxed" style={{ color: 'var(--text-muted)' }}>
                         The sum of individual question scores (<strong>{totalScore}</strong> points) does not match the configured Exam Total Marks (<strong>{lessonExam.totalMarks}</strong> marks). Students will see a mismatch. Please adjust question scores or edit the exam marks.
                       </p>
                       {Number(lessonExam.passingMarks) > totalScore && (
-                        <p className="text-amber-700 text-xs mt-1.5 font-semibold flex items-center gap-1.5">
+                        <p className="text-xs mt-1.5 font-semibold flex items-center gap-1.5" style={{ color: 'var(--warning)' }}>
                           ⚠️ Warning: If you sync total marks to {totalScore}, the passing marks threshold ({lessonExam.passingMarks}) will exceed the new total. You will need to lower your passing marks.
                         </p>
                       )}
@@ -414,11 +421,18 @@ const ExamManagerPage: FC = () => {
 
               {/* ── Passing Marks Exceeds Total Marks Warning ── */}
               {lessonExam && Number(lessonExam.passingMarks) > Number(lessonExam.totalMarks) && (
-                <div className="bg-amber-50 border-l-4 border-amber-500 p-4 mb-4 rounded-r-xl shadow-sm flex items-start gap-3 animate-fade-in">
-                  <div className="text-amber-500 mt-0.5">⚠️</div>
+                <div 
+                  style={{
+                    backgroundColor: 'color-mix(in srgb, var(--warning) 8%, var(--surface))',
+                    borderLeft: '4px solid var(--warning)',
+                    color: 'var(--warning)'
+                  }}
+                  className="p-4 mb-4 rounded-r-xl shadow-sm flex items-start gap-3 animate-fade-in"
+                >
+                  <div className="mt-0.5" style={{ color: 'var(--warning)' }}>⚠️</div>
                   <div>
-                    <h4 className="font-bold text-amber-800 text-sm">Passing Marks Exceeds Total Marks</h4>
-                    <p className="text-amber-700 text-xs mt-1 leading-relaxed">
+                    <h4 className="font-bold text-sm" style={{ color: 'var(--warning)' }}>Passing Marks Exceeds Total Marks</h4>
+                    <p className="text-xs mt-1 leading-relaxed" style={{ color: 'var(--text-muted)' }}>
                       Configured Passing Marks (<strong>{lessonExam.passingMarks}</strong> marks) is currently larger than the Exam Total Marks (<strong>{lessonExam.totalMarks}</strong> marks). Students cannot pass this exam. Please edit the exam settings to lower passing marks.
                     </p>
                   </div>
@@ -467,7 +481,15 @@ const ExamManagerPage: FC = () => {
                                 )}
                                 {question.questionType === 'calculation' ? (
                                   displayQuestionText.includes('\n') ? (
-                                    <div className="inline-flex flex-col items-end border-b border-indigo-200/80 pb-1.5 px-4 py-2.5 bg-indigo-50/20 border border-indigo-100 rounded-xl font-mono text-sm font-bold text-indigo-700 min-w-[80px] mt-1 shadow-xs" style={{ alignSelf: 'flex-start' }}>
+                                    <div 
+                                      style={{
+                                        backgroundColor: 'color-mix(in srgb, var(--primary) 8%, var(--surface))',
+                                        borderColor: 'color-mix(in srgb, var(--primary) 18%, transparent)',
+                                        color: 'var(--primary)',
+                                        alignSelf: 'flex-start'
+                                      }}
+                                      className="inline-flex flex-col items-end border-b pb-1.5 px-4 py-2.5 rounded-xl font-mono text-sm font-bold min-w-[80px] mt-1 shadow-xs" 
+                                    >
                                       {displayQuestionText.split('\n').map((step: string, idx: number) => (
                                         <div key={idx} className="tracking-wider leading-relaxed">
                                           {step}
@@ -478,10 +500,18 @@ const ExamManagerPage: FC = () => {
                                     /* Horizontal Flow Layout */
                                     <div className="flex flex-wrap items-center gap-1.5 mt-1">
                                       {displayQuestionText ? displayQuestionText.split(' ').map((step: string, idx: number) => (
-                                        <span key={idx} className="inline-flex items-center justify-center px-2.5 py-1 font-mono text-sm font-bold bg-indigo-50 border border-indigo-100 text-indigo-700 rounded-lg shadow-xs">
+                                        <span 
+                                          key={idx} 
+                                          style={{
+                                            backgroundColor: 'color-mix(in srgb, var(--primary) 10%, var(--surface))',
+                                            borderColor: 'color-mix(in srgb, var(--primary) 18%, transparent)',
+                                            color: 'var(--primary)'
+                                          }}
+                                          className="inline-flex items-center justify-center px-2.5 py-1 font-mono text-sm font-bold border rounded-lg shadow-xs"
+                                        >
                                           {step}
                                         </span>
-                                      )) : <span className="text-gray-400 italic">Empty calculation</span>}
+                                      )) : <span className="text-text-muted italic">Empty calculation</span>}
                                     </div>
                                   )
                                 ) : (
