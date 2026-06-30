@@ -108,6 +108,9 @@ export const URL_KEYS = {
     GET: "/dashboard",
     ANALYTICS: "/dashboard/analytics",
     LOGIN_HISTORY: "/dashboard/login-history",
+    DELETE_LOGIN_HISTORY: "/dashboard/login-history",
+    BLOCK_DEVICE: "/dashboard/login-history/block",
+    UNBLOCK_DEVICE: "/dashboard/login-history/unblock",
   },
   CHAT: {
     SEND: "/chat/send",

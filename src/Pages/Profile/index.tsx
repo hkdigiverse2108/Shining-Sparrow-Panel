@@ -289,7 +289,7 @@ const SiteSettingsTab: FC = () => {
             { label: "Classes Completed", value: setting?.classCompleted, icon: <SettingOutlined /> },
             { label: "Satisfaction Rate", value: setting?.satisfactionRate != null ? `${setting.satisfactionRate}%` : null, icon: <SettingOutlined /> },
             { label: "Razorpay Key ID", value: setting?.razorpayKey ? "••••••••••••••••" : null, icon: <KeyOutlined /> },
-            { label: "Razorpay Secret", value: setting?.razorpaySecret ? "••••••••••••••••" : null, icon: <KeyOutlined /> },
+            { label: "Razorpay Secret", value: setting?.hasRazorpaySecret ? "••••••••••••••••" : null, icon: <KeyOutlined /> },
           ].map((d, i) => (
             <div key={i} className="profile-info-item">
               <div className="profile-info-icon-wrapper">{d.icon}</div>

@@ -30,6 +30,7 @@ export type UpdateSettingPayload = Omit<SettingFormValues, 'razorpaySecret'> & {
 export type SettingBase = Omit<SettingFormValues, 'razorpaySecret'> & CommonDataType & {
     isDeleted: boolean;
     razorpaySecret?: string; 
+    hasRazorpaySecret?: boolean;
     socialMediaLinks: SocialMediaLinks; 
     enrolledLearners: number;
     classCompleted: number;

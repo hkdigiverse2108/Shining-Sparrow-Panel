@@ -150,6 +150,11 @@ export const Mutations = {
   useDeleteFranchiseInquiry: () => useMutations<string, void>([KEYS.FRANCHISE_INQUIRY.DELETE, KEYS.FRANCHISE_INQUIRY.BASE], (id) => Delete(`${URL_KEYS.FRANCHISE_INQUIRY.DELETE}/${id}`)),
   useMarkFranchiseRead: () => useMutations<{ franchiseInquiryId: string; isRead: boolean }, any>([KEYS.FRANCHISE_INQUIRY.BASE, "mark-read"], (input) => Post(URL_KEYS.FRANCHISE_INQUIRY.EDIT, input)),
   useUpdateFranchiseInquiry: () => useMutations<any, any>([KEYS.FRANCHISE_INQUIRY.BASE, "update"], (input) => Post(URL_KEYS.FRANCHISE_INQUIRY.EDIT, input)),
+
+  // ************ Login History (Dashboard) ***********
+  useDeleteLoginHistory: () => useMutations<string, void>([KEYS.DASHBOARD.LOGIN_HISTORY], (id) => Delete(`${URL_KEYS.DASHBOARD.DELETE_LOGIN_HISTORY}/${id}`)),
+  useBlockDevice: () => useMutations<string, void>([KEYS.DASHBOARD.LOGIN_HISTORY], (id) => Post(`${URL_KEYS.DASHBOARD.BLOCK_DEVICE}/${id}`, {})),
+  useUnblockDevice: () => useMutations<string, void>([KEYS.DASHBOARD.LOGIN_HISTORY], (id) => Post(`${URL_KEYS.DASHBOARD.UNBLOCK_DEVICE}/${id}`, {})),
 };
 
 

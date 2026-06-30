@@ -3,12 +3,13 @@ import { HTTP_STATUS, ROUTES } from "@/Constants";
 import type { Params } from "@/Types";
 import { getToken, Storage } from "@/Utils";
 import { showNotification } from "@/Attribute";
+import { getBaseUrl } from "./helper";
 
 let isRedirecting = false;
 
 export async function Get<T>(url: string, params?: Params, headers?: Record<string, string>): Promise<T> {
   const authToken = getToken();
-  const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+  const BASE_URL = getBaseUrl();
   const config: AxiosRequestConfig = {
     method: "GET",
     headers: {

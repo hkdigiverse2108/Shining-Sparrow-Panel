@@ -1,9 +1,11 @@
 import React, { useMemo, useState } from 'react';
 import { motion } from 'motion/react';
-import { Table, Tag } from 'antd';
-import { ClockCircleOutlined, DesktopOutlined, GlobalOutlined } from '@ant-design/icons';
+import { Table, Tag, Button, Tooltip, Popconfirm, message } from 'antd';
+import { ClockCircleOutlined, DesktopOutlined, GlobalOutlined, DeleteOutlined, StopOutlined, CheckCircleOutlined } from '@ant-design/icons';
 import { fadeInUp } from '@/Utils/animations';
-import { Queries } from '@/Api';
+import { Queries, Mutations } from '@/Api';
+import { KEYS } from '@/Constants';
+import { useQueryClient } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { CommonSimplePagination } from '@/Components/Common/CommonSimplePagination';
@@ -15,8 +17,12 @@ import type { ColumnType } from 'antd/es/table';
 const DashboardLoginHistoryTable: React.FC = () => {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const queryClient = useQueryClient();
 
   const { data: historyRes, isLoading } = Queries.useGetLoginHistory({ page, limit: pageSize });
+  const deleteMutation = Mutations.useDeleteLoginHistory();
+  const blockMutation = Mutations.useBlockDevice();
+  const unblockMutation = Mutations.useUnblockDevice();
 
   const records = useMemo(() => {
     return historyRes?.data?.records || [];
@@ -27,6 +33,42 @@ const DashboardLoginHistoryTable: React.FC = () => {
   const handlePageChange = (newPage: number, newPageSize: number) => {
     setPage(newPage);
     setPageSize(newPageSize);
+  };
+
+  const handleDelete = (id: string) => {
+    deleteMutation.mutate(id, {
+      onSuccess: () => {
+        message.success('Login log deleted successfully');
+        queryClient.invalidateQueries({ queryKey: [KEYS.DASHBOARD.LOGIN_HISTORY] });
+      },
+      onError: (err: any) => {
+        message.error(err?.message || 'Failed to delete login log');
+      }
+    });
+  };
+
+  const handleBlock = (id: string) => {
+    blockMutation.mutate(id, {
+      onSuccess: () => {
+        message.success('Device blocked successfully');
+        queryClient.invalidateQueries({ queryKey: [KEYS.DASHBOARD.LOGIN_HISTORY] });
+      },
+      onError: (err: any) => {
+        message.error(err?.message || 'Failed to block device');
+      }
+    });
+  };
+
+  const handleUnblock = (id: string) => {
+    unblockMutation.mutate(id, {
+      onSuccess: () => {
+        message.success('Device unblocked successfully');
+        queryClient.invalidateQueries({ queryKey: [KEYS.DASHBOARD.LOGIN_HISTORY] });
+      },
+      onError: (err: any) => {
+        message.error(err?.message || 'Failed to unblock device');
+      }
+    });
   };
 
   const columns: ColumnType<any>[] = [
@@ -65,13 +107,85 @@ const DashboardLoginHistoryTable: React.FC = () => {
     {
       title: 'Login Time',
       dataIndex: 'createdAt',
-      align: 'right',
+      align: 'center',
       render: (_: any, r: any) => (
-        <div className="flex items-center justify-end gap-1.5">
+        <div className="flex items-center justify-center gap-1.5">
           <ClockCircleOutlined className="text-text-muted text-xs" />
           <span className="text-xs text-text-muted">
             {r.createdAt ? dayjs(r.createdAt).format('DD MMM, hh:mm A') : 'N/A'}
           </span>
+        </div>
+      ),
+    },
+    {
+      title: 'Status',
+      dataIndex: 'isBlocked',
+      align: 'center',
+      render: (isBlocked: boolean) => (
+        isBlocked ? (
+          <Tag color="error" className="m-0 uppercase font-semibold text-xs rounded-full">
+            Blocked
+          </Tag>
+        ) : (
+          <Tag color="success" className="m-0 uppercase font-semibold text-xs rounded-full">
+            Allowed
+          </Tag>
+        )
+      ),
+    },
+    {
+      title: 'Action',
+      key: 'action',
+      align: 'right',
+      render: (_: any, r: any) => (
+        <div className="flex justify-end items-center gap-2">
+          {r.isBlocked ? (
+            <Tooltip title="Unblock Device">
+              <Button
+                type="text"
+                shape="circle"
+                icon={<CheckCircleOutlined className="text-success text-sm" />}
+                onClick={() => handleUnblock(r._id)}
+                loading={unblockMutation.isPending}
+              />
+            </Tooltip>
+          ) : (
+            <Tooltip title="Block Device">
+              <Popconfirm
+                title="Block Device"
+                description="Are you sure you want to block this device? It will not be able to log in to the admin panel."
+                onConfirm={() => handleBlock(r._id)}
+                okText="Yes"
+                cancelText="No"
+                okButtonProps={{ danger: true }}
+              >
+                <Button
+                  type="text"
+                  shape="circle"
+                  icon={<StopOutlined className="text-error text-sm" />}
+                  loading={blockMutation.isPending}
+                />
+              </Popconfirm>
+            </Tooltip>
+          )}
+
+          <Tooltip title="Delete Log">
+            <Popconfirm
+              title="Delete Login Log"
+              description={r.isBlocked ? "Deleting this blocked log will unblock the device. Continue?" : "Are you sure you want to delete this log?"}
+              onConfirm={() => handleDelete(r._id)}
+              okText="Yes"
+              cancelText="No"
+              okButtonProps={{ danger: true }}
+            >
+              <Button
+                type="text"
+                shape="circle"
+                icon={<DeleteOutlined className="text-error text-sm" />}
+                loading={deleteMutation.isPending}
+              />
+            </Popconfirm>
+          </Tooltip>
         </div>
       ),
     },
