@@ -92,20 +92,20 @@ export const UserForm: FC<UserFormProps> = ({ open, onClose, onSave, editingUser
               <CommonValidationTextField name="schoolName" label="School Name" startIcon={<BookOutlined />} />
               <CommonValidationSelect 
                 name="std" 
-                label="Standard (Std)" 
+                label="Standard" 
                 options={[
-                  { label: "1st Std", value: "1st Std" },
-                  { label: "2nd Std", value: "2nd Std" },
-                  { label: "3rd Std", value: "3rd Std" },
-                  { label: "4th Std", value: "4th Std" },
-                  { label: "5th Std", value: "5th Std" },
-                  { label: "6th Std", value: "6th Std" },
-                  { label: "7th Std", value: "7th Std" },
-                  { label: "8th Std", value: "8th Std" },
-                  { label: "9th Std", value: "9th Std" },
-                  { label: "10th Std", value: "10th Std" },
-                  { label: "11th Std", value: "11th Std" },
-                  { label: "12th Std", value: "12th Std" },
+                  { label: "1st Standard", value: "1st Standard" },
+                  { label: "2nd Standard", value: "2nd Standard" },
+                  { label: "3rd Standard", value: "3rd Standard" },
+                  { label: "4th Standard", value: "4th Standard" },
+                  { label: "5th Standard", value: "5th Standard" },
+                  { label: "6th Standard", value: "6th Standard" },
+                  { label: "7th Standard", value: "7th Standard" },
+                  { label: "8th Standard", value: "8th Standard" },
+                  { label: "9th Standard", value: "9th Standard" },
+                  { label: "10th Standard", value: "10th Standard" },
+                  { label: "11th Standard", value: "11th Standard" },
+                  { label: "12th Standard", value: "12th Standard" },
                   { label: "Adult Learner", value: "Adult Learner" }
                 ]}
               />
